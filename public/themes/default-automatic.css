@@ -1,0 +1,30 @@
+:root{
+
+
+    --font-1: "avenir", sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-1: white;
+        --background-2: rgb(250, 250, 250);
+        --background-3: rgb(240, 240, 240);
+        --background-transparent-1: rgba(255,255,255,0.5);
+        --accent-1: rgb(255,200,20);
+        --foreground-1: black;
+        --border-1: rgb(235,235,235);
+        --shadow-1: rgba(0,0,0,0.3);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-1: rgb(20,22,25);
+        --background-2: rgb(22, 24, 28);
+        --background-3: rgb(24, 26, 30);
+        --background-transparent-1: rgba(20,22,25,0.5);
+        --accent-1: rgb(245,180,20);
+        --foreground-1: white;
+        --border-1: rgb(30,35,38);
+    }
+}
