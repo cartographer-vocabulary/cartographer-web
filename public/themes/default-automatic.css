@@ -19,9 +19,9 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --background-1: rgb(20,22,25); 
-        --background-2: rgb(22, 24, 28);
-        --background-3: rgb(24, 26, 30);
+        --background-1: rgb(20,22,25);
+        --background-2: rgb(24, 28, 30);
+        --background-3: rgb(32, 36, 40);
         --background-transparent-1: rgba(20,22,25,0.5);
         --accent-1: rgb(245,180,20);
         --foreground-1: white;

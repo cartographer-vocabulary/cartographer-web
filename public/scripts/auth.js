@@ -27,8 +27,7 @@ function initApp() {
             },{merge:true}).catch((error)=>{console.error("error:" + error)})
             window.listsRef = firestore.collection('lists');
             unsubscribe = listsRef
-                .where(uid,'==','creator')
-                .orderBy('lastOpened')
+                .where(`roles.${uid}`,'==','creator')
                 .onSnapshot(updateLists);
         } else {
             // User is signed out.
@@ -37,7 +36,7 @@ function initApp() {
             for(let fullnameElement of fullnameElements){
                 fullnameElement.innerHTML = "Profile"
             }
-            unsubscribe && unsubscribe();
+            try{unsubscribe()}catch{}
             clearLists();
         }
     }, function(error) {
