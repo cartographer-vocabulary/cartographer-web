@@ -7,6 +7,10 @@ body, html{
     color: var(--foreground-1);
 }
 
+*{
+    box-sizing: border-box;
+}
+
 #navbar{
     position:fixed;
     top:0;
@@ -40,8 +44,68 @@ body, html{
     font-weight:bold;
 }
 
-#content-container{
+#main-container{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction:row;
     padding-top: 3em;
+    overflow: hidden;
+}
+
+#sidebar-container{
+    height:100%;
+    width: 200px;
+    max-width: 25%;
+    border-right: 1px solid var(--border-1);
+    padding: 6px;
+    background-color: var(--background-2);
+    overflow:hidden;
+
+    white-space: nowrap;
+}
+
+#sidebar-container h3{
+    margin: 3px;
+    font-weight:450;
+    text-overflow: ellipsis;
+}
+
+#sidebar-container ul{
+    margin: 0;
+    padding: 0;
+}
+
+#sidebar-container ul li{
+    list-style-type: none;
+    border-radius: 5px;
+    padding: 5px;
+    transition: background-color 0.15s;
+    text-overflow: ellipsis;
+}
+
+#sidebar-container ul li:hover{
+    background-color: var(--background-3);
+}
+
+.sidebar-header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#add-list-btn{
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border-radius: 10px;
+}
+
+#content-container{
+    height:100%;
+    flex-grow: 1;
+    padding: 5px;
 }
 
 #panel-container{
@@ -53,13 +117,14 @@ body, html{
     background-color: rgba(0,0,0,0.4);
     z-index:10000;
     align-content: center;
+    display: none;
     justify-content: center;
     transition: background-color 0.5s;
 }
 
 #sign-in-panel{
-    max-height: 450px;
-    max-width: 650px;
+    height: 450px;
+    width: 650px;
 }
 
 #sign-in-panel h1{
@@ -72,8 +137,8 @@ body, html{
 }
 
 #profile-panel{
-    max-width: 800px;
-    max-height: 600px;
+    width: 800px;
+    height: 600px;
 }
 
 .panel{
@@ -84,6 +149,7 @@ body, html{
     pointer-events: auto;
     box-sizing: border-box;
     background-color: var(--background-1);
+    display: none;
 }
 
 .panel h1{
@@ -98,12 +164,12 @@ button{
     margin: 5px;
     color: var(--foreground-1);
     font-size: 14px;
-    transition: transform 0.15s ease-in-out;
+    transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
 }
 
 button:hover{
     background-color: var(--background-2);
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
 button:active{

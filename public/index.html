@@ -9,6 +9,7 @@
 
         <script defer src="scripts/panel.js"></script>
         <script defer src="scripts/auth.js"></script>
+        <script src="scripts/sidebar.js"></script>
         <!-- firebase scripts -->
         <script src="https://www.gstatic.com/firebasejs/ui/4.7.3/firebase-ui-auth.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.2.5/firebase-app.js"></script>
@@ -64,15 +65,27 @@
             <button id="open-profile-btn" class="user-full-name" hidden="true">Profile</button>
             <div style="width:3px"></div>
         </nav>
-        <div id="content-container">
+        <div id="main-container">
+            <div id="sidebar-container">
+                <div class="sidebar-header">
+                    <h3>My lists</h3>
+                    <button id="add-list-btn">+</button>
+                </div>
+                <ul id="my-lists-container">
 
+                </ul>
+            </div>
+            <div id="content-container">
+
+                content
+            </div>
         </div>
-        <div id="panel-container" hidden = "true">
-            <div id = "sign-in-panel" class="panel" hidden = "true">
+        <div id="panel-container">
+            <div id = "sign-in-panel" class="panel">
                 <h1>Create an Account or Log In!</h1>
                 <div id="firebaseui-auth-container"></div>
             </div>
-            <div id = "profile-panel" class="panel" hidden = "true">
+            <div id = "profile-panel" class="panel">
                 <h1 class="user-full-name">Profile</h1>
                 <button id="signout-btn">sign out </button>
             </div>

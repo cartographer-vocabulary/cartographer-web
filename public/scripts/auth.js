@@ -1,5 +1,5 @@
+var firestore = firebase.firestore();
 (function() {
-
 let signInBtn = document.getElementById("login-btn");
 let profileBtn = document.getElementById("open-profile-btn");
 let fullnameElements = document.getElementsByClassName("user-full-name");
@@ -12,16 +12,24 @@ function initApp() {
             profileBtn.hidden = false;
             signInBtn.hidden = true;
             // User is signed in.
-            var displayName = user.displayName;
-            var email = user.email;
-            var emailVerified = user.emailVerified;
-            var photoURL = user.photoURL;
-            var uid = user.uid;
+            window.displayName = user.displayName;
+            window.userEmail = user.email;
+            window.emailVerified = user.emailVerified;
+            window.photoURL = user.photoURL;
+            window.uid = user.uid;
             var phoneNumber = user.phoneNumber;
             var providerData = user.providerData;
             for(let fullnameElement of fullnameElements){
                 fullnameElement.innerHTML = displayName
             }
+            firestore.collection('users').doc(uid).set({
+                email:userEmail
+            },{merge:true}).catch((error)=>{console.error("error:" + error)})
+            window.listsRef = firestore.collection('lists');
+            unsubscribe = listsRef
+                .where(uid,'==','creator')
+                .orderBy('lastOpened')
+                .onSnapshot(updateLists);
         } else {
             // User is signed out.
             profileBtn.hidden = true;
@@ -29,6 +37,8 @@ function initApp() {
             for(let fullnameElement of fullnameElements){
                 fullnameElement.innerHTML = "Profile"
             }
+            unsubscribe && unsubscribe();
+            clearLists();
         }
     }, function(error) {
         console.log(error);

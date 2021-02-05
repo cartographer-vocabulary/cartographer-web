@@ -6,21 +6,21 @@ let signInBtn = document.getElementById("login-btn");
 let profilePanel = document.getElementById("profile-panel");
 let profileBtn = document.getElementById("open-profile-btn");
 signInBtn.addEventListener("click", ()=>{
-    panelContainer.hidden = false;
-    signInPanel.hidden = false;
+    panelContainer.style.display = "flex";
+    signInPanel.style.display = "block";
 })
 
 profileBtn.addEventListener("click", ()=>{
-    panelContainer.hidden = false;
-    profilePanel.hidden = false;
+    panelContainer.style.display = "flex";
+    profilePanel.style.display = "block";
 })
 
 
 panelContainer.addEventListener("click", (e)=>{
     if(e.target == panelContainer) {
-        panelContainer.hidden = true;
+        panelContainer.style.display = "none";
         for (let panel of panelContainer.children) {
-            panel.hidden = true;
+            panel.style.display = "none";
         }
     }
 })
