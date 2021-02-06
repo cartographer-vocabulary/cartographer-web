@@ -11,6 +11,11 @@ body, html{
     box-sizing: border-box;
 }
 
+.horizontal{
+    display: flex;
+    flex-direction: row;
+}
+
 #navbar{
     position:fixed;
     top:0;
@@ -170,6 +175,10 @@ body, html{
     height: 600px;
 }
 
+#list-delete-btn{
+    display: none;
+}
+
 
 .panel{
     margin: 100px 20px;
@@ -183,7 +192,7 @@ body, html{
 }
 
 .panel h1{
-    margin-bottom:5px;
+    margin: 0;
 }
 
 button{
