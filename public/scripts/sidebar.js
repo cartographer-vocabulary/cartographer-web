@@ -6,7 +6,7 @@ function updateLists(querySnapshot){
     //convert array into html basically
     let items = sorted.map(doc => {
                                                 //this part changes the url when you click and calles update window function in content.js
-        return(doc.data().name ? `<li onclick='window.history.pushState("","","/list/${doc.id}");updateWindows()'> ${doc.data().name} </li>` : "  ")
+        return(doc.data().name ? `<li onclick='firestore.collection("lists").doc("${doc.id}").update({lastOpened: firebase.firestore.FieldValue.serverTimestamp()});window.history.pushState("","","/list/${doc.id}");updateWindows()'> ${doc.data().name} </li>` : "  ")
     })
     document.getElementById("my-lists-container").innerHTML=items.join(' ');
 }
