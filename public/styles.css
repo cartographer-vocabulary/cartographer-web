@@ -31,7 +31,7 @@ body, html{
     margin: 0.5em;
 }
 
-#navbar .spacer{
+.spacer{
     flex-grow: 1;
 }
 
@@ -42,6 +42,7 @@ body, html{
     color: var(--background-1);
     padding:6px 8px;
     font-weight:bold;
+    border:none;
 }
 
 #sidebar-toggle{
@@ -129,10 +130,17 @@ body, html{
 
 }
 
+#list-settings{
+    font-size: 25px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+}
+
 #panel-container{
     width: 100%;
     height: 100%;
-    position: absolute;
+    position: fixed;
     top:0;
     left:0;
     background-color: rgba(0,0,0,0.4);
@@ -157,10 +165,11 @@ body, html{
     margin-top: 20px;
 }
 
-#profile-panel{
+#profile-panel, #list-settings-panel{
     width: 800px;
     height: 600px;
 }
+
 
 .panel{
     margin: 100px 20px;
