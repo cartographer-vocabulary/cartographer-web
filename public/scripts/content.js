@@ -1,6 +1,6 @@
 //you have to "unsubscribe" to these continously listening updates
 var unsubscribeListView;
-
+var unsubscribeCards;
 function updateListView(id){
     //if unsubscribe exists, unsubscribe
     unsubscribeListView && unsubscribeListView();
@@ -28,8 +28,17 @@ function updateListView(id){
             window.history.pushState("","","/welcome");
             updateWindows();
         })
+    unsubscribeCards = firestore.collection("lists").doc(id).collection("cards")
+        .orderBy("word")
+        .onSnapshot(updateCards);
 }
 
+function updateCards(querySnapshot){
+    let items = querySnapshot.docs.map(doc =>{
+        return(`<div class="card"><h3>${doc.data().word}</h3><hr><p>${doc.data().definition}</p></div>`)
+    })
+    document.getElementById("card-container").innerHTML = items.join("  ")
+}
 
 //gets the path of the url and updates the window layout
 function updateWindows(){

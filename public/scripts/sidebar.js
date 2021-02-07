@@ -6,7 +6,7 @@ function updateLists(querySnapshot){
     //convert array into html basically
     let items = sorted.map(doc => {
                                                 //this part changes the url when you click and calles update window function in content.js
-        return(doc.data().name ? `<li onclick='firestore.collection("lists").doc("${doc.id}").update({lastOpened: firebase.firestore.FieldValue.serverTimestamp()});window.history.pushState("","","/list/${doc.id}");updateWindows()'> ${doc.data().name} </li>` : "  ")
+        return(doc.exists ? `<li onclick='firestore.collection("lists").doc("${doc.id}").update({lastOpened: firebase.firestore.FieldValue.serverTimestamp()});window.history.pushState("","","/list/${doc.id}");updateWindows()'> ${doc.data().name} </li>` : "  ")
     })
     document.getElementById("my-lists-container").innerHTML=items.join(' ');
 }
@@ -22,15 +22,17 @@ window.addEventListener('load',() => {
             if(!uid){lmao}
             //prompt user to enter name of list
             let name = window.prompt("Enter name for list", "New List")
-            //adds a document
-            listsRef.add({
-                name: name,
-                public:false,
-                roles: {
-                    [uid]: 'creator',
-                },
-                lastOpened: firebase.firestore.FieldValue.serverTimestamp()
-            })
+            if (name){
+                //adds a document
+                listsRef.add({
+                    name: name,
+                    public:false,
+                    roles: {
+                        [uid]: 'creator',
+                    },
+                    lastOpened: firebase.firestore.FieldValue.serverTimestamp()
+                })
+            }
         }catch{
             //shows sign in panel
             document.getElementById('panel-container').style.display = "flex";
