@@ -84,15 +84,26 @@ function deleteCard(element){
 
 
 function addCard(word,definition){
-    firestore.collection('lists').doc(splitPath[1]).update(
-        {
-            cards: listDoc.data().cards.concat([{
-                word:word,
-                definition:definition,
+    if(listDoc.data().cards) {
+        firestore.collection('lists').doc(splitPath[1]).update(
+            {
+                cards: listDoc.data().cards.concat([{
+                    word: word,
+                    definition: definition,
                 }
-            ])
-        }
-    )
+                ])
+            }
+        )
+    }else{
+        firestore.collection('lists').doc(splitPath[1]).set(
+            {
+                cards:[{
+                    word: word,
+                    definition: definition,
+                }]
+            },{merge:true}
+        )
+    }
 }
 //gets the path of the url and updates the window layout
 function updateWindows(){

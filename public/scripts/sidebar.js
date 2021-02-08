@@ -30,7 +30,8 @@ window.addEventListener('load',() => {
                     roles: {
                         [uid]: 'creator',
                     },
-                    lastOpened: firebase.firestore.FieldValue.serverTimestamp()
+                    lastOpened: firebase.firestore.FieldValue.serverTimestamp(),
+                    cards:[]
                 })
             }
         }catch{
