@@ -159,7 +159,7 @@ body, html{
     padding: 15px;
     flex-grow: 1;
     transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    overflow: hidden;
+    overflow: scroll;
 }
 .card:hover{
     transform: scale(1.01);
@@ -169,11 +169,22 @@ body, html{
 .card h3{
     margin:0;
     white-space: nowrap;
+    width: 100%;
+    max-width: 100%;
+    outline: none;
+    overflow: hidden;
+}
+
+.card p{
+    outline: none;
 }
 
 .card button{
     width: 20px;
     height: 20px;
+    position: absolute;
+    top: 15px;
+    right: 15px;
     margin: 0;
     padding: 0;
     opacity: 0;

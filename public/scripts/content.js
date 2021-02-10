@@ -25,7 +25,7 @@ function updateListView(id){
             //its in the same document now, there is an attribute called card,
             //card is an array of objects, and the objects have attributes: word, definition
             let items = doc.data().cards.map((card,index) =>{
-                return(`<div class="card" id="card-${index}"><div class="horizontal"><h3>${card.word}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)">×</button></div><hr><p>${card.definition}</p></div>`)
+                return(`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerHTML, parseInt(this.parentNode.parentNode.id))" onbeforeunload="this.onblur">${card.word}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)">×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerHTML, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur">${card.definition}</p></div>`)
             })
 
             document.getElementById("card-container").innerHTML = items.join("  ")
@@ -105,6 +105,31 @@ function addCard(word,definition){
         )
     }
 }
+
+function updateCardWord(word,index){
+    let editedArray = listDoc.data().cards
+    if(editedArray[index.word] != word) {
+        editedArray[index].word = word;
+        firestore.collection('lists').doc(splitPath[1]).update(
+            {
+                cards: editedArray
+            }
+        )
+    }
+}
+
+function updateCardDefinition(definition,index){
+    let editedArray = listDoc.data().cards
+    if(editedArray[index.definition] != definition) {
+        editedArray[index].definition = definition;
+        firestore.collection('lists').doc(splitPath[1]).update(
+            {
+                cards: editedArray
+            }
+        )
+    }
+}
+
 //gets the path of the url and updates the window layout
 function updateWindows(){
     //splits the url into array; example: hello.com/abc/xyz becomes ["abc","xyz"]
