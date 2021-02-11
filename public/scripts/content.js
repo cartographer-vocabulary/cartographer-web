@@ -136,6 +136,82 @@ function updateCardDefinition(definition,index){
     }
 }
 
+let cardXOffset=0; //the default offset of the elements
+let cardYOffset=0;
+let cardDragIndex=0;
+let cardDragElement
+function cardDragStart(e){
+    if(e.target.className === "card" && listDoc.data().roles[uid] !== "viewer") {
+        let element = e.target
+        cardDragIndex = parseInt(element.id);
+        cardDragElement = element
+        cardXOffset = event.pageX;
+        cardYOffset = event.pageY;
+        document.addEventListener('mousemove', cardDrag);
+        document.addEventListener("mouseup", cardDragEnd);
+        document.addEventListener('mouseover',cardDragIndexSet);
+        element.style.transition = "transform 0s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out";
+        element.style.zIndex = "10";
+        element.style.pointerEvents = "none";
+        element.style.boxShadow = "0px 10px 20px var(--shadow-2)"
+    }
+}
+
+function cardDrag(){
+    //moves the element to the mouse
+    cardDragElement.style.boxShadow = "0px 10px 20px var(--shadow-2)"
+    cardDragElement.style.transform = `translate(${event.pageX - cardXOffset}px,${ event.pageY - cardYOffset}px) scale(1.01)`
+}
+
+function cardDragIndexSet(e){
+    if(e.target.className === "card" || e.target.parentNode.className === "card" || e.target.parentNode.parentNode.className === "card"){
+        cardDragIndex = parseInt(e.target.id) || parseInt(e.target.closest(".card").id);
+        if(e.target.className === "card"){
+            e.target.style.backgroundColor = "var(--background-2)"
+            e.target.closest(".card").style.boxShadow = "inset 0px 8px 15px var(--shadow-3)"
+        }else{
+            e.target.closest(".card").style.backgroundColor = "var(--background-2)"
+            e.target.closest(".card").style.boxShadow = "inset 0px 8px 15px var(--shadow-3)"
+        }
+    }else{
+        document.getElementById(`${cardDragIndex}`).style.backgroundColor = "var(--background-1)"
+        document.getElementById(`${cardDragIndex}`).style.boxShadow = ""
+        cardDragIndex = parseInt(cardDragElement.id)
+    }
+}
+
+function cardDragEnd(){
+    cardDragElement.style.pointerEvents = "auto";
+    cardDragElement.style.transform = ""
+    cardDragElement.style.transition = "transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out";
+    cardDragElement.style.zIndex = ""
+    cardDragElement.style.boxShadow = ""
+    document.removeEventListener("mousemove",cardDrag);
+    document.removeEventListener("mouseup", cardDragEnd);
+    document.removeEventListener("mouseover", cardDragIndexSet);
+    if(parseInt(cardDragElement.id) != cardDragIndex){
+        let editedArray = listDoc.data().cards;
+        array_move(editedArray,parseInt(cardDragElement.id),cardDragIndex);
+        firestore.collection("lists").doc(splitPath[1]).set({
+            cards: editedArray
+        },{merge:true})
+    }
+}
+
+function array_move(arr, old_index, new_index) {
+    if (new_index >= arr.length) {
+        var k = new_index - arr.length + 1;
+        while (k--) {
+            arr.push(undefined);
+        }
+    }
+    arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+    return arr; // for testing
+};
+
+
+document.addEventListener("mousedown", cardDragStart)
+
 //gets the path of the url and updates the window layout
 function updateWindows(){
     //splits the url into array; example: hello.com/abc/xyz becomes ["abc","xyz"]
