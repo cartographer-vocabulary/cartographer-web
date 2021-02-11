@@ -24,10 +24,16 @@ function updateListView(id){
             //get the card data stuff
             //its in the same document now, there is an attribute called card,
             //card is an array of objects, and the objects have attributes: word, definition
-            let items = doc.data().cards.map((card,index) =>{
-                return(`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerHTML, parseInt(this.parentNode.parentNode.id))" onbeforeunload="this.onblur">${card.word}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)">×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerHTML, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur">${card.definition}</p></div>`)
-            })
-
+            let items
+            if(doc.data().roles[uid] != "viewer") {
+                items = doc.data().cards.map((card, index) => {
+                    return (`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerHTML, parseInt(this.parentNode.parentNode.id))" onbeforeunload="this.onblur">${card.word}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerHTML, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur">${card.definition}</p></div>`)
+                })
+            }else{
+                items = doc.data().cards.map((card, index) => {
+                    return (`<div class="card" id="${index}"><div class="horizontal"><h3>${card.word}</h3></div><hr><p>${card.definition}</p></div>`)
+                })
+            }
             document.getElementById("card-container").innerHTML = items.join("  ")
 
         },(error) => {
