@@ -1,6 +1,7 @@
 //you have to "unsubscribe" to these continously listening updates
 var unsubscribeListView;
 var listDoc;
+var flashcardIndex = 0;
 function updateListView(id){
     //if unsubscribe exists, unsubscribe
     unsubscribeListView && unsubscribeListView();
@@ -19,6 +20,16 @@ function updateListView(id){
                 document.getElementById("list-delete-btn").style.display = "block"
             }else{
                 document.getElementById("list-delete-btn").style.display = "none"
+            }
+
+            if(doc.data().cards[flashcardIndex]) {
+                document.getElementById("flashcard-word").innerHTML = doc.data().cards[flashcardIndex].word
+                document.getElementById("flashcard-definition").innerHTML = doc.data().cards[flashcardIndex].definition
+                document.getElementById("flashcard-index").innerHTML = flashcardIndex + 1;
+            }else{
+                document.getElementById("flashcard-word").innerHTML = "No card selected"
+                document.getElementById("flashcard-definition").innerHTML = "No card selected"
+                document.getElementById("flashcard-index").innerHTML = "--";
             }
 
             //get the card data stuff
@@ -211,6 +222,40 @@ function array_move(arr, old_index, new_index) {
 
 
 document.addEventListener("mousedown", cardDragStart)
+
+
+function changeFlashcard(next){
+    if (next){
+
+        if(listDoc.data().cards[flashcardIndex+1]){
+            flashcardIndex++
+            document.getElementById("flashcard-word").innerHTML = listDoc.data().cards[flashcardIndex].word
+            document.getElementById("flashcard-definition").innerHTML = listDoc.data().cards[flashcardIndex].definition
+            document.getElementById("flashcard-index").innerHTML = flashcardIndex+1;
+        }
+    }else{
+
+        if(listDoc.data().cards[flashcardIndex-1]){
+            flashcardIndex--
+            document.getElementById("flashcard-word").innerHTML = listDoc.data().cards[flashcardIndex].word
+            document.getElementById("flashcard-definition").innerHTML = listDoc.data().cards[flashcardIndex].definition
+            document.getElementById("flashcard-index").innerHTML = flashcardIndex+1;
+        }
+    }
+}
+
+
+window.addEventListener("unload", ()=>{
+    localStorage.setItem("flashcard-index", `${flashcardIndex}`);
+})
+
+window.addEventListener("load", ()=>{
+    if(parseInt(localStorage.getItem("flashcard-index"))){
+        flashcardIndex =parseInt(localStorage.getItem("flashcard-index"))
+    }
+})
+
+
 
 //gets the path of the url and updates the window layout
 function updateWindows(){

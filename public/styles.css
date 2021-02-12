@@ -11,6 +11,10 @@ body, html{
     box-sizing: border-box;
 }
 
+hr{
+    border:0.5px solid var(--border-2);
+}
+
 .horizontal{
     display: flex;
     flex-direction: row;
@@ -193,16 +197,78 @@ body, html{
     transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
 
-
-
 .card:hover button{
     opacity: 1;
     transform: scale(1);
 }
 
-.card hr{
-    border:0.5px solid var(--border-2);
+#card-flashcard-container{
+    padding: 15px 10px;
 }
+
+#card-flashcard-container button{
+    width: 30px;
+    height: 50px;
+    margin: auto;
+    /*border: none*/
+}
+
+#card-inner-flashcard-container{
+
+    width: 500px;
+    height: 300px;
+    background-color: transparent;
+    display: block;
+    margin: auto;
+    margin-left: 5px;
+    margin-right: 5px;
+    perspective: 1000px;
+}
+
+#flashcard{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    transition-delay: 0.4s;
+    border: 1px solid var(--border-1);
+    border-radius: 8px;
+    box-shadow: 0px 10px 20px var(--shadow-2);
+    transform-style: preserve-3d;
+}
+
+#flashcard-front, #flashcard-back{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding: 50px 20px;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+#flashcard-front *, #flashcard-back *{margin: auto}
+
+#flashcard-index{
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    color: var(--foreground-2);
+}
+
+#card-inner-flashcard-container:hover #flashcard{
+    transform: rotateX(180deg);
+    box-shadow: 0px -10px 20px var(--shadow-2);
+}
+
+#flashcard-back {
+    transform: rotateX(180deg);
+    font-size: 20px;
+}
+
 
 #add-card-container{
     width: calc(100% - 40px);

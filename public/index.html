@@ -85,7 +85,22 @@
                         <div class="spacer"></div>
                         <button id="list-settings">⚙</button>
                     </div>
-
+                    <div id="card-flashcard-container" class="horizontal">
+                        <button class="previous-flashcard" onclick="changeFlashcard(false)">❮</button>
+                        <div id="card-inner-flashcard-container">
+                            <div id="flashcard">
+                                <div id="flashcard-front">
+                                    <p id="flashcard-index">--</p>
+                                    <h1 id="flashcard-word">No card selected</h1>
+                                </div>
+                                <div id="flashcard-back">
+                                    <p id="flashcard-definition">No card selected</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="next-flashcard" onclick="changeFlashcard(true)">❯</button>
+                    </div>
+                    <hr>
                     <div id="card-container">
 
                     </div>

@@ -12,6 +12,7 @@
         --background-transparent-1: rgba(255,255,255,0.5);
         --accent-1: rgb(255,200,20);
         --foreground-1: black;
+        --foreground-2: rgb(180,180,180);
         --border-1: rgb(235,235,235);
         --border-2: rgb(240,240,240);
         --shadow-1: rgba(0,0,0,0.3);
@@ -28,6 +29,7 @@
         --background-transparent-1: rgba(20,22,25,0.5);
         --accent-1: rgb(245,180,20);
         --foreground-1: white;
+        --foreground-2: rgb(140,140,140);
         --border-1: rgb(35,38,40);
         --border-2: rgb(30,34,46);
         --shadow-1: rgba(0,0,0,0.8);
