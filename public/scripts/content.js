@@ -101,6 +101,7 @@ function deleteCard(element){
 
 
 function addCard(word,definition){
+    word.trim()
     if(listDoc.data().cards) {
         firestore.collection('lists').doc(splitPath[1]).update(
             {
@@ -124,6 +125,7 @@ function addCard(word,definition){
 }
 
 function updateCardWord(word,index){
+    word.trim();
     let editedArray = listDoc.data().cards
     if(editedArray[index.word] != word) {
         editedArray[index].word = word;
@@ -136,6 +138,7 @@ function updateCardWord(word,index){
 }
 
 function updateCardDefinition(definition,index){
+    definition.trim()
     let editedArray = listDoc.data().cards
     if(editedArray[index.definition] != definition) {
         editedArray[index].definition = definition;
@@ -256,6 +259,87 @@ window.addEventListener("load", ()=>{
 })
 
 
+let unsubscribeUserDoc;
+let userDoc;
+let uiTheme = localStorage.getItem("uiTheme") ?? "automatic";
+let colorScheme = localStorage.getItem("colorScheme") ?? "default";
+function updateUserInfo(){
+    unsubscribeUserDoc && unsubscribeUserDoc();
+    firestore.collection('users').doc(uid)
+        .onSnapshot((doc)=>{
+            userDoc = doc
+            for(let userDisplayName of document.getElementsByClassName("user-full-name")){
+                userDisplayName.innerHTML = doc.data().displayName;
+            }
+            for(let themeBtn of document.getElementsByClassName("theme-toggle")){
+                themeBtn.style.backgroundColor = ""
+                themeBtn.style.border = ""
+            }
+
+            for(let colorSchemeBtn of document.getElementsByClassName("color-scheme")){
+                colorSchemeBtn.style.border = ""
+            }
+
+            if(doc.data().theme){
+                uiTheme = doc.data().theme
+                localStorage.setItem("uiTheme",uiTheme)
+                document.getElementById(`${uiTheme}-mode`).style.backgroundColor = "var(--accent-1)"
+                document.getElementById(`${uiTheme}-mode`).style.border = "1px solid var(--border-1)"
+                document.getElementById("theme-stylesheet").href = `/themes/${colorScheme}-${uiTheme}.css`
+            }
+
+            if(doc.data().colorScheme){
+                colorScheme = doc.data().colorScheme
+                localStorage.setItem("colorScheme",colorScheme)
+                document.getElementById(`${colorScheme}-color-scheme`).style.border = "2px solid var(--accent-1)"
+                document.getElementById("theme-stylesheet").href = `/themes/${colorScheme}-${uiTheme}.css`
+            }
+        })
+}
+
+function updateColorScheme(name){
+    colorScheme = name;
+    firestore.collection('users').doc(uid).update({
+        colorScheme:colorScheme
+    })
+}
+
+window.addEventListener('load',()=> {
+    document.getElementById("edit-user-display-name").addEventListener("click", () => {
+        let newName = window.prompt("Enter new name:", userDoc.data().displayName)
+        newName.trim()
+        if(newName){
+            firestore.collection('users').doc(uid).set({
+                displayName:`${newName}`
+            },{merge:true})
+        }
+    })
+    document.getElementById('automatic-mode').addEventListener("click",()=>{
+        if(uiTheme != "automatic"){
+            firestore.collection('users').doc(uid).update({
+                theme: "automatic"
+            })
+        }
+    })
+    document.getElementById('light-mode').addEventListener("click",()=>{
+        if(uiTheme != "light"){
+            firestore.collection('users').doc(uid).update({
+                theme: "light"
+            })
+        }
+    })
+    document.getElementById('dark-mode').addEventListener("click",()=>{
+        if(uiTheme != "dark"){
+            firestore.collection('users').doc(uid).update({
+                theme: "dark"
+            })
+        }
+    })
+    document.getElementById("theme-stylesheet").href = `/themes/${colorScheme}-${uiTheme}.css`
+})
+
+
+
 
 //gets the path of the url and updates the window layout
 function updateWindows(){
@@ -284,7 +368,7 @@ window.addEventListener('load', updateWindows);
 
 
 window.addEventListener('load',()=>{
-    //event listner for the button thata edits the list, and puts that data on firestore
+    //event listener for the button that edits the list, and puts that data on firestore
     document.querySelector("#list-edit-btn").addEventListener('click',()=>{
         let newName = window.prompt("Rename List:");
         if(newName || newName ==""){

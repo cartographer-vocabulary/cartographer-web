@@ -9,6 +9,7 @@ body, html{
 
 *{
     box-sizing: border-box;
+    transition: background-color 0.15s ease-in-out;
 }
 
 hr{
@@ -353,6 +354,31 @@ hr{
 
 .panel h1{
     margin: 0;
+}
+
+.panel h2{
+    margin: 3px;
+}
+
+.panel h3{
+    margin: 3px 3px 3px 10px ;
+    font-weight: normal;
+}
+
+#color-scheme-container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 5px;
+    margin: 5px;
+}
+
+.color-scheme{
+    padding: 5px;
+    height: 2em;
+    width: 200px;
+    border-radius: 5px;
+    flex-grow: 1;
 }
 
 button{

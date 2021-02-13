@@ -16,7 +16,7 @@ function initApp() {
 
         //if there is an user, it means they are signed in, else they are signed out.
         if (user) {
-            //hidens the sign in button and shows profile button when signed in
+            //hides the sign in button and shows profile button when signed in
             profileBtn.hidden = false;
             signInBtn.hidden = true;
             //gets the data of stuff and stores it in window, which is basically like defining a global variable
@@ -27,14 +27,23 @@ function initApp() {
             window.uid = user.uid;
             var phoneNumber = user.phoneNumber;
             var providerData = user.providerData;
-            //change the text of elements to the name of user
-            for(let fullnameElement of fullnameElements){
-                fullnameElement.innerHTML = displayName
-            }
+            updateUserInfo()
             //creates/updates user document
-            firestore.collection('users').doc(uid).set({
-                email:userEmail
-            },{merge:true}).catch((error)=>{console.error("error:" + error)})
+            firestore.collection('users').doc(uid).get().then(doc => {
+                if(doc.exists) {
+                    firestore.collection('users').doc(uid).set({
+                        displayName: displayName,
+                        email: userEmail
+                    }, {merge: true}).catch((error) => {
+                        console.error("error:" + error)
+                    })
+                }else{
+                    firestore.collection('users').doc(uid).set({
+                        email: userEmail
+                    }, {merge: true}).catch(error => {console.log(error)})
+                }
+            })
+
             window.listsRef = firestore.collection('lists');
             unsubscribe = listsRef
                 .where(`roles.${uid}`,'==','creator')

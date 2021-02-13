@@ -5,11 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4518435c-f992-4caf-9a65-80c398122c6e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/public/themes/default-dark.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/default-light.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/nord-automatic.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/nord-dark.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/nord-light.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/solarized-automatic.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/solarized-dark.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/themes/solarized-light.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/scripts/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/scripts/auth.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/scripts/content.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/scripts/content.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/themes/default-automatic.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/themes/default-automatic.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,6 +49,11 @@
     <property name="settings.editor.selected.configurable" value="editor.preferences.appearance" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public/themes" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -55,7 +68,8 @@
       <workItem from="1612823417095" duration="1280000" />
       <workItem from="1612990550057" duration="2339000" />
       <workItem from="1613067944052" duration="9197000" />
-      <workItem from="1613159314801" duration="5496000" />
+      <workItem from="1613159314801" duration="5966000" />
+      <workItem from="1613249533089" duration="6907000" />
     </task>
     <task id="LOCAL-00001" summary="Made the ui and reading of cards, but you can't add or delete yet">
       <created>1612715218635</created>
