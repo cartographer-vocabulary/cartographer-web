@@ -32,8 +32,8 @@
         --foreground-2: rgb(136, 141, 160);
         --border-1: rgb(43, 47, 61);
         --border-2: rgb(46, 54, 64);
-        --shadow-1: rgba(0,0,0,0.8);
-        --shadow-2: rgba(0,0,0,0.4);
-        --shadow-3: rgba(0,0,0,0.15);
+        --shadow-1: rgba(0,0,0,0.3);
+        --shadow-2: rgba(0,0,0,0.18);
+        --shadow-3: rgba(0,0,0,0.07);
     }
 }
