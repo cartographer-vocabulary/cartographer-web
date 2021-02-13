@@ -30,7 +30,7 @@ function initApp() {
             updateUserInfo()
             //creates/updates user document
             firestore.collection('users').doc(uid).get().then(doc => {
-                if(doc.exists) {
+                if(!doc.exists) {
                     firestore.collection('users').doc(uid).set({
                         displayName: displayName,
                         email: userEmail
