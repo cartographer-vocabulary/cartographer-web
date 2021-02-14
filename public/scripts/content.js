@@ -31,7 +31,7 @@ function updateListView(id){
                 document.getElementById("flashcard-definition").innerHTML = "No card selected"
                 document.getElementById("flashcard-index").innerHTML = "--";
             }
-            if(doc.data().cards.length > 0) {
+            if(doc.data().cards.length >= 2) {
                 refreshQuizAnswers();
             }else{
                 document.getElementById("quiz-word").innerHTML = "--"

@@ -17,8 +17,8 @@ function initApp() {
         //if there is an user, it means they are signed in, else they are signed out.
         if (user) {
             //hides the sign in button and shows profile button when signed in
-            profileBtn.hidden = false;
-            signInBtn.hidden = true;
+            profileBtn.style.display = "block";
+            signInBtn.style.display = "none";
             //gets the data of stuff and stores it in window, which is basically like defining a global variable
             window.displayName = user.displayName;
             window.userEmail = user.email;
@@ -56,8 +56,8 @@ function initApp() {
             window.photoURL = null;
             window.uid = null;
             //hides profile button and shows log in button
-            profileBtn.hidden = true;
-            signInBtn.hidden = false;
+            profileBtn.style.display = "none";
+            signInBtn.style.display = "block";
             //changes the text with the user's name to "profile"
             for(let fullnameElement of fullnameElements){
                 fullnameElement.innerHTML = "Profile"

@@ -16,6 +16,14 @@ hr{
     border:0.5px solid var(--border-2);
 }
 
+svg{
+    margin: 0;
+}
+
+span{
+    margin:0;
+}
+
 .horizontal{
     display: flex;
     flex-direction: row;
@@ -38,7 +46,7 @@ hr{
 
 #navbar h1{
     font-size: 1.4em;
-    margin: 0.5em;
+    margin: 14px 0.5em 0.5em 4px;
 }
 
 .spacer{
@@ -57,7 +65,7 @@ hr{
 
 #sidebar-toggle{
     font-size: 20px;
-    padding: 4px 7px !important;
+    padding: 7px 5px !important;
     margin-left: 5px !important;
 }
 
@@ -189,11 +197,9 @@ hr{
     background-color: var(--background-3);
 }
 
-#list-settings{
+#list-settings {
     font-size: 25px;
     width: 32px;
-    /*height: 32px;*/
-    padding: 0;
 }
 
 #card-container{
@@ -438,6 +444,9 @@ button{
     color: var(--foreground-1);
     font-size: 14px;
     transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    display:flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button:hover{
