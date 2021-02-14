@@ -1,12 +1,10 @@
 //supposed to be called in a querySnapshot, sorts and displays the lists on sidebar
 function updateLists(querySnapshot){
-    let sorted = querySnapshot.docs.sort((a,b)=>{
-        return b.data().lastOpened.toMillis() - a.data().lastOpened.toMillis()
-    })
+    let sorted = querySnapshot.docs
     //convert array into html basically
     let items = sorted.map(doc => {
                                                 //this part changes the url when you click and calles update window function in content.js
-        return(doc.exists ? `<li onclick='firestore.collection("lists").doc("${doc.id}").update({lastOpened: firebase.firestore.FieldValue.serverTimestamp()});window.history.pushState("","","/list/${doc.id}");updateWindows()'> ${doc.data().name} </li>` : "  ")
+        return(doc.exists ? `<li onclick='window.history.pushState("","","/list/${doc.id}");updateWindows()'> ${doc.data().name} </li>` : "  ")
     })
     document.getElementById("my-lists-container").innerHTML=items.join(' ');
 }
@@ -30,7 +28,6 @@ window.addEventListener('load',() => {
                     roles: {
                         [uid]: 'creator',
                     },
-                    lastOpened: firebase.firestore.FieldValue.serverTimestamp(),
                     cards:[]
                 })
             }
