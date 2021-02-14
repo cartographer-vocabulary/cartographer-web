@@ -11,6 +11,8 @@
         --background-3: rgb(207, 213, 223);
         --background-transparent-1: rgba(225, 229, 235,0.5);
         --accent-1: rgb(156, 181, 136);
+        --wrong: rgb(183, 94, 104);
+        --correct: rgb(156, 181, 136);
         --foreground-1: #2d333f;
         --foreground-2: rgb(120, 132, 161);
         --border-1: rgb(198, 203, 213);
@@ -28,6 +30,8 @@
         --background-3: rgb(64, 74, 92);
         --background-transparent-1: rgba(58, 65, 80, 0.5);
         --accent-1: rgb(156, 181, 136);
+        --wrong: rgb(183, 94, 104);
+        --correct: rgb(156, 181, 136);
         --foreground-1: #e1e5eb;
         --foreground-2: rgb(136, 141, 160);
         --border-1: rgb(43, 47, 61);

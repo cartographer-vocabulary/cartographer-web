@@ -31,7 +31,16 @@ function updateListView(id){
                 document.getElementById("flashcard-definition").innerHTML = "No card selected"
                 document.getElementById("flashcard-index").innerHTML = "--";
             }
-
+            if(doc.data().cards.length > 0) {
+                refreshQuizAnswers();
+            }else{
+                document.getElementById("quiz-word").innerHTML = "--"
+                for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
+                    document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
+                    document.getElementsByClassName("quiz-answer")[quizAnswer].innerHTML= "--"
+                    document.getElementsByClassName("quiz-answer")[quizAnswer].style.border = "1px solid var(--border-1)"
+                }
+            }
             //get the card data stuff
             //its in the same document now, there is an attribute called card,
             //card is an array of objects, and the objects have attributes: word, definition
@@ -340,6 +349,105 @@ window.addEventListener('load',()=> {
 
 
 
+window.addEventListener('load',()=>{
+    //event listener for the button that edits the list, and puts that data on firestore
+    document.querySelector("#list-edit-btn").addEventListener('click',()=>{
+        let newName = window.prompt("Rename List:");
+        if(newName || newName ==""){
+            firestore.collection("lists").doc(splitPath[1]).update(
+                {
+                    name: newName,
+                }
+            )
+        }
+    })
+    //for deleting the list
+    document.querySelector('#list-delete-btn').addEventListener('click',()=>{
+        if(window.confirm("Delete this list?")){
+            firestore.collection("lists").doc(splitPath[1]).delete()
+            //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
+            let panelContainer = document.getElementById("panel-container");
+            panelContainer.style.display = "none";
+            for (let panel of panelContainer.children) {
+                panel.style.display = "none";
+            }
+        }
+    })
+})
+
+let listCardQuizMode = localStorage.getItem("listCardQuizMode") ?? "card"
+
+
+window.addEventListener("load",()=>{
+
+    updateListCardQuizMode()
+    document.getElementById("list-card-toggle").addEventListener('click',()=>{
+        listCardQuizMode = "card"
+        localStorage.setItem("listCardQuizMode",listCardQuizMode)
+        updateListCardQuizMode()
+    })
+    document.getElementById("list-quiz-toggle").addEventListener('click',()=>{
+        listCardQuizMode = "quiz"
+        localStorage.setItem("listCardQuizMode",listCardQuizMode)
+        updateListCardQuizMode()
+    })
+})
+
+
+function updateListCardQuizMode(){
+    if (listCardQuizMode == "card"){
+        document.getElementById("list-card-toggle").style.border = "2px solid var(--accent-1)"
+        document.getElementById("list-quiz-toggle").style.border = "1px solid var(--border-1)"
+        document.getElementById("list-card-container").style.display = "block"
+        document.getElementById("list-quiz-container").style.display = "none"
+    }else{
+        document.getElementById("list-quiz-toggle").style.border = "2px solid var(--accent-1)"
+        document.getElementById("list-card-toggle").style.border = "1px solid var(--border-1)"
+        document.getElementById("list-quiz-container").style.display = "block"
+        document.getElementById("list-card-container").style.display = "none"
+    }
+}
+let quizPreviousWord;
+function refreshQuizAnswers(){
+    let quizWord = Math.floor(Math.random()*listDoc.data().cards.length);
+    let correctQuizAnswer = ((listDoc.data().cards.length >= 4) ?  Math.floor(Math.random()*4)  : Math.floor(Math.random()*listDoc.data().cards.length));
+    if(!quizPreviousWord){quizPreviousWord = quizWord}
+    do{
+        quizWord = Math.floor(Math.random()*listDoc.data().cards.length);
+        console.log('hello')
+    }while(quizWord === quizPreviousWord)
+    let quizAnswers = [quizWord]
+    document.getElementById("quiz-word").innerHTML = listDoc.data().cards[quizWord].word;
+
+    for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
+        document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "none"
+        document.getElementsByClassName("quiz-answer")[quizAnswer].style.border = "1px solid var(--border-1)"
+    }
+    for (let quizAnswer = 0; quizAnswer < ((listDoc.data().cards.length < 4) ? listDoc.data().cards.length : 4); quizAnswer++) {
+        if (quizAnswer != correctQuizAnswer) {
+            document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
+            let currentAnswer = Math.floor(Math.random() * listDoc.data().cards.length);
+            do {
+                currentAnswer = Math.floor(Math.random() * listDoc.data().cards.length)
+            } while (quizAnswers.includes(currentAnswer));
+            quizAnswers.push(currentAnswer);
+            document.getElementsByClassName("quiz-answer")[quizAnswer].innerHTML = listDoc.data().cards[currentAnswer].definition;
+            document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = () => {
+                document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--wrong)"
+            }
+        } else {
+            document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
+            document.getElementsByClassName("quiz-answer")[quizAnswer].innerHTML = listDoc.data().cards[quizWord].definition;
+            document.getElementsByClassName("quiz-answer")[quizAnswer].onclick =
+                () => {
+                    document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--correct)";
+                    setTimeout(function () {
+                        refreshQuizAnswers()
+                    }, 500);
+                }
+        }
+    }
+}
 
 //gets the path of the url and updates the window layout
 function updateWindows(){
@@ -366,29 +474,3 @@ window.addEventListener('popstate', updateWindows);
 window.addEventListener('load', updateWindows);
 
 
-
-window.addEventListener('load',()=>{
-    //event listener for the button that edits the list, and puts that data on firestore
-    document.querySelector("#list-edit-btn").addEventListener('click',()=>{
-        let newName = window.prompt("Rename List:");
-        if(newName || newName ==""){
-            firestore.collection("lists").doc(splitPath[1]).update(
-                {
-                    name: newName,
-                }
-            )
-        }
-    })
-    //for deleting the list
-    document.querySelector('#list-delete-btn').addEventListener('click',()=>{
-        if(window.confirm("Delete this list?")){
-            firestore.collection("lists").doc(splitPath[1]).delete()
-            //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
-            let panelContainer = document.getElementById("panel-container");
-            panelContainer.style.display = "none";
-            for (let panel of panelContainer.children) {
-                panel.style.display = "none";
-            }
-        }
-    })
-})

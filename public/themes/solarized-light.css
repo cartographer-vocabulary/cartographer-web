@@ -5,6 +5,8 @@
     --background-3: rgb(210, 203, 185);
     --background-transparent-1: rgba(242, 235, 218,0.5);
     --accent-1: rgb(128, 147, 10);
+    --wrong: rgb(210, 51, 47);
+    --correct: rgb(128, 147, 10);
     --foreground-1: #022b35;
     --foreground-2: rgb(126, 141, 146);
     --border-1: rgb(217, 216, 193);

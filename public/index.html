@@ -83,32 +83,46 @@
                     <div class="horizontal" style="margin: 5px 15px">
                         <h1 class="content-header">placeholder</h1>
                         <div class="spacer"></div>
+                        <button id="list-card-toggle">card</button>
+                        <button id="list-quiz-toggle">quiz</button>
                         <button id="list-settings">⚙</button>
                     </div>
-                    <div id="card-flashcard-container" class="horizontal">
-                        <div class="spacer"></div>
-                        <button class="previous-flashcard" onclick="changeFlashcard(false)">❮</button>
-                        <div id="card-inner-flashcard-container">
-                            <div id="flashcard">
-                                <div id="flashcard-front">
-                                    <p id="flashcard-index">--</p>
-                                    <h1 id="flashcard-word">No card selected</h1>
-                                </div>
-                                <div id="flashcard-back">
-                                    <p id="flashcard-definition">No card selected</p>
+                    <div id="list-card-container">
+                        <div id="card-flashcard-container" class="horizontal">
+                            <div class="spacer"></div>
+                            <button class="previous-flashcard" onclick="changeFlashcard(false)">❮</button>
+                            <div id="card-inner-flashcard-container">
+                                <div id="flashcard">
+                                    <div id="flashcard-front">
+                                        <p id="flashcard-index">--</p>
+                                        <h1 id="flashcard-word">No card selected</h1>
+                                    </div>
+                                    <div id="flashcard-back">
+                                        <p id="flashcard-definition">No card selected</p>
+                                    </div>
                                 </div>
                             </div>
+                            <button id="next-flashcard" onclick="changeFlashcard(true)">❯</button>
+                            <div class="spacer"></div>
                         </div>
-                        <button id="next-flashcard" onclick="changeFlashcard(true)">❯</button>
-                        <div class="spacer"></div>
-                    </div>
-                    <hr>
-                    <div id="card-container">
+                        <hr>
+                        <div id="card-container">
 
+                        </div>
+                        <div id="add-card-container">
+                            <input id="card-word-input" type="text" placeholder="word">
+                            <input id="card-definition-input" type="text" placeholder="definition">
+                        </div>
                     </div>
-                    <div id="add-card-container">
-                        <input id="card-word-input" type="text" placeholder="word">
-                        <input id="card-definition-input" type="text" placeholder="definition">
+                    <div id="list-quiz-container">
+                        <h2 id="quiz-word">--</h2>
+                        <hr>
+                        <div id="quiz-answers-grid">
+                            <div id="quiz-definition-0" class="quiz-answer">--</div>
+                            <div id="quiz-definition-1" class="quiz-answer">--</div>
+                            <div id="quiz-definition-2" class="quiz-answer">--</div>
+                            <div id="quiz-definition-3" class="quiz-answer">--</div>
+                        </div>
                     </div>
                 </div>
 

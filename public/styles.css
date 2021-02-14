@@ -141,10 +141,58 @@ hr{
 
 }
 
+#list-quiz-container{
+    display: none;
+    padding: 0px 10px 10px 10px;
+    margin: 15px;
+    border: 1px solid var(--border-1);
+    border-radius: 8px;
+}
+
+#list-quiz-container h2{
+    font-size: 35px;
+    margin-bottom: 0;
+    margin-top:15px;
+    margin-left: 10px;
+}
+
+#list-quiz-container hr{
+    margin: 5px 5px 10px;
+}
+
+#quiz-answers-grid{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.quiz-answer{
+    border: 1px solid var(--border-1);
+    border-radius: 5px;
+    flex-grow: 1;
+    margin: 8px;
+    padding: 10px;
+    min-height: 100px;
+    overflow: auto;
+    width: 150px;
+    white-space: normal;
+    transition: background-color 0.15s ease-in-out, transform 0.15s ease-in-out;
+}
+
+.quiz-answer:hover{
+    background-color: var(--background-2);
+    transform: scale(1.05);
+}
+
+.quiz-answer:active{
+    transform: scale(0.95);
+    background-color: var(--background-3);
+}
+
 #list-settings{
     font-size: 25px;
     width: 32px;
-    height: 32px;
+    /*height: 32px;*/
     padding: 0;
 }
 

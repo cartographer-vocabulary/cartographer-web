@@ -11,6 +11,8 @@
         --background-3: rgb(240, 240, 240);
         --background-transparent-1: rgba(255,255,255,0.5);
         --accent-1: rgb(255,200,20);
+        --wrong: rgb(255, 67, 20);
+        --correct: rgb(139, 213, 50);
         --foreground-1: black;
         --foreground-2: rgb(180,180,180);
         --border-1: rgb(235,235,235);
@@ -29,6 +31,8 @@
         --background-3: rgb(33, 35, 38);
         --background-transparent-1: rgba(30,32,35,0.5);
         --accent-1: rgb(245,180,20);
+        --wrong: rgb(255, 67, 20);
+        --correct: rgb(139, 213, 50);
         --foreground-1: white;
         --foreground-2: rgb(140,140,140);
         --border-1: rgb(44,46,50);
