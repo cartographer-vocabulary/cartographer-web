@@ -449,6 +449,14 @@ function refreshQuizAnswers(){
     }
 }
 
+
+window.addEventListener("keydown",(e)=>{
+    if(listCardQuizMode === "quiz" && document.activeElement == document.body){
+        document.getElementById(`quiz-definition-${parseInt(e.key)-1}`).click()
+    }
+})
+
+
 //gets the path of the url and updates the window layout
 function updateWindows(){
     //splits the url into array; example: hello.com/abc/xyz becomes ["abc","xyz"]
