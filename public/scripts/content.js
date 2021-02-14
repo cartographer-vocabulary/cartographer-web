@@ -17,7 +17,7 @@ function updateListView(id){
             //only shows the delete button if you are the creator, there isn't meant for security because people can change the css,
             //but only so that people don't really need to see something they can't press.
             if(doc.data().roles[uid] == "creator"){
-                document.getElementById("list-delete-btn").style.display = "block"
+                document.getElementById("list-delete-btn").style.display = "grid"
             }else{
                 document.getElementById("list-delete-btn").style.display = "none"
             }

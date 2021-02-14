@@ -444,7 +444,8 @@ button{
     color: var(--foreground-1);
     font-size: 14px;
     transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
-    display:flex;
+    display: grid;
+    grid-template-columns: auto auto;
     align-items: center;
     justify-content: center;
 }

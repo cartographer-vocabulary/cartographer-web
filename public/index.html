@@ -62,11 +62,11 @@
     <body>
         <nav id="navbar">
             <button id="sidebar-toggle">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="16" height="16" viewBox="0 0 24 24" stroke-width="3" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="16" height="16" viewBox="0 0 24 24" stroke-width="3" stroke="var(--background-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <line stroke="var(--background-1)" x1="4" y1="6" x2="20" y2="6" />
-                    <line stroke="var(--background-1)" x1="4" y1="12" x2="20" y2="12" />
-                    <line stroke="var(--background-1)" x1="4" y1="18" x2="20" y2="18" />
+                    <line x1="4" y1="6" x2="20" y2="6" />
+                    <line x1="4" y1="12" x2="20" y2="12" />
+                    <line x1="4" y1="18" x2="20" y2="18" />
                 </svg>
             </button>
             <h1 onclick = "window.history.pushState('','','/welcome'); updateWindows()">Cartographer</h1>
@@ -91,30 +91,30 @@
                         <h1 class="content-header">placeholder</h1>
                         <div class="spacer"></div>
                         <button id="list-card-toggle">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-id" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-id" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <rect stroke="var(--foreground-1)" x="3" y="4" width="18" height="16" rx="3" />
-                                <circle stroke="var(--foreground-1)" cx="9" cy="10" r="2" />
-                                <line stroke="var(--foreground-1)" x1="15" y1="8" x2="17" y2="8" />
-                                <line stroke="var(--foreground-1)" x1="15" y1="12" x2="17" y2="12" />
-                                <line stroke="var(--foreground-1)" x1="7" y1="16" x2="17" y2="16" />
+                                <rect  x="3" y="4" width="18" height="16" rx="3" />
+                                <circle  cx="9" cy="10" r="2" />
+                                <line  x1="15" y1="8" x2="17" y2="8" />
+                                <line  x1="15" y1="12" x2="17" y2="12" />
+                                <line  x1="7" y1="16" x2="17" y2="16" />
                             </svg>
                              <span>card</span>
                         </button>
                         <button id="list-quiz-toggle">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <path stroke="var(--foreground-1)" d="M9 7h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />
-                                <path stroke="var(--foreground-1)" d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />
-                                <line stroke="var(--foreground-1)" x1="16" y1="5" x2="19" y2="8" />
+                                <path  d="M9 7h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />
+                                <path  d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />
+                                <line  x1="16" y1="5" x2="19" y2="8" />
                             </svg>
                             <span>quiz</span>
                         </button>
                         <button id="list-settings">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <path stroke="var(--foreground-1)" d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
-                                <circle stroke="var(--foreground-1)" cx="12" cy="12" r="3" />
+                                <path  d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                                <circle  cx="12" cy="12" r="3" />
                             </svg>
                         </button>
                     </div>
@@ -171,17 +171,54 @@
                 <div class="horizontal">
                     <h1 class="user-full-name">Profile</h1>
                     <div class="spacer"></div>
-                    <button id="edit-user-display-name">edit name</button>
-                    <button id="signout-btn">sign out </button>
+                    <button id="edit-user-display-name">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+                            <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+                        </svg>
+                        <span> edit name </span>
+                    </button>
+                    <button id="signout-btn">
+                        <span>sign out &nbsp;</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path  d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                            <path  d="M7 12h14l-3 -3m0 6l3 -3" />
+                        </svg>
+                    </button>
                 </div>
                 <hr>
                 <h2>Appearance</h2>
                 <div class="horizontal">
                     <h3>Theme</h3>
                     <div class="spacer"></div>
-                    <button id="automatic-mode" class="theme-toggle">system</button>
-                    <button id="light-mode" class="theme-toggle">light</button>
-                    <button id="dark-mode" class="theme-toggle">dark</button>
+                    <button id="automatic-mode" class="theme-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brightness" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <circle cx="12" cy="12" r="9" />
+                            <line x1="12" y1="3" x2="12" y2="21" />
+                            <line x1="12" y1="9" x2="16.65" y2="4.35" />
+                            <line x1="12" y1="14.3" x2="19.37" y2="6.93" />
+                            <line x1="12" y1="19.6" x2="20.85" y2="10.75" />
+                        </svg>
+                        <span>system</span>
+                    </button>
+                    <button id="light-mode" class="theme-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <circle  cx="12" cy="12" r="4" />
+                            <path  d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" />
+                        </svg>
+                        <span>light</span>
+                    </button>
+                    <button id="dark-mode" class="theme-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path  d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+                        </svg>
+                        <span>dark</span>
+                    </button>
                 </div>
                 <h3>Color scheme</h3>
                 <div id="color-scheme-container">
@@ -194,8 +231,25 @@
                 <div class="horizontal">
                     <h1>Placeholder</h1>
                     <div class="spacer"></div>
-                    <button id="list-edit-btn">Edit</button>
-                    <button id="list-delete-btn">Delete</button>
+                    <button id="list-edit-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path  d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+                            <line  x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+                        </svg>
+                        <span>edit</span>
+                    </button>
+                    <button id="list-delete-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <line  x1="4" y1="7" x2="20" y2="7" />
+                            <line  x1="10" y1="11" x2="10" y2="17" />
+                            <line  x1="14" y1="11" x2="14" y2="17" />
+                            <path  d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                            <path  d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
+                        <span>delete</span>
+                    </button>
                 </div>
             </div>
         </div>
