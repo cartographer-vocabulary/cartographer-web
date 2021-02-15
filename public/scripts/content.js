@@ -417,6 +417,7 @@ function refreshQuizAnswers(){
         quizWord = Math.floor(Math.random()*listDoc.data().cards.length);
         console.log('hello')
     }while(quizWord === quizPreviousWord)
+    quizPreviousWord = quizWord
     let quizAnswers = [quizWord]
     document.getElementById("quiz-word").innerHTML = listDoc.data().cards[quizWord].word;
 
