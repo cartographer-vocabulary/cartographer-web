@@ -1,5 +1,6 @@
 :root{
-    --font-1: "avenir", sans-serif;
+    --font-1: "Roboto", sans-serif;
+    --font-2: "Montserrat", sans-serif;
     --background-1: rgb(10, 53, 65);
     --background-2: rgb(2, 43, 53);
     --background-3: rgb(12, 72, 90);

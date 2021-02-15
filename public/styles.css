@@ -5,7 +5,24 @@ body, html{
     background-color: var(--background-1);
     font-family: var(--font-1);
     color: var(--foreground-1);
+    font-weight: lighter;
+    line-height: 1.35;
 }
+
+h1,h2{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+}
+
+h3,h4{
+     font-family: "Montserrat", sans-serif;
+     font-weight: 600;
+ }
+
+h5,h6{
+     font-family: "Montserrat", sans-serif;
+     font-weight: 500;
+ }
 
 *{
     box-sizing: border-box;
@@ -93,7 +110,6 @@ span{
 
 #sidebar-container h3{
     margin: 3px;
-    font-weight:450;
     text-overflow: ellipsis;
 }
 

@@ -1,7 +1,8 @@
 :root{
 
 
-    --font-1: "avenir", sans-serif;
+    --font-1: "Roboto", sans-serif;
+    --font-2: "Montserrat", sans-serif;
 }
 
 @media (prefers-color-scheme: light) {
