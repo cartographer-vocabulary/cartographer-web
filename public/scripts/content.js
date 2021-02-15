@@ -39,6 +39,7 @@ function updateListView(id){
                     document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
                     document.getElementsByClassName("quiz-answer")[quizAnswer].innerHTML= "--"
                     document.getElementsByClassName("quiz-answer")[quizAnswer].style.border = "1px solid var(--border-1)"
+                    document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = ()=>{}
                 }
             }
             //get the card data stuff

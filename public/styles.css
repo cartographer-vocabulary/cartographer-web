@@ -205,11 +205,11 @@ span{
 
 .quiz-answer:hover{
     background-color: var(--background-2);
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .quiz-answer:active{
-    transform: scale(0.95);
+    transform: scale(0.98);
     background-color: var(--background-3);
 }
 
