@@ -34,7 +34,7 @@ hr{
 }
 
 svg{
-    margin: 0;
+    margin: 0px 2px;
 }
 
 span{
@@ -44,6 +44,7 @@ span{
 .horizontal{
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 #navbar{
@@ -124,6 +125,7 @@ span{
     padding: 5px;
     transition: background-color 0.15s;
     text-overflow: ellipsis;
+    font-weight: normal;
 }
 
 #sidebar-container ul li:hover{
