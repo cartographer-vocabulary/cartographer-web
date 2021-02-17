@@ -8,7 +8,8 @@ let profileBtn = document.getElementById("open-profile-btn");
 //elements that need to be replaced with the users name, such as in the profile button or profile panel
 let fullnameElements = document.getElementsByClassName("user-full-name");
 let signOutBtn = document.getElementById("signout-btn");
-
+let unsubscribeLists;
+let unsubscribeFolders;
 //kinda copy and pasted from somewhere
 function initApp() {
     //detects when the auth state changes
@@ -44,10 +45,12 @@ function initApp() {
                 }
             })
 
-            window.listsRef = firestore.collection('lists');
-            unsubscribe = listsRef
+            unsubscribeLists = firestore.collection('lists')
                 .where(`roles.${uid}`,'==','creator')
                 .onSnapshot(updateLists);
+            unsubscribeFolders = firestore.collection('folders')
+                .where(`roles.${uid}`, '==','creator')
+                .onSnapshot(updateFolders);
         } else {
             // User is signed out. and makes them null so you can't have these variables
             window.displayName = null;
@@ -63,9 +66,11 @@ function initApp() {
                 fullnameElement.innerHTML = "Profile"
             }
             //unsubscribe
-            try{unsubscribe()}catch{}
+            unsubscribeLists?.()
+            unsubscribeFolders?.()
             //clears the lists on the sidebar
             clearLists();
+            clearFolders();
         }
     }, function(error) {
         console.log(error);

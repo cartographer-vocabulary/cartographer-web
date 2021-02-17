@@ -10,17 +10,17 @@ body, html{
 }
 
 h1,h2{
-    font-family: "Montserrat", sans-serif;
+    font-family: var(--font-2), sans-serif;
     font-weight: 700;
 }
 
 h3,h4{
-     font-family: "Montserrat", sans-serif;
+     font-family: var(--font-2), sans-serif;
      font-weight: 600;
  }
 
 h5,h6{
-     font-family: "Montserrat", sans-serif;
+     font-family: var(--font-2), sans-serif;
      font-weight: 500;
  }
 
@@ -44,6 +44,7 @@ span{
 .horizontal{
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
 }
 
@@ -138,7 +139,7 @@ span{
     align-items: center;
 }
 
-#add-list-btn{
+#add-list-btn, #add-folder-btn{
     width: 20px;
     height: 20px;
     padding: 0;
@@ -220,7 +221,7 @@ span{
     width: 32px;
 }
 
-#card-container{
+#card-container, #folder-list-container{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -236,7 +237,7 @@ span{
     padding: 15px;
     flex-grow: 1;
     transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
-    overflow: scroll;
+    overflow: auto;
     background-color: var(--background-1);
 }
 .card:hover{
@@ -375,6 +376,44 @@ span{
     font-weight: 400 !important;
 }
 
+.folder-list{
+    width:150px;
+    height: 100px;
+    border: 1px solid var(--border-1);
+    border-radius: 8px;
+    margin: 10px;
+    padding: 15px;
+    flex-grow: 1;
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    overflow: auto;
+    background-color: var(--background-1);
+}
+
+.folder-list:hover{
+    transform: scale(1.01);
+    box-shadow: 0px 10px 20px var(--shadow-2);
+}
+
+.folder-list:active{
+    transform: scale(0.98);
+    box-shadow: 0px 0px 0px var(--shadow-2);
+}
+
+.folder-list h3{
+    margin:2px;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 100%;
+    outline: none;
+    overflow: hidden;
+}
+
+.folder-list p{
+    margin: 2px;
+    outline: none;
+    color: var(--foreground-2)
+}
+
 #panel-container{
     width: 100%;
     height: 100%;
@@ -403,12 +442,12 @@ span{
     margin-top: 20px;
 }
 
-#profile-panel, #list-settings-panel{
+#profile-panel, #list-settings-panel, #folder-settings-panel{
     width: 800px;
     height: 600px;
 }
 
-#list-delete-btn{
+#list-delete-btn, #folder-delete-btn{
     display: none;
 }
 

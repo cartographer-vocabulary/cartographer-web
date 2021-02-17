@@ -7,7 +7,8 @@ let profilePanel = document.getElementById("profile-panel");
 let profileBtn = document.getElementById("open-profile-btn");
 let listSettingsPanel = document.getElementById("list-settings-panel");
 let listSettingsBtn = document.getElementById("list-settings");
-
+let folderSettingsPanel = document.getElementById("folder-settings-panel");
+let folderSettingsBtn = document.getElementById("folder-settings");
 //the three functions are basically duplicates and shows the corresponding panel when button is clicked
 signInBtn.addEventListener("click", ()=>{
     panelContainer.style.display = "flex";
@@ -24,6 +25,10 @@ listSettingsBtn.addEventListener("click", ()=>{
     listSettingsPanel.style.display = "block";
 })
 
+folderSettingsBtn.addEventListener("click", ()=>{
+    panelContainer.style.display = "flex";
+    folderSettingsPanel.style.display = "block";
+})
 
 //hides the panels when you click outside
 panelContainer.addEventListener("click", (e)=>{

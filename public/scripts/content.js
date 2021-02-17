@@ -415,7 +415,6 @@ function refreshQuizAnswers(){
     if(!quizPreviousWord){quizPreviousWord = quizWord}
     do{
         quizWord = Math.floor(Math.random()*listDoc.data().cards.length);
-        console.log('hello')
     }while(quizWord === quizPreviousWord)
     quizPreviousWord = quizWord
     let quizAnswers = [quizWord]
@@ -453,11 +452,65 @@ function refreshQuizAnswers(){
 
 
 window.addEventListener("keydown",(e)=>{
-    if(listCardQuizMode === "quiz" && document.activeElement == document.body){
+    if(listCardQuizMode === "quiz" && document.activeElement == document.body && splitPath[0] == "list"){
         document.getElementById(`quiz-definition-${parseInt(e.key)-1}`).click()
     }
 })
 
+var unsubscribeFolderView;
+var folderDoc;
+function updateFolderView(id){
+    unsubscribeFolderView?.();
+    unsubscribeFolderView = firestore.collection('folders').doc(id)
+        .onSnapshot((doc) => {
+            folderDoc = doc;
+            //header of the list thing
+            document.querySelector("#content-folder .content-header").innerHTML = doc.data().name;
+            //header in the settings panel
+            document.querySelector("#folder-settings-panel h1").innerHTML = doc.data().name;
+            //only shows the delete button if you are the creator, there isn't meant for security because people can change the css,
+            //but only so that people don't really need to see something they can't press.
+            if(doc.data().roles[uid] == "creator"){
+                document.getElementById("folder-delete-btn").style.display = "grid"
+            }else{
+                document.getElementById("folder-delete-btn").style.display = "none"
+            }
+        },(error) => {
+            //does this when there is a error, probably because it was deleted and sets everything to placeholders
+            document.querySelector("#content-folder .content-header").innerHTML = "placeholder"
+            document.querySelector("#folder-settings-panel h1").innerHTML = "placeholder";
+            console.error(error);
+            //changes it back to welcome and refreshes the page
+            window.history.pushState("","","/welcome");
+            updateWindows();
+        })
+}
+
+window.addEventListener('load',()=>{
+    //event listener for the button that edits the list, and puts that data on firestore
+    document.querySelector("#folder-edit-btn").addEventListener('click',()=>{
+        let newName = window.prompt("Rename Folder:");
+        if(newName || newName ==""){
+            firestore.collection("folders").doc(splitPath[1]).update(
+                {
+                    name: newName,
+                }
+            )
+        }
+    })
+    //for deleting the list
+    document.querySelector('#folder-delete-btn').addEventListener('click',()=>{
+        if(window.confirm("Delete this folder? it will also delete all lists in this folder.")){
+            firestore.collection("folders").doc(splitPath[1]).delete()
+            //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
+            let panelContainer = document.getElementById("panel-container");
+            panelContainer.style.display = "none";
+            for (let panel of panelContainer.children) {
+                panel.style.display = "none";
+            }
+        }
+    })
+})
 
 //gets the path of the url and updates the window layout
 function updateWindows(){
@@ -469,10 +522,17 @@ function updateWindows(){
     if(splitPath[0] == "list" && splitPath[1]){
         document.getElementById("content-list").style.display = "block";
         document.getElementById("content-welcome").style.display = "none";
+        document.getElementById("content-folder").style.display = "none";
         updateListView(splitPath[1]);
+    }else if(splitPath[0] == "folder" && splitPath[1]){
+        document.getElementById("content-list").style.display = "none";
+        document.getElementById("content-welcome").style.display = "none";
+        document.getElementById("content-folder").style.display = "block";
+        updateFolderView(splitPath[1]);
     }else if(splitPath[0] == "welcome"){
         document.getElementById("content-list").style.display = "none";
         document.getElementById("content-welcome").style.display = "block";
+        document.getElementById("content-folder").style.display = "none";
     }else{
         window.history.pushState("","","/welcome");
         updateWindows();
