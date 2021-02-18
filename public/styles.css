@@ -414,6 +414,14 @@ span{
     color: var(--foreground-2)
 }
 
+#add-folder-list-btn{
+    margin-left: 20px;
+    border:none;
+    background-color: var(--accent-1);
+    color: var(--background-1);
+    font-weight: normal;
+}
+
 #panel-container{
     width: 100%;
     height: 100%;

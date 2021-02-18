@@ -86,7 +86,6 @@ window.addEventListener('load',() => {
                     cards:[]
                 })
             }
-            console.log("hello")
         }catch{
             //shows sign in panel
             document.getElementById('panel-container').style.display = "flex";

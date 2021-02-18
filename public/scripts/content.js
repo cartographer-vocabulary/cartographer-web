@@ -458,9 +458,12 @@ window.addEventListener("keydown",(e)=>{
 })
 
 var unsubscribeFolderView;
+var unsubscribeFolderListView;
 var folderDoc;
+var folderLists;
 function updateFolderView(id){
     unsubscribeFolderView?.();
+    unsubscribeFolderListView?.();
     unsubscribeFolderView = firestore.collection('folders').doc(id)
         .onSnapshot((doc) => {
             folderDoc = doc;
@@ -475,6 +478,9 @@ function updateFolderView(id){
             }else{
                 document.getElementById("folder-delete-btn").style.display = "none"
             }
+            document.getElementById("folder-list-container").innerHTML = ""
+            updateFolderLists(id)
+
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders
             document.querySelector("#content-folder .content-header").innerHTML = "placeholder"
@@ -483,6 +489,27 @@ function updateFolderView(id){
             //changes it back to welcome and refreshes the page
             window.history.pushState("","","/welcome");
             updateWindows();
+        })
+}
+
+function updateFolderLists(id){
+    unsubscribeFolderListView = firestore.collection("lists")
+        .where(`roles.${uid}`,'in',["viewer","editor","creator"])
+        .where(`folder`,'==',`${id}`)
+        .onSnapshot((querySnapshot)=>{
+            folderLists = querySnapshot.docs
+            let items = querySnapshot.docs.map(doc => {
+                return(doc.exists ? `
+                    <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
+                        <h3>${doc.data().name}</h3>
+                        <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
+                    </div>
+                ` : "  ")
+            })
+            document.getElementById("folder-list-container").innerHTML = items.join(" ")
+
+        },(error) => {
+            console.log(error)
         })
 }
 
@@ -501,6 +528,11 @@ window.addEventListener('load',()=>{
     //for deleting the list
     document.querySelector('#folder-delete-btn').addEventListener('click',()=>{
         if(window.confirm("Delete this folder? it will also delete all lists in this folder.")){
+            let batchDelete = firestore.batch();
+            for (let doc of folderLists){
+                batchDelete.delete(firestore.collection("lists").doc(doc.id))
+            }
+            batchDelete.commit()
             firestore.collection("folders").doc(splitPath[1]).delete()
             //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
             let panelContainer = document.getElementById("panel-container");
@@ -508,6 +540,34 @@ window.addEventListener('load',()=>{
             for (let panel of panelContainer.children) {
                 panel.style.display = "none";
             }
+
+        }
+    })
+    document.getElementById('add-folder-list-btn').addEventListener('click', ()=>{
+        //see if this gives a error, if it does it's probably because
+        //you are logged out and then shows you the log in screen
+        try{
+            //cause error if you don't have uid
+            if(!uid){lmao}
+            //prompt user to enter name of list
+            let name = window.prompt("Enter name for list", "New List")
+            if (name){
+                //adds a document
+                firestore.collection("lists").add({
+                    name: name,
+                    public:false,
+                    folder:splitPath[1],
+                    roles: {
+                        [uid]: 'creator',
+                    },
+                    cards:[]
+                }).catch(error => {
+                    console.log(error)})
+            }
+        }catch{
+            //shows sign in panel
+            document.getElementById('panel-container').style.display = "flex";
+            document.getElementById("sign-in-panel").style.display = "block";
         }
     })
 })
@@ -523,11 +583,16 @@ function updateWindows(){
         document.getElementById("content-list").style.display = "block";
         document.getElementById("content-welcome").style.display = "none";
         document.getElementById("content-folder").style.display = "none";
+        unsubscribeFolderListView?.();
+        unsubscribeFolderView?.();
         updateListView(splitPath[1]);
+
+
     }else if(splitPath[0] == "folder" && splitPath[1]){
         document.getElementById("content-list").style.display = "none";
         document.getElementById("content-welcome").style.display = "none";
         document.getElementById("content-folder").style.display = "block";
+        unsubscribeListView?.();
         updateFolderView(splitPath[1]);
     }else if(splitPath[0] == "welcome"){
         document.getElementById("content-list").style.display = "none";
@@ -535,6 +600,9 @@ function updateWindows(){
         document.getElementById("content-folder").style.display = "none";
     }else{
         window.history.pushState("","","/welcome");
+        unsubscribeListView?.();
+        unsubscribeFolderView?.();
+        unsubscribeFolderListView?.();
         updateWindows();
     }
 }
