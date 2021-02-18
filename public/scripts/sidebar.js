@@ -53,7 +53,7 @@ window.addEventListener('load',() => {
             let name = window.prompt("Enter name for list", "New List")
             if (name){
                 //adds a document
-                listsRef.add({
+                firestore.collection("lists").add({
                     name: name,
                     public:false,
                     roles: {
@@ -62,7 +62,8 @@ window.addEventListener('load',() => {
                     cards:[]
                 })
             }
-        }catch{
+        }catch(error){
+            console.log(error)
             //shows sign in panel
             document.getElementById('panel-container').style.display = "flex";
             document.getElementById("sign-in-panel").style.display = "block";
@@ -86,7 +87,7 @@ window.addEventListener('load',() => {
                     cards:[]
                 })
             }
-        }catch{
+        }catch(error){
             //shows sign in panel
             document.getElementById('panel-container').style.display = "flex";
             document.getElementById("sign-in-panel").style.display = "block";
