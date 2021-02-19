@@ -324,7 +324,7 @@ span{
     justify-content: center;
 }
 
-#flashcard-front *, #flashcard-back *{margin: auto}
+#flashcard-front *, #flashcard-back *{margin: auto; overflow: hidden}
 
 #flashcard-index{
     position: absolute;

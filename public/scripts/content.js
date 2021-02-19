@@ -48,11 +48,11 @@ function updateListView(id){
             let items
             if(doc.data().roles[uid] != "viewer") {
                 items = doc.data().cards.map((card, index) => {
-                    return (`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerHTML, parseInt(this.parentNode.parentNode.id))" onbeforeunload="this.onblur">${card.word}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerHTML, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur">${card.definition}</p></div>`)
+                    return (`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
                 })
             }else{
                 items = doc.data().cards.map((card, index) => {
-                    return (`<div class="card" id="${index}"><div class="horizontal"><h3>${card.word}</h3></div><hr><p>${card.definition}</p></div>`)
+                    return (`<div class="card" id="${index}"><div class="horizontal"><h3>${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3></div><hr><p>${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
                 })
             }
             document.getElementById("card-container").innerHTML = items.join("  ")
@@ -412,11 +412,11 @@ let quizPreviousWord;
 function refreshQuizAnswers(){
     let quizWord = Math.floor(Math.random()*listDoc.data().cards.length);
     let correctQuizAnswer = ((listDoc.data().cards.length >= 4) ?  Math.floor(Math.random()*4)  : Math.floor(Math.random()*listDoc.data().cards.length));
-    if(!quizPreviousWord){quizPreviousWord = quizWord}
-    do{
+    while(quizWord == quizPreviousWord){
         quizWord = Math.floor(Math.random()*listDoc.data().cards.length);
-    }while(quizWord === quizPreviousWord)
+    }
     quizPreviousWord = quizWord
+
     let quizAnswers = [quizWord]
     document.getElementById("quiz-word").innerHTML = listDoc.data().cards[quizWord].word;
 
@@ -428,9 +428,9 @@ function refreshQuizAnswers(){
         if (quizAnswer != correctQuizAnswer) {
             document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
             let currentAnswer = Math.floor(Math.random() * listDoc.data().cards.length);
-            do {
+            while (quizAnswers.includes(currentAnswer)) {
                 currentAnswer = Math.floor(Math.random() * listDoc.data().cards.length)
-            } while (quizAnswers.includes(currentAnswer));
+            }
             quizAnswers.push(currentAnswer);
             document.getElementsByClassName("quiz-answer")[quizAnswer].innerHTML = listDoc.data().cards[currentAnswer].definition;
             document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = () => {

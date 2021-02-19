@@ -96,14 +96,25 @@ window.addEventListener('load',() => {
 
     //hides and shows the sidebar
     document.getElementById('sidebar-toggle').addEventListener('click',()=>{
-        let sidebar = document.getElementById('sidebar-container');
-        if(sidebar.style.display != "none"){
-            sidebar.style.display = "none";
+
+        if((localStorage.getItem("showSidebar") ?? "true") =="true"){
+            localStorage.setItem("showSidebar","false");
         }else{
-            sidebar.style.display = "block";
+            localStorage.setItem("showSidebar","true");
         }
+        toggleSidebar(localStorage.getItem("showSidebar") == "true")
     })
+    toggleSidebar((localStorage.getItem("showSidebar") ?? "true") =="true")
+
 })
+
+function toggleSidebar(bool){
+    if(bool){
+        document.getElementById('sidebar-container').style.display = "block";
+    }else{
+        document.getElementById('sidebar-container').style.display = "none";
+    }
+}
 
 //remove lists from sidebar when signed out
 function clearLists(){
