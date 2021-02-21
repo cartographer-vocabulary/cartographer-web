@@ -6,7 +6,7 @@ function updateLists(querySnapshot){
     })
     //convert array into html basically
     let items = filtered.map(doc => {
-                                                //this part changes the url when you click and calles update window function in content.js
+                                                //this part changes the url when you click and calls update window function in content.js
         return(doc.exists ? `
             <li class = "horizontal" onclick='window.history.pushState("","","/list/${doc.id}");updateWindows()'>
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-list" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">

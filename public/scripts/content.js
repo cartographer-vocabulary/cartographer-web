@@ -173,7 +173,7 @@ function updateCardDefinition(definition,index){
 function updateListFolder(folder){
     firestore.collection("lists").doc(splitPath[1]).update(
         {
-            folder: folder
+            folder: folder ||  firebase.firestore.FieldValue.delete()
         }
     )
 }
@@ -247,7 +247,7 @@ function cardDragEnd(){
     document.removeEventListener("mousemove",cardDrag);
     document.removeEventListener("mouseup", cardDragEnd);
     document.removeEventListener("mouseover", cardDragIndexSet);
-    document.removeEventListener('scroll',cardDrag);
+    document.getElementById("content-list").removeEventListener('scroll',cardDrag);
     if(parseInt(cardDragElement.id) != cardDragIndex){
         let editedArray = listDoc.data().cards;
         array_move(editedArray,parseInt(cardDragElement.id),cardDragIndex);
