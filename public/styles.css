@@ -158,6 +158,7 @@ span{
     height: 100%;
     padding: 20px;
     display: none;
+    overflow: auto;
 }
 
 .content-header{
@@ -165,7 +166,7 @@ span{
 }
 
 #content-list{
-
+    padding-bottom: 40px;
 }
 
 #list-quiz-container{
@@ -324,6 +325,10 @@ span{
     justify-content: center;
 }
 
+#flashcard-back{
+    overflow: auto;
+}
+
 #flashcard-front *, #flashcard-back *{margin: auto; overflow: hidden}
 
 #flashcard-index{
@@ -352,7 +357,6 @@ span{
     padding: 5px;
     display: flex;
     flex-direction: column;
-
 }
 
 #add-card-container input{
