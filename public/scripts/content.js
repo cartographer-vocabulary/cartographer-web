@@ -1,11 +1,12 @@
 //you have to "unsubscribe" to these continously listening updates
 var unsubscribeListView;
+var unsubscribeAvailableFolders;
 var listDoc;
 var flashcardIndex = 0;
 function updateListView(id){
     //if unsubscribe exists, unsubscribe
     unsubscribeListView && unsubscribeListView();
-
+    unsubscribeAvailableFolders?.()
     //gets data and changes the content
     unsubscribeListView = firestore.collection("lists").doc(id)
         .onSnapshot((doc) => {
@@ -56,7 +57,16 @@ function updateListView(id){
                 })
             }
             document.getElementById("card-container").innerHTML = items.join("  ")
-
+            unsubscribeAvailableFolders = firestore.collection("folders")
+                .where(`roles.${uid}`,'in',["creator","editor"])
+                .onSnapshot((querySnapshot)=>{
+                    let  items = querySnapshot.docs.sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map((doc)=>{
+                        return (`<option value="${doc.id}">${doc.data().name}</option>`)
+                    })
+                    items.unshift("<option value=''>None</option>")
+                    document.getElementById("list-folder-select-dropdown").innerHTML = items.join("  ");
+                    document.getElementById("list-folder-select-dropdown").value = listDoc.data().folder ?? ""
+                })
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders
             document.querySelector("#content-list .content-header").innerHTML = "placeholder"
@@ -137,7 +147,7 @@ function addCard(word,definition){
 function updateCardWord(word,index){
     word.trim();
     let editedArray = listDoc.data().cards
-    if(editedArray[index.word] != word) {
+    if(editedArray[index].word != word) {
         editedArray[index].word = word;
         firestore.collection('lists').doc(splitPath[1]).update(
             {
@@ -150,7 +160,7 @@ function updateCardWord(word,index){
 function updateCardDefinition(definition,index){
     definition.trim()
     let editedArray = listDoc.data().cards
-    if(editedArray[index.definition] != definition) {
+    if(editedArray[index].definition != definition) {
         editedArray[index].definition = definition;
         firestore.collection('lists').doc(splitPath[1]).update(
             {
@@ -160,46 +170,70 @@ function updateCardDefinition(definition,index){
     }
 }
 
+function updateListFolder(folder){
+    firestore.collection("lists").doc(splitPath[1]).update(
+        {
+            folder: folder
+        }
+    )
+}
+
 let cardXOffset=0; //the default offset of the elements
 let cardYOffset=0;
 let cardDragIndex=0;
-let cardDragElement
+let cardDragElement;
+let mouseX;
+let mouseY;
 function cardDragStart(e){
     if(e.target.className === "card" && listDoc.data().roles[uid] !== "viewer") {
         let element = e.target
         cardDragIndex = parseInt(element.id);
         cardDragElement = element
-        cardXOffset = event.pageX;
-        cardYOffset = event.pageY;
+        cardXOffset = e.pageX;
+        cardYOffset = e.pageY + document.getElementById("content-list").scrollTop;
+        mouseX = e.pageX;
+        mouseY = e.pageY;
         document.addEventListener('mousemove', cardDrag);
         document.addEventListener("mouseup", cardDragEnd);
         document.addEventListener('mouseover',cardDragIndexSet);
+        document.getElementById("content-list").addEventListener("scroll",cardDrag)
         element.style.transition = "transform 0s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out";
         element.style.zIndex = "10";
         element.style.pointerEvents = "none";
         element.style.boxShadow = "0px 10px 20px var(--shadow-2)"
+        if(e.stopPropagation) e.stopPropagation();
+        if(e.preventDefault) e.preventDefault();
+        e.cancelBubble=true;
+        e.returnValue=false;
+        return false;
     }
 }
 
-function cardDrag(){
+function cardDrag(e){
     //moves the element to the mouse
+    mouseX = e.pageX ?? mouseX;
+    mouseY = e.pageY ?? mouseY;
     cardDragElement.style.boxShadow = "0px 10px 20px var(--shadow-2)"
-    cardDragElement.style.transform = `translate(${event.pageX - cardXOffset}px,${ event.pageY - cardYOffset}px) scale(1.01)`
+    cardDragElement.style.transform = `translate(${(e.pageX ?? mouseX) - cardXOffset}px,${ (e.pageY ?? mouseY) - cardYOffset + document.getElementById("content-list").scrollTop}px) scale(1.01)`
+
 }
 
 function cardDragIndexSet(e){
+    document.getElementById(`${cardDragIndex}`).style.backgroundColor = "var(--background-1)"
+    document.getElementById(`${cardDragIndex}`).style.boxShadow = ""
+    document.getElementById(`${cardDragIndex}`).style.transform = ""
     if(e.target.className === "card" || e.target.parentNode.className === "card" || e.target.parentNode.parentNode.className === "card"){
         cardDragIndex = parseInt(e.target.id) || parseInt(e.target.closest(".card").id);
         if(e.target.className === "card"){
             e.target.style.backgroundColor = "var(--background-2)"
-            e.target.closest(".card").style.boxShadow = "inset 0px 8px 15px var(--shadow-3)"
+            e.target.style.boxShadow = "inset 0px 8px 15px var(--shadow-3)"
+            e.target.style.transform = "scale(0.95)"
         }else{
             e.target.closest(".card").style.backgroundColor = "var(--background-2)"
             e.target.closest(".card").style.boxShadow = "inset 0px 8px 15px var(--shadow-3)"
+            e.target.closest(".card").style.transform = "scale(0.95)"
         }
     }else{
-        document.getElementById(`${cardDragIndex}`).style.backgroundColor = "var(--background-1)"
-        document.getElementById(`${cardDragIndex}`).style.boxShadow = ""
         cardDragIndex = parseInt(cardDragElement.id)
     }
 }
@@ -213,6 +247,7 @@ function cardDragEnd(){
     document.removeEventListener("mousemove",cardDrag);
     document.removeEventListener("mouseup", cardDragEnd);
     document.removeEventListener("mouseover", cardDragIndexSet);
+    document.removeEventListener('scroll',cardDrag);
     if(parseInt(cardDragElement.id) != cardDragIndex){
         let editedArray = listDoc.data().cards;
         array_move(editedArray,parseInt(cardDragElement.id),cardDragIndex);
@@ -494,7 +529,6 @@ function updateFolderView(id){
 
 function updateFolderLists(id){
     unsubscribeFolderListView = firestore.collection("lists")
-        .where(`roles.${uid}`,'in',["viewer","editor","creator"])
         .where(`folder`,'==',`${id}`)
         .onSnapshot((querySnapshot)=>{
             folderLists = querySnapshot.docs
@@ -528,11 +562,13 @@ window.addEventListener('load',()=>{
     //for deleting the list
     document.querySelector('#folder-delete-btn').addEventListener('click',()=>{
         if(window.confirm("Delete this folder? it will also delete all lists in this folder.")){
-            let batchDelete = firestore.batch();
-            for (let doc of folderLists){
-                batchDelete.delete(firestore.collection("lists").doc(doc.id))
+            if(folderLists) {
+                let batchDelete = firestore.batch();
+                for (let doc of folderLists) {
+                    batchDelete.delete(firestore.collection("lists").doc(doc.id))
+                }
+                batchDelete.commit()
             }
-            batchDelete.commit()
             firestore.collection("folders").doc(splitPath[1]).delete()
             //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
             let panelContainer = document.getElementById("panel-container");
@@ -593,6 +629,7 @@ function updateWindows(){
         document.getElementById("content-welcome").style.display = "none";
         document.getElementById("content-folder").style.display = "block";
         unsubscribeListView?.();
+        unsubscribeAvailableFolders?.();
         updateFolderView(splitPath[1]);
     }else if(splitPath[0] == "welcome"){
         document.getElementById("content-list").style.display = "none";
@@ -601,6 +638,7 @@ function updateWindows(){
     }else{
         window.history.pushState("","","/welcome");
         unsubscribeListView?.();
+        unsubscribeAvailableFolders?.();
         unsubscribeFolderView?.();
         unsubscribeFolderListView?.();
         updateWindows();

@@ -189,6 +189,18 @@
                 </div>
                 <div id="content-welcome" class="content">
                     <h1 class="content-header">Welcome to Cartographer</h1>
+                    <p>Cartographer is a simple and minimal vocabulary app, because vocabulary should be simple. (what an amazing excuse for being too lazy to add new features)
+                        <br><br>
+                        Anyways, to get started, you have to log on with the button on the top, and then just go and create your first list! press the + button on the right of
+                        my lists, then enter the name of what you want. Now click the list on the sidebar, and you will see two places where you can type text, make sure to type
+                        something in both of those places, and then it would appear as a card. (you can drag, rename, and delete them)
+                        <br><br>
+                        Try click on the quiz button (only works if you have more than one card) and start practicing!
+                        <br><br>
+                        Folders work similarly
+                        <br><br>
+                        Try clicking around some stuff and see what you can do!
+                    </p>
                 </div>
             </div>
         </div>
@@ -281,6 +293,13 @@
                         <span>delete</span>
                     </button>
                 </div>
+                <div class="horizontal">
+                    <h3>Folder:</h3>
+                    <div class="spacer"></div>
+                    <select id="list-folder-select-dropdown" onchange="updateListFolder(this.value)">
+
+                    </select>
+                </div>
             </div>
             <div id = "folder-settings-panel" class="panel">
                 <div class="horizontal">
@@ -306,6 +325,7 @@
                         <span>delete</span>
                     </button>
                 </div>
+
             </div>
         </div>
     </body>
