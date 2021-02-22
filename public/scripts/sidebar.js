@@ -5,7 +5,7 @@ function updateLists(querySnapshot){
         return(!(item.data().folder || item.data().folder == ""))
     })
     //convert array into html basically
-    let items = filtered.map(doc => {
+    let items = filtered.reverse().sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map(doc => {
                                                 //this part changes the url when you click and calls update window function in content.js
         return(doc.exists ? `
             <li class = "horizontal" onclick='window.history.pushState("","","/list/${doc.id}");updateWindows()'>
@@ -26,7 +26,7 @@ function updateLists(querySnapshot){
 }
 
 function updateFolders(querySnapshot){
-    let items = querySnapshot.docs.map(doc => {
+    let items = querySnapshot.docs.reverse().sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map(doc => {
         return(doc.exists ? `
             <li class = "horizontal" onclick="window.history.pushState('','','/folder/${doc.id}');updateWindows()">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">

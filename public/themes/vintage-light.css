@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500');
+@import url('https://fonts.googleapis.com/css2?family=Suez+One&display=swap');
+
+:root{
+    --font-1: "IBM Plex Mono", sans-serif;
+    --font-2: "Suez one", serif;
+    --background-1: rgb(255,250,230);
+    --background-2: rgb(251, 244, 224);
+    --background-3: rgb(240, 235, 220);
+    --background-transparent-1: rgba(255,250,230,0.5);
+    --accent-1: rgb(255,180,120);
+    --wrong: rgb(255, 127, 100);
+    --correct: rgb(139, 213, 120);
+    --foreground-1: rgb(60,90,105);
+    --foreground-2: rgb(160,170,190);
+    --border-1: rgb(235,230,220);
+    --border-2: rgb(240,235,224);
+    --shadow-1: rgba(0,0,0,0.3);
+    --shadow-2: rgba(0,0,0,0.06);
+    --shadow-3: rgba(0,0,0,0.02);
+}
+
+.card,#flashcard,#add-card-container{
+    border-radius: 5px !important;}

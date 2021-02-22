@@ -46,10 +46,10 @@ function initApp() {
             })
 
             unsubscribeLists = firestore.collection('lists')
-                .where(`roles.${uid}`,'==','creator')
+                .where(`roles.${uid}`,'in',['creator','editor','viewer'])
                 .onSnapshot(updateLists);
             unsubscribeFolders = firestore.collection('folders')
-                .where(`roles.${uid}`, '==','creator')
+                .where(`roles.${uid}`,'in',['creator','editor','viewer'])
                 .onSnapshot(updateFolders);
         } else {
             // User is signed out. and makes them null so you can't have these variables
