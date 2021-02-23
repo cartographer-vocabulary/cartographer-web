@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4518435c-f992-4caf-9a65-80c398122c6e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/public/themes/vintage-automatic.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/themes/vintage-dark.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/themes/vintage-light.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/scripts/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/scripts/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/scripts/sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/scripts/sidebar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -98,7 +92,9 @@
       <workItem from="1613877496356" duration="10145000" />
       <workItem from="1613921544861" duration="102000" />
       <workItem from="1614026446087" duration="2547000" />
-      <workItem from="1614029013356" duration="4074000" />
+      <workItem from="1614029013356" duration="4149000" />
+      <workItem from="1614033392548" duration="1181000" />
+      <workItem from="1614112585525" duration="142000" />
     </task>
     <task id="LOCAL-00001" summary="Made the ui and reading of cards, but you can't add or delete yet">
       <created>1612715218635</created>
