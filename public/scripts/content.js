@@ -273,6 +273,8 @@ document.addEventListener("mousedown", cardDragStart)
 
 
 function changeFlashcard(next){
+    if (flashcardIndex < 0){flashcardIndex = 0}
+    if (flashcardIndex >= listDoc.data().cards.length){flashcardIndex = listDoc.data().cards.length-1}
     if (next){
 
         if(listDoc.data().cards[flashcardIndex+1]){

@@ -24,6 +24,8 @@
         <script src="https://www.gstatic.com/firebasejs/8.2.5/firebase-analytics.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.2.5/firebase-auth.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.2.5/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-functions.js"></script>
         <script>
             // Your web app's Firebase configuration
             // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -39,6 +41,7 @@
             // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
             firebase.analytics();
+            var functions = firebase.functions();
         </script>
         <script type="text/javascript">
             // FirebaseUI config.
