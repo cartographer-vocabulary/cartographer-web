@@ -534,7 +534,7 @@ function updateFolderLists(id){
         .where(`folder`,'==',`${id}`)
         .onSnapshot((querySnapshot)=>{
             folderLists = querySnapshot.docs
-            let items = querySnapshot.docs.map(doc => {
+            let items = querySnapshot.docs.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).map(doc => {
                 return(doc.exists ? `
                     <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
                         <h3>${doc.data().name}</h3>
