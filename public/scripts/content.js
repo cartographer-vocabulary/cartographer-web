@@ -3,25 +3,69 @@ var unsubscribeListView;
 var unsubscribeAvailableFolders;
 var listDoc;
 var flashcardIndex = 0;
+var listRole;
+var unsubscribeParentFolder;
+var parentFolderRole;
 function updateListView(id){
     //if unsubscribe exists, unsubscribe
     unsubscribeListView && unsubscribeListView();
     unsubscribeAvailableFolders?.()
+    unsubscribeParentFolder?.()
     //gets data and changes the content
+    firestore.collection("lists").doc(id).get().then((listDoc)=>{
+
+        unsubscribeParentFolder = firestore.collection("folders").doc(listDoc.data().folder)
+            .onSnapshot((doc)=>{
+                parentFolderRole = doc.data().roles[uid]
+                try{
+                    let highestRole = "viewer";
+                    if (listRole === "editor" || parentFolderRole === "editor") {
+                        highestRole = "editor"
+                    }
+                    if (listRole === "creator" || parentFolderRole === "creator") {
+                        highestRole = "creator"
+                    }
+                    updateListViewableContent(highestRole, listDoc)
+                }catch(err){
+                    updateListViewableContent(doc.data().roles[uid], listDoc)
+                }
+            },(err)=>{})
+    })
+    firestore.collection("lists").doc(id).get().then((listDoc)=> {
+        unsubscribeAvailableFolders = firestore.collection("folders")
+            .where(`roles.${uid}`, 'in', ["creator", "editor"])
+            .onSnapshot((querySnapshot) => {
+                let items = querySnapshot.docs.sort((a, b) => {
+                    return ((a.data().roles[uid] < b.data().roles[uid]) ? -1 : 1)
+                }).map((doc) => {
+                    return (`<option value="${doc.id}">${doc.data().name}</option>`)
+                })
+                items.unshift("<option value=''>None</option>")
+                document.getElementById("list-folder-select-dropdown").innerHTML = items.join("  ");
+                document.getElementById("list-folder-select-dropdown").value = listDoc.data().folder ?? ""
+            })
+    })
     unsubscribeListView = firestore.collection("lists").doc(id)
         .onSnapshot((doc) => {
             listDoc = doc;
+            try{
+                let highestRole = "viewer";
+                if (doc.data().roles[uid] === "editor" || parentFolderRole === "editor") {
+                    highestRole = "editor"
+                }
+                if (doc.data().roles[uid] === "creator" || parentFolderRole === "creator") {
+                    highestRole = "creator"
+                }
+                updateListViewableContent(highestRole, doc)
+            }catch(err){
+                updateListViewableContent(doc.data().roles[uid], doc)
+           }
+            listRole = doc.data().roles;
             //header of the list thing
             document.querySelector("#content-list .content-header").innerHTML = doc.data().name;
             //header in the settings panel
             document.querySelector("#list-settings-panel h1").innerHTML = doc.data().name;
-            //only shows the delete button if you are the creator, there isn't meant for security because people can change the css,
-            //but only so that people don't really need to see something they can't press.
-            if(doc.data().roles[uid] == "creator"){
-                document.getElementById("list-delete-btn").style.display = "grid"
-            }else{
-                document.getElementById("list-delete-btn").style.display = "none"
-            }
+
 
             if(doc.data().cards[flashcardIndex]) {
                 document.getElementById("flashcard-word").innerHTML = doc.data().cards[flashcardIndex].word
@@ -43,30 +87,7 @@ function updateListView(id){
                     document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = ()=>{}
                 }
             }
-            //get the card data stuff
-            //its in the same document now, there is an attribute called card,
-            //card is an array of objects, and the objects have attributes: word, definition
-            let items
-            if(doc.data().roles[uid] != "viewer") {
-                items = doc.data().cards.map((card, index) => {
-                    return (`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
-                })
-            }else{
-                items = doc.data().cards.map((card, index) => {
-                    return (`<div class="card" id="${index}"><div class="horizontal"><h3>${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3></div><hr><p>${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
-                })
-            }
-            document.getElementById("card-container").innerHTML = items.join("  ")
-            unsubscribeAvailableFolders = firestore.collection("folders")
-                .where(`roles.${uid}`,'in',["creator","editor"])
-                .onSnapshot((querySnapshot)=>{
-                    let  items = querySnapshot.docs.sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map((doc)=>{
-                        return (`<option value="${doc.id}">${doc.data().name}</option>`)
-                    })
-                    items.unshift("<option value=''>None</option>")
-                    document.getElementById("list-folder-select-dropdown").innerHTML = items.join("  ");
-                    document.getElementById("list-folder-select-dropdown").value = listDoc.data().folder ?? ""
-                })
+
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders
             document.querySelector("#content-list .content-header").innerHTML = "placeholder"
@@ -76,6 +97,30 @@ function updateListView(id){
             window.history.pushState("","","/welcome");
             updateWindows();
         })
+}
+
+function updateListViewableContent(role,doc){
+    if(role == "creator"){
+        document.getElementById("list-delete-btn").style.display = "grid"
+    }else{
+        document.getElementById("list-delete-btn").style.display = "none"
+    }
+    let items
+    if(role != "viewer") {
+        items = doc.data().cards.map((card, index) => {
+            return (`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
+        })
+        document.getElementById("list-edit-btn").style.display = "grid"
+        document.getElementById("list-folder-select-dropdown").parentNode.style.display = "flex"
+    }else{
+        items = doc.data().cards.map((card, index) => {
+            return (`<div class="card" id="${index}"><div class="horizontal"><h3>${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3></div><hr><p>${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
+        })
+        document.getElementById("list-edit-btn").style.display = "none"
+        document.getElementById("list-folder-select-dropdown").parentNode.style.display = "none"
+    }
+
+    document.getElementById("card-container").innerHTML = items.join("  ")
 }
 
 //adding cards with input
@@ -185,7 +230,14 @@ let cardDragElement;
 let mouseX;
 let mouseY;
 function cardDragStart(e){
-    if(e.target.className === "card" && listDoc.data().roles[uid] !== "viewer") {
+    let highestRole = "viewer";
+    if (listRole === "editor" || parentFolderRole === "editor") {
+        highestRole = "editor"
+    }
+    if (listRole === "creator" || parentFolderRole === "creator") {
+        highestRole = "creator"
+    }
+    if(e.target.className === "card" && highestRole !== "viewer") {
         let element = e.target
         cardDragIndex = parseInt(element.id);
         cardDragElement = element
@@ -510,10 +562,15 @@ function updateFolderView(id){
             document.querySelector("#folder-settings-panel h1").innerHTML = doc.data().name;
             //only shows the delete button if you are the creator, there isn't meant for security because people can change the css,
             //but only so that people don't really need to see something they can't press.
-            if(doc.data().roles[uid] == "creator"){
+            if(doc.data().roles[uid] === "creator"){
                 document.getElementById("folder-delete-btn").style.display = "grid"
             }else{
                 document.getElementById("folder-delete-btn").style.display = "none"
+            }
+            if(doc.data().roles[uid] !== "viewer"){
+                document.getElementById("folder-edit-btn").style.display = "grid"
+            }else{
+                document.getElementById("folder-edit-btn").style.display = "grid"
             }
             document.getElementById("folder-list-container").innerHTML = ""
             updateFolderLists(id)
@@ -632,6 +689,7 @@ function updateWindows(){
         document.getElementById("content-folder").style.display = "block";
         unsubscribeListView?.();
         unsubscribeAvailableFolders?.();
+        unsubscribeParentFolder?.();
         updateFolderView(splitPath[1]);
     }else if(splitPath[0] == "welcome"){
         document.getElementById("content-list").style.display = "none";
@@ -641,6 +699,7 @@ function updateWindows(){
         window.history.pushState("","","/welcome");
         unsubscribeListView?.();
         unsubscribeAvailableFolders?.();
+        unsubscribeParentFolder?.();
         unsubscribeFolderView?.();
         unsubscribeFolderListView?.();
         updateWindows();

@@ -493,7 +493,7 @@ span{
     height: 600px;
 }
 
-#list-delete-btn, #folder-delete-btn{
+#list-delete-btn, #folder-delete-btn,#list-edit-btn,#folder-edit-btn{
     display: none;
 }
 
