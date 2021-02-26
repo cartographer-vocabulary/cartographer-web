@@ -442,7 +442,7 @@ window.addEventListener('load',()=> {
 window.addEventListener('load',()=>{
     //event listener for the button that edits the list, and puts that data on firestore
     document.querySelector("#list-edit-btn").addEventListener('click',()=>{
-        let newName = window.prompt("Rename List:");
+        let newName = window.prompt("Rename List:",listDoc.data().name);
         if(newName || newName ==""){
             firestore.collection("lists").doc(splitPath[1]).update(
                 {
@@ -609,7 +609,7 @@ function updateFolderLists(id){
 window.addEventListener('load',()=>{
     //event listener for the button that edits the list, and puts that data on firestore
     document.querySelector("#folder-edit-btn").addEventListener('click',()=>{
-        let newName = window.prompt("Rename Folder:");
+        let newName = window.prompt("Rename Folder:",folderDoc.data().name);
         if(newName || newName ==""){
             firestore.collection("folders").doc(splitPath[1]).update(
                 {

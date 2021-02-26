@@ -8,7 +8,7 @@ function updateLists(querySnapshot){
     let items = filtered.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map(doc => {
                                                 //this part changes the url when you click and calls update window function in content.js
         return(doc.exists ? `
-            <li class = "horizontal" onclick='window.history.pushState("","","/list/${doc.id}");updateWindows()'>
+            <li onclick='window.history.pushState("","","/list/${doc.id}");updateWindows()'>
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-list" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <line x1="9" y1="6" x2="20" y2="6" />
@@ -28,7 +28,7 @@ function updateLists(querySnapshot){
 function updateFolders(querySnapshot){
     let items = querySnapshot.docs.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map(doc => {
         return(doc.exists ? `
-            <li class = "horizontal" onclick="window.history.pushState('','','/folder/${doc.id}');updateWindows()">
+            <li onclick="window.history.pushState('','','/folder/${doc.id}');updateWindows()">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />

@@ -137,7 +137,20 @@ span{
     transition: background-color 0.15s;
     text-overflow: ellipsis;
     font-weight: normal;
+    overflow: hidden;
+    display: block;
 }
+
+#sidebar-container ul li svg {
+    float: left;
+    margin: 1px 2px;
+}
+
+#sidebar-container ul li span {
+    margin: 1px 3px;
+}
+
+
 
 #sidebar-container ul li:hover{
     background-color: var(--background-3);
