@@ -299,11 +299,35 @@
                     </button>
                 </div>
                 <div class="horizontal" style = "display:none">
-                    <h3>Folder:</h3>
+                    <h3>Folder</h3>
                     <div class="spacer"></div>
                     <select id="list-folder-select-dropdown" onchange="updateListFolder(this.value)">
 
                     </select>
+                </div>
+                <div id="list-roles-container" class = "roles-container">
+                    <h2>Sharing</h2>
+                    <div class="horizontal">
+                        <h3>Public</h3>
+                        <div class="spacer"></div>
+                        <button id="list-toggle-public-btn" onclick="firestore.collection('lists').doc(splitPath[1]).update({public: !listDoc.data().public})"></button>
+                    </div>
+                    <h3>People</h3>
+                    <div id="list-roles-list" class="roles-list">
+                        <div class="roles-list-item horizontal">
+                            <span>--</span>
+                            <div class="spacer"></div>
+                            <select class="roles-list-select">
+                                <option value="viewer">viewer</option>
+                                <option value="editor">editor</option>
+                            </select>
+                            <button class="roles-list-delete-btn">×</button>
+                        </div>
+                    </div>
+                    <div class="horizontal">
+                        <button onclick="firebase.functions().httpsCallable('getUidFromEmail')({email: window.prompt('Enter Email:')}).then((data)=>{let updatedRoles = listDoc.data().roles;updatedRoles[data.data.user]='viewer';firestore.collection('lists').doc(splitPath[1]).update({roles:updatedRoles})}) ">add viewer</button>
+                        <button onclick="firebase.functions().httpsCallable('getUidFromEmail')({email: window.prompt('Enter Email:')}).then((data)=>{let updatedRoles = listDoc.data().roles;updatedRoles[data.data.user]='editor';firestore.collection('lists').doc(splitPath[1]).update({roles:updatedRoles})}) ">add editor</button>
+                    </div>
                 </div>
             </div>
             <div id = "folder-settings-panel" class="panel">
@@ -330,7 +354,29 @@
                         <span>delete</span>
                     </button>
                 </div>
-
+                <div id="folder-roles-container" class = "roles-container">
+                    <h2>Sharing</h2>
+                    <div class="horizontal">
+                        <h3>Public</h3>
+                        <div class="spacer"></div>
+                        <button id="folder-toggle-public-btn" onclick="firestore.collection('folders').doc(splitPath[1]).update({public: !folderDoc.data().public})"></button>
+                    </div>
+                    <h3>People</h3>
+                    <div id="folder-roles-list" class="roles-list">
+                        <div class="roles-list-item horizontal">
+                            <span>--</span>
+                            <div class="spacer"></div>
+                            <select class="roles-list-select">
+                                <option value="viewer">viewer</option>
+                                <option value="editor">editor</option>
+                            </select>
+                            <button class="roles-list-delete-btn">×</button>
+                        </div>
+                    </div>
+                    <div class="horizontal">
+                        <button onclick="firebase.functions().httpsCallable('getUidFromEmail')({email: window.prompt('Enter Email:')}).then((data)=>{let updatedRoles = listDoc.data().roles;updatedRoles[data.data.user]='viewer';firestore.collection('folders').doc(splitPath[1]).update({roles:updatedRoles})}) ">add viewer</button>
+                        <button onclick="firebase.functions().httpsCallable('getUidFromEmail')({email: window.prompt('Enter Email:')}).then((data)=>{let updatedRoles = listDoc.data().roles;updatedRoles[data.data.user]='editor';firestore.collection('folders').doc(splitPath[1]).update({roles:updatedRoles})}) ">add editor</button>
+                    </div>
             </div>
         </div>
     </body>

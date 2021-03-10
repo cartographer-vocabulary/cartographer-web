@@ -6,6 +6,7 @@ var flashcardIndex = 0;
 var listRole;
 var unsubscribeParentFolder;
 var parentFolderRole;
+var previousListRoles;
 function updateListView(id){
     //if unsubscribe exists, unsubscribe
     unsubscribeListView && unsubscribeListView();
@@ -13,7 +14,7 @@ function updateListView(id){
     unsubscribeParentFolder?.()
     //gets data and changes the content
     firestore.collection("lists").doc(id).get().then((listDoc)=>{
-
+        listRole = listDoc.data().roles[uid];
         unsubscribeParentFolder = firestore.collection("folders").doc(listDoc.data().folder)
             .onSnapshot((doc)=>{
                 parentFolderRole = doc.data().roles[uid]
@@ -60,13 +61,49 @@ function updateListView(id){
             }catch(err){
                 updateListViewableContent(doc.data().roles[uid], doc)
            }
-            listRole = doc.data().roles;
+            listRole = doc.data().roles[uid];
+
+            if(doc.data().roles != previousListRoles){
+
+                let names = Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)}).map(([uid,role])=>{
+                    return firebase.functions().httpsCallable('getDisplayName')({uid: uid})
+                })
+                Promise.all(names).then((result)=>{
+                    document.querySelector("#list-roles-list").innerHTML = result.map((data, index) => {
+                        if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != uid) {
+                            return (`
+                            <div class="roles-list-item horizontal">
+                                <span>${data.data.name}</span>
+                                <div class="spacer"></div>
+                                <select class="roles-list-select" onchange="let updatedRoles = listDoc.data().roles;updatedRoles[Object.entries(listDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('lists').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
+                                    <option value="viewer" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "viewer" ? "selected" : ""}>viewer</option>
+                                    <option value="editor" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "editor" ? "selected" : ""}>editor</option>
+                                    <option value="creator" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "creator" ? "selected" : ""}>creator</option>
+                                </select>
+                                <button class="roles-list-delete-btn" onclick="let deletedRoles = listDoc.data().roles;delete deletedRoles[Object.entries(listDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]];firestore.collection('lists').doc(splitPath[1]).update({roles:deletedRoles})">×</button>
+                            </div>
+                            `)
+                        }else{
+                            return (`
+                            <div class="roles-list-item horizontal">
+                                <span>${data.data.name}</span>
+                                <div class="spacer"></div>
+                            </div>
+                            `)
+                        }
+                    }).join("  ")
+                })
+            }
+
+            previousListRoles = doc.data().roles[uid];
             //header of the list thing
             document.querySelector("#content-list .content-header").innerHTML = doc.data().name;
             //header in the settings panel
             document.querySelector("#list-settings-panel h1").innerHTML = doc.data().name;
-
-
+            document.querySelector("#list-toggle-public-btn").innerHTML = doc.data().public ? "✔︎" : ""
+            document.querySelector("#list-toggle-public-btn").style.backgroundColor = doc.data().public ? "var(--accent-1)" : "var(--background-1)"
+            document.querySelector("#list-toggle-public-btn").style.color = doc.data().public ? "var(--background-1)" : "var(--foreground-1)"
+            document.querySelector("#list-toggle-public-btn").style.border = doc.data().public ? "none" : "1px solid var(--border-1)"
             if(doc.data().cards[flashcardIndex]) {
                 document.getElementById("flashcard-word").innerHTML = doc.data().cards[flashcardIndex].word
                 document.getElementById("flashcard-definition").innerHTML = doc.data().cards[flashcardIndex].definition
@@ -550,6 +587,7 @@ var unsubscribeFolderView;
 var unsubscribeFolderListView;
 var folderDoc;
 var folderLists;
+var previousFolderRoles;
 function updateFolderView(id){
     unsubscribeFolderView?.();
     unsubscribeFolderListView?.();
@@ -574,6 +612,44 @@ function updateFolderView(id){
             }
             document.getElementById("folder-list-container").innerHTML = ""
             updateFolderLists(id)
+
+            document.querySelector("#folder-toggle-public-btn").innerHTML = doc.data().public ? "✔︎" : ""
+            document.querySelector("#folder-toggle-public-btn").style.backgroundColor = doc.data().public ? "var(--accent-1)" : "var(--background-1)"
+            document.querySelector("#folder-toggle-public-btn").style.color = doc.data().public ? "var(--background-1)" : "var(--foreground-1)"
+            document.querySelector("#folder-toggle-public-btn").style.border = doc.data().public ? "none" : "1px solid var(--border-1)"
+
+            if(doc.data().roles != previousFolderRoles){
+
+                let names = Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)}).map(([uid,role])=>{
+                    return firebase.functions().httpsCallable('getDisplayName')({uid: uid})
+                })
+                Promise.all(names).then((result)=>{
+                    document.querySelector("#folder-roles-list").innerHTML = result.map((data, index) => {
+                        if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != uid) {
+                            return (`
+                            <div class="roles-list-item horizontal">
+                                <span>${data.data.name}</span>
+                                <div class="spacer"></div>
+                                <select class="roles-list-select" onchange="let updatedRoles = folderDoc.data().roles;updatedRoles[Object.entries(folderDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('folders').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
+                                    <option value="viewer" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "viewer" ? "selected" : ""}>viewer</option>
+                                    <option value="editor" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "editor" ? "selected" : ""}>editor</option>
+                                    <option value="creator" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "creator" ? "selected" : ""}>creator</option>
+                                </select>
+                                <button class="roles-list-delete-btn" onclick="let deletedRoles = folderDoc.data().roles;delete deletedRoles[Object.entries(folderDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]];firestore.collection('folders').doc(splitPath[1]).update({roles:deletedRoles})">×</button>
+                            </div>
+                            `)
+                        }else{
+                            return (`
+                            <div class="roles-list-item horizontal">
+                                <span>${data.data.name}</span>
+                                <div class="spacer"></div>
+                            </div>
+                            `)
+                        }
+                    }).join("  ")
+                })
+            }
+            previousFolderRoles = doc.data().roles;
 
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders

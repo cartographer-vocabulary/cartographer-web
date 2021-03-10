@@ -510,6 +510,53 @@ span{
     display: none;
 }
 
+#list-toggle-public-btn, #folder-toggle-public-btn{
+    height: 25px;
+    width: 25px;
+}
+
+.roles-container{
+    width: 100%;
+    max-height: calc(100% - 120px);
+}
+
+.roles-list{
+    padding: 0 5px;
+}
+
+.roles-list-item{
+    padding: 4px 4px 4px 10px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.roles-list-item:hover{
+    background-color: var(--background-2);
+}
+
+
+.roles-list-delete-btn{
+    width: 27px;
+    height: 27px;
+    padding: 0;
+    transition: opacity 0.15s, transform 0.15s;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.roles-list-item:hover .roles-list-delete-btn{
+    opacity: 1;
+    transform: scale(1);
+}
+
+.roles-list-select{
+    transform: translate(35px);
+}
+
+.roles-list-item:hover .roles-list-select{
+    transform: translate(0);
+}
 
 .panel{
     margin: 100px 20px;
