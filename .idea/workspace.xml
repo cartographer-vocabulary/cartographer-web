@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="4518435c-f992-4caf-9a65-80c398122c6e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/functions/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/scripts/content.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/scripts/content.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +42,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
+    <property name="settings.editor.selected.configurable" value="terminal" />
     <property name="ts.external.directory.path" value="$PROJECT_DIR$/functions/node_modules/typescript/lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -109,7 +105,7 @@
       <workItem from="1614522958128" duration="345000" />
       <workItem from="1614632582791" duration="9274000" />
       <workItem from="1614882916358" duration="31000" />
-      <workItem from="1615413251299" duration="2841000" />
+      <workItem from="1615413251299" duration="3150000" />
     </task>
     <task id="LOCAL-00001" summary="Made the ui and reading of cards, but you can't add or delete yet">
       <created>1612715218635</created>

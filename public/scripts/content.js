@@ -97,6 +97,7 @@ function updateListView(id){
 
             previousListRoles = doc.data().roles[uid];
             //header of the list thing
+            document.title = doc.data().name + " - Cartographer";
             document.querySelector("#content-list .content-header").innerHTML = doc.data().name;
             //header in the settings panel
             document.querySelector("#list-settings-panel h1").innerHTML = doc.data().name;
@@ -594,6 +595,7 @@ function updateFolderView(id){
     unsubscribeFolderView = firestore.collection('folders').doc(id)
         .onSnapshot((doc) => {
             folderDoc = doc;
+            document.title = doc.data().name + " - Cartographer"
             //header of the list thing
             document.querySelector("#content-folder .content-header").innerHTML = doc.data().name;
             //header in the settings panel
@@ -771,8 +773,16 @@ function updateWindows(){
         document.getElementById("content-list").style.display = "none";
         document.getElementById("content-welcome").style.display = "block";
         document.getElementById("content-folder").style.display = "none";
+        document.title = "Cartographer";
+        unsubscribeListView?.();
+        unsubscribeAvailableFolders?.();
+        unsubscribeParentFolder?.();
+        unsubscribeFolderView?.();
+        unsubscribeFolderListView?.();
+        updateWindows();
     }else{
         window.history.pushState("","","/welcome");
+        document.title = "Cartographer"
         unsubscribeListView?.();
         unsubscribeAvailableFolders?.();
         unsubscribeParentFolder?.();
