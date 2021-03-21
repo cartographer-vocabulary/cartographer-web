@@ -49,6 +49,14 @@ function updateListView(id){
     unsubscribeListView = firestore.collection("lists").doc(id)
         .onSnapshot((doc) => {
             listDoc = doc;
+
+            let containerElement = document.querySelector("#content-list")
+            let scrollToBottom = containerElement.scrollHeight - containerElement.clientHeight <= containerElement.scrollTop + 80;
+            
+            let focusedElement = document?.activeElement;
+            let focusedElementId = focusedElement?.closest(".card")?.id
+            let focusedElementType = focusedElement.tagName
+
             try{
                 let highestRole = "viewer";
                 if (doc.data().roles[uid] === "editor" || parentFolderRole === "editor") {
@@ -125,7 +133,13 @@ function updateListView(id){
                     document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = ()=>{}
                 }
             }
+            if(scrollToBottom){
+                containerElement.scrollTop = containerElement.scrollHeight - containerElement.clientHeight;
+            }
 
+            if(parseInt(focusedElementId) && focusedElementType){
+                document.getElementById(focusedElementId).querySelector(focusedElementType).focus();
+            }
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders
             document.querySelector("#content-list .content-header").innerHTML = "placeholder"
@@ -150,12 +164,14 @@ function updateListViewableContent(role,doc){
         })
         document.getElementById("list-edit-btn").style.display = "grid"
         document.getElementById("list-folder-select-dropdown").parentNode.style.display = "flex"
+        document.getElementById("add-card-container").style.display = "flex"
     }else{
         items = doc.data().cards.map((card, index) => {
             return (`<div class="card" id="${index}"><div class="horizontal"><h3>${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3></div><hr><p>${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
         })
         document.getElementById("list-edit-btn").style.display = "none"
         document.getElementById("list-folder-select-dropdown").parentNode.style.display = "none"
+        document.getElementById("add-card-container").style.display = "none"
     }
 
     document.getElementById("card-container").innerHTML = items.join("  ")
@@ -176,6 +192,8 @@ window.addEventListener('load',()=>{
             cardWordElement.value = ""
             cardDefinitionElement.value = ""
             cardWordElement.focus();
+        }else if((e.key == 'Enter' || e.keyCode ===13)){
+            cardDefinitionElement.focus()
         }
     })
     cardDefinitionElement.addEventListener('keyup',(e)=>{
@@ -187,6 +205,8 @@ window.addEventListener('load',()=>{
             cardWordElement.value = ""
             cardDefinitionElement.value = ""
             cardWordElement.focus();
+        }else if((e.key === 'Enter' || e.keycCode === 13)){
+            cardWordElement.focus()
         }
     })
 
@@ -209,8 +229,8 @@ function addCard(word,definition){
         firestore.collection('lists').doc(splitPath[1]).update(
             {
                 cards: listDoc.data().cards.concat([{
-                    word: word,
-                    definition: definition,
+                    word: word.trim(),
+                    definition: definition.trim(),
                 }
                 ])
             }
@@ -219,8 +239,8 @@ function addCard(word,definition){
         firestore.collection('lists').doc(splitPath[1]).set(
             {
                 cards:[{
-                    word: word,
-                    definition: definition,
+                    word: word.trim(),
+                    definition: definition.trim(),
                 }]
             },{merge:true}
         )
@@ -230,8 +250,8 @@ function addCard(word,definition){
 function updateCardWord(word,index){
     word.trim();
     let editedArray = listDoc.data().cards
-    if(editedArray[index].word != word) {
-        editedArray[index].word = word;
+    if(editedArray[index].word != word.trim()) {
+        editedArray[index].word = word.trim();
         firestore.collection('lists').doc(splitPath[1]).update(
             {
                 cards: editedArray
@@ -243,8 +263,8 @@ function updateCardWord(word,index){
 function updateCardDefinition(definition,index){
     definition.trim()
     let editedArray = listDoc.data().cards
-    if(editedArray[index].definition != definition) {
-        editedArray[index].definition = definition;
+    if(editedArray[index].definition != definition.trim()) {
+        editedArray[index].definition = definition.trim();
         firestore.collection('lists').doc(splitPath[1]).update(
             {
                 cards: editedArray

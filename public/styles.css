@@ -394,7 +394,7 @@ span{
     margin: 0px 20px;
     border-radius: 8px;
     padding: 5px;
-    display: flex;
+    display: none;
     flex-direction: column;
 }
 
