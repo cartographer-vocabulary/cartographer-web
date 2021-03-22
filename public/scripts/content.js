@@ -56,7 +56,6 @@ function updateListView(id){
             let focusedElement = document?.activeElement;
             let focusedElementId = focusedElement?.closest(".card")?.id
             let focusedElementType = focusedElement.tagName
-
             try{
                 let highestRole = "viewer";
                 if (doc.data().roles[uid] === "editor" || parentFolderRole === "editor") {
@@ -137,7 +136,7 @@ function updateListView(id){
                 containerElement.scrollTop = containerElement.scrollHeight - containerElement.clientHeight;
             }
 
-            if(parseInt(focusedElementId) && focusedElementType){
+            if(focusedElementId && focusedElementType){
                 document.getElementById(focusedElementId).querySelector(focusedElementType).focus();
             }
         },(error) => {
