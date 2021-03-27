@@ -521,7 +521,8 @@ span{
 }
 
 .roles-list{
-    padding: 0 5px;
+    /* padding: 0 5px; */
+    margin-right:-7px;
 }
 
 .roles-list-item{
@@ -586,8 +587,7 @@ span{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 5px;
-    margin: 5px;
+    margin: 10px 0px;
 }
 
 .color-scheme{
@@ -599,7 +599,7 @@ span{
 }
 
 button{
-    padding:5px;
+    padding:5px 8px;
     background-color: var(--background-1);
     border-radius: 3px;
     border:1px solid var(--border-1);
@@ -612,6 +612,14 @@ button{
     align-items: center;
     justify-content: center;
    font-family: var(--font-1);
+}
+
+button *:first-child:not(span){
+    margin-left:-1px;
+}
+
+button *:last-child:not(span){
+    margin-right:-1px;
 }
 
 button:hover{
@@ -639,7 +647,12 @@ select{
     outline: none;
     text-align-last:center;
     font-family: var(--font-1);
+    direction: rtl;
+    padding-right:8px;
     transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    text-align: center;
+    text-align-last: center;
+    -moz-text-align-last: center;
 }
 
 select:hover{
@@ -652,3 +665,4 @@ select:active{
     color: var(--foreground-1);
     transform:  scale(0.95);
 }
+

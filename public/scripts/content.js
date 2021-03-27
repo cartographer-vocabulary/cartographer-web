@@ -132,7 +132,7 @@ function updateListView(id){
                     document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = ()=>{}
                 }
             }
-            if(scrollToBottom){
+            if(scrollToBottom && containerElement.scrollTop != 0){
                 containerElement.scrollTop = containerElement.scrollHeight - containerElement.clientHeight;
             }
 
@@ -440,7 +440,7 @@ function updateUserInfo(){
                 uiTheme = doc.data().theme
                 localStorage.setItem("uiTheme",uiTheme)
                 document.getElementById(`${uiTheme}-mode`).style.backgroundColor = "var(--accent-1)"
-                document.getElementById(`${uiTheme}-mode`).style.border = "1px solid var(--border-1)"
+                document.getElementById(`${uiTheme}-mode`).style.border = "1px solid var(--accent-1)"
                 document.getElementById("theme-stylesheet").href = `/themes/${colorScheme}-${uiTheme}.css`
             }
 
@@ -798,7 +798,6 @@ function updateWindows(){
         unsubscribeParentFolder?.();
         unsubscribeFolderView?.();
         unsubscribeFolderListView?.();
-        updateWindows();
     }else{
         window.history.pushState("","","/welcome");
         document.title = "Cartographer"
