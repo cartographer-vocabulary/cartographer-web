@@ -51,7 +51,7 @@ function updateListView(id){
             listDoc = doc;
 
             let containerElement = document.querySelector("#content-list")
-            let scrollToBottom = containerElement.scrollHeight - containerElement.clientHeight <= containerElement.scrollTop + 80;
+            let scrollToBottom = containerElement.scrollHeight - containerElement.clientHeight <= containerElement.scrollTop + 80 && (containerElement.scrollTop != 0 || document.activeElement.closest("#add-card-container"));
             
             let focusedElement = document?.activeElement;
             let focusedElementId = focusedElement?.closest(".card")?.id
@@ -132,7 +132,7 @@ function updateListView(id){
                     document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = ()=>{}
                 }
             }
-            if(scrollToBottom && containerElement.scrollTop != 0){
+            if(scrollToBottom){
                 containerElement.scrollTop = containerElement.scrollHeight - containerElement.clientHeight;
             }
 
@@ -450,6 +450,9 @@ function updateUserInfo(){
                 document.getElementById(`${colorScheme}-color-scheme`).style.border = "2px solid var(--accent-1)"
                 document.getElementById("theme-stylesheet").href = `/themes/${colorScheme}-${uiTheme}.css`
             }
+            if(splitPath[0] == "favorites"){
+                updateFavorites(doc.data().favoriteLists ?? [], doc.data().favoriteFolders ?? [])
+            }
         })
 }
 
@@ -703,6 +706,43 @@ function updateFolderLists(id){
         })
 }
 
+
+function updateFavorites(lists,folders){
+    
+    let listGets = lists.map((list)=>{
+        return firestore.collection("lists").doc(list).get()
+    })
+
+    Promise.all(listGets).then((listDocs)=>{
+            let listItems = listDocs.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).map(doc => {
+                return(doc.exists ? `
+                    <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
+                        <h3>${doc.data().name}</h3>
+                        <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
+                    </div>
+                ` : "  ")
+            })
+           document.getElementById("favorites-list-container").innerHTML = listItems.join(" ")
+        })    
+
+    let folderGets = folders.map((folder)=>{
+        return firestore.collection("folders").doc(folder).get()
+    })
+
+    Promise.all(folderGets).then((folderDocs)=>{
+            let folderItems = folderDocs.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).map(doc => {
+                return(doc.exists ? `
+                    <div class="folder-list" onclick="window.history.pushState('','','/folder/${doc.id}'); updateWindows()">
+                        <h3>${doc.data().name}</h3>
+                    </div>
+                ` : "  ")
+            })
+            document.getElementById("favorites-folder-container").innerHTML = folderItems.join(" ")
+        })    
+}
+
+
+
 window.addEventListener('load',()=>{
     //event listener for the button that edits the list, and puts that data on firestore
     document.querySelector("#folder-edit-btn").addEventListener('click',()=>{
@@ -771,41 +811,34 @@ function updateWindows(){
     //removes null stuff
     splitPath = splitPath.filter(element => {return element != null && element != ''})
     //checks if the url is a task, welcome, or if neither it sets it to welcome
+
+
+    unsubscribeListView?.();
+    unsubscribeAvailableFolders?.();
+    unsubscribeParentFolder?.();
+    unsubscribeFolderView?.();
+    unsubscribeFolderListView?.();
+    document.getElementById("content-list").style.display = "none";
+    document.getElementById("content-welcome").style.display = "none";
+    document.getElementById("content-folder").style.display = "none";
+    document.getElementById("content-favorites").style.display = "none";
+
     if(splitPath[0] == "list" && splitPath[1]){
         document.getElementById("content-list").style.display = "block";
-        document.getElementById("content-welcome").style.display = "none";
-        document.getElementById("content-folder").style.display = "none";
-        unsubscribeFolderListView?.();
-        unsubscribeFolderView?.();
         updateListView(splitPath[1]);
 
 
     }else if(splitPath[0] == "folder" && splitPath[1]){
-        document.getElementById("content-list").style.display = "none";
-        document.getElementById("content-welcome").style.display = "none";
         document.getElementById("content-folder").style.display = "block";
-        unsubscribeListView?.();
-        unsubscribeAvailableFolders?.();
-        unsubscribeParentFolder?.();
         updateFolderView(splitPath[1]);
+    }else if(splitPath[0] == "favorites"){
+        document.getElementById("content-favorites").style.display = "block";
     }else if(splitPath[0] == "welcome"){
-        document.getElementById("content-list").style.display = "none";
         document.getElementById("content-welcome").style.display = "block";
-        document.getElementById("content-folder").style.display = "none";
         document.title = "Cartographer";
-        unsubscribeListView?.();
-        unsubscribeAvailableFolders?.();
-        unsubscribeParentFolder?.();
-        unsubscribeFolderView?.();
-        unsubscribeFolderListView?.();
     }else{
         window.history.pushState("","","/welcome");
         document.title = "Cartographer"
-        unsubscribeListView?.();
-        unsubscribeAvailableFolders?.();
-        unsubscribeParentFolder?.();
-        unsubscribeFolderView?.();
-        unsubscribeFolderListView?.();
         updateWindows();
     }
 }

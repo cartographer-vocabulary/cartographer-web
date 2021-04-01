@@ -89,7 +89,7 @@ span{
 
 #sidebar-toggle{
     font-size: 20px;
-    padding: 7px 5px !important;
+    padding: 7px 8px !important;
     margin-left: 5px !important;
 }
 
@@ -206,6 +206,14 @@ span{
     padding-bottom: 40px;
 }
 
+#content-favorites > h3{
+    margin-bottom: 0px;
+    margin-left: 30px;
+    font-size: 14px; 
+    font-weight: 400;
+    color:var(--foreground-2)
+}
+
 #list-quiz-container{
     display: none;
     padding: 0px 10px 10px 10px;
@@ -259,7 +267,7 @@ span{
     width: 32px;
 }
 
-#card-container, #folder-list-container{
+#card-container, #folder-list-container, #favorites-list-container, #favorites-folder-container{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
