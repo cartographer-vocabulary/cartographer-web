@@ -441,20 +441,48 @@ function updateUserInfo(){
                 localStorage.setItem("uiTheme",uiTheme)
                 document.getElementById(`${uiTheme}-mode`).style.backgroundColor = "var(--accent-1)"
                 document.getElementById(`${uiTheme}-mode`).style.border = "1px solid var(--accent-1)"
-                document.getElementById("theme-stylesheet").href = `/themes/${colorScheme}-${uiTheme}.css`
+                if(uiTheme != "automatic"){
+                    document.documentElement.setAttribute("color-scheme", `${colorScheme}-${uiTheme}`)
+                }else{
+                    if(window.matchMedia("(perfers-color-scheme: dark)").matches){
+                        document.documentElement.setAttribute("color-scheme", `${colorScheme}-dark`)
+                    }else{
+                        document.documentElement.setAttribute("color-scheme", `${colorScheme}-light`)
+                    }
+                }
             }
 
             if(doc.data().colorScheme){
                 colorScheme = doc.data().colorScheme
                 localStorage.setItem("colorScheme",colorScheme)
                 document.getElementById(`${colorScheme}-color-scheme`).style.border = "2px solid var(--accent-1)"
-                document.getElementById("theme-stylesheet").href = `/themes/${colorScheme}-${uiTheme}.css`
+                if(uiTheme != "automatic"){
+                    document.documentElement.setAttribute("color-scheme", `${colorScheme}-${uiTheme}`)
+                }else{
+                    if(window.matchMedia("(perfers-color-scheme: dark)").matches){
+                        document.documentElement.setAttribute("color-scheme", `${colorScheme}-dark`)
+                    }else{
+                        document.documentElement.setAttribute("color-scheme", `${colorScheme}-light`)
+                    }
+                }
             }
             if(splitPath[0] == "favorites"){
                 updateFavorites(doc.data().favoriteLists ?? [], doc.data().favoriteFolders ?? [])
             }
         })
 }
+
+window.matchMedia("(prefers-color-scheme: dark)").addListener((e)=>{
+        if(uiTheme == "automatic"){
+            if(e.matches){
+                document.documentElement.setAttribute("color-scheme", `${colorScheme}-dark`)
+            }else{
+                document.documentElement.setAttribute("color-scheme", `${colorScheme}-light`)
+            }
+        }
+    }
+);
+
 
 function updateColorScheme(name){
     colorScheme = name;
@@ -477,6 +505,7 @@ window.addEventListener('load',()=> {
         if(uiTheme != "automatic"){
             firestore.collection('users').doc(uid).update({
                 theme: "automatic"
+                
             })
         }
     })
@@ -494,7 +523,15 @@ window.addEventListener('load',()=> {
             })
         }
     })
-    document.getElementById("theme-stylesheet").href = `/themes/${colorScheme}-${uiTheme}.css`
+    if(uiTheme != "automatic"){
+        document.documentElement.setAttribute("color-scheme", `${colorScheme}-${uiTheme}`)
+    }else{
+        if(window.matchMedia("(perfers-color-scheme: dark)").matches){
+            document.documentElement.setAttribute("color-scheme", `${colorScheme}-dark`)
+        }else{
+            document.documentElement.setAttribute("color-scheme", `${colorScheme}-light`)
+        }
+    }
 })
 
 
