@@ -12,6 +12,10 @@ function updateListView(id){
     unsubscribeListView && unsubscribeListView();
     unsubscribeAvailableFolders?.()
     unsubscribeParentFolder?.()
+
+    document.querySelector("#content-list .content-header").innerHTML = "placeholder"
+    document.querySelector("#list-settings-panel h1").innerHTML = "placeholder";
+    document.getElementById("card-container").innerHTML = "";
     //gets data and changes the content
     firestore.collection("lists").doc(id).get().then((listDoc)=>{
         listRole = listDoc.data().roles[uid];
@@ -101,8 +105,13 @@ function updateListView(id){
                     }).join("  ")
                 })
             }
-
+            
             previousListRoles = doc.data().roles[uid];
+            if(userDoc){
+                document.querySelector("#content-list .favorites-toggle svg").style.fill = userDoc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
+                document.querySelector("#content-list .favorites-toggle svg").style.stroke = userDoc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
+            }
+
             //header of the list thing
             document.title = doc.data().name + " - Cartographer";
             document.querySelector("#content-list .content-header").innerHTML = doc.data().name;
@@ -210,6 +219,21 @@ window.addEventListener('load',()=>{
     })
 
 })
+
+function toggleFavoriteList(){
+    if(userDoc?.data()?.favoriteLists?.includes(splitPath[1])){
+        let editedFavorites = userDoc.data().favoriteLists.filter(a=>{
+            return a!=splitPath[1]
+        })
+        firestore.collection("users").doc(uid).update({
+            favoriteLists:editedFavorites 
+        })
+    }else{
+        firestore.collection("users").doc(uid).update({
+            favoriteLists:userDoc?.data()?.favoriteLists?.concat([splitPath[1]]) ?? [splitPath[1]]
+        })
+    }
+}
 
 function deleteCard(element){
     let splicedCards = listDoc.data().cards
@@ -467,8 +491,15 @@ function updateUserInfo(){
                 }
             }
             if(splitPath[0] == "favorites"){
-                updateFavorites(doc.data().favoriteLists ?? [], doc.data().favoriteFolders ?? [])
+                updateFavorites(doc?.data()?.favoriteLists ?? [], doc?.data()?.favoriteFolders ?? [])
+            }else if(splitPath[0] == "list"){
+                document.querySelector("#content-list .favorites-toggle svg").style.fill = doc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
+                document.querySelector("#content-list .favorites-toggle svg").style.stroke = doc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
+            }else if(splitPath[0] == "folder"){
+                document.querySelector("#content-folder .favorites-toggle svg").style.fill = doc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
+                document.querySelector("#content-folder .favorites-toggle svg").style.stroke = doc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
             }
+            
         })
 }
 
@@ -651,6 +682,11 @@ var previousFolderRoles;
 function updateFolderView(id){
     unsubscribeFolderView?.();
     unsubscribeFolderListView?.();
+
+    document.querySelector("#content-folder .content-header").innerHTML = "placeholder";
+    document.querySelector("#folder-settings-panel h1").innerHTML = "placeholder";
+    document.getElementById("folder-list-container").innerHTML = "";
+
     unsubscribeFolderView = firestore.collection('folders').doc(id)
         .onSnapshot((doc) => {
             folderDoc = doc;
@@ -712,6 +748,10 @@ function updateFolderView(id){
             }
             previousFolderRoles = doc.data().roles;
 
+            if(userDoc){
+                document.querySelector("#content-folder .favorites-toggle svg").style.fill = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
+                document.querySelector("#content-folder .favorites-toggle svg").style.stroke = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
+            }
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders
             document.querySelector("#content-folder .content-header").innerHTML = "placeholder"
@@ -750,8 +790,8 @@ function updateFavorites(lists,folders){
         return firestore.collection("lists").doc(list).get()
     })
 
-    Promise.all(listGets).then((listDocs)=>{
-            let listItems = listDocs.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).map(doc => {
+    Promise.allSettled(listGets).then((listDocs)=>{
+            let listItems = listDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
                 return(doc.exists ? `
                     <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
                         <h3>${doc.data().name}</h3>
@@ -766,19 +806,47 @@ function updateFavorites(lists,folders){
         return firestore.collection("folders").doc(folder).get()
     })
 
-    Promise.all(folderGets).then((folderDocs)=>{
-            let folderItems = folderDocs.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).map(doc => {
+    Promise.allSettled(folderGets).then((folderDocs)=>{
+            let folderItems = folderDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
                 return(doc.exists ? `
                     <div class="folder-list" onclick="window.history.pushState('','','/folder/${doc.id}'); updateWindows()">
                         <h3>${doc.data().name}</h3>
                     </div>
                 ` : "  ")
             })
-            document.getElementById("favorites-folder-container").innerHTML = folderItems.join(" ")
+           document.getElementById("favorites-folder-container").innerHTML = folderItems.join(" ")
         })    
 }
 
+function toggleFavoriteFolder(){
+    if(userDoc.data().favoriteFolders.includes(splitPath[1])){
+        let editedFavorites = userDoc.data().favoriteFolders.filter(a=>{
+            return a!=splitPath[1]
+        })
+        firestore.collection("users").doc(uid).update({
+            favoriteFolders:editedFavorites 
+        })
+    }else{
+        firestore.collection("users").doc(uid).update({
+            favoriteFolders:userDoc.data().favoriteFolders.concat([splitPath[1]]) 
+        })
+    }
+}
 
+function toggleFavoriteFolder(){
+    if(userDoc?.data()?.favoriteFolders?.includes(splitPath[1])){
+        let editedFavorites = userDoc.data().favoriteFolders.filter(a=>{
+            return a!=splitPath[1]
+        })
+        firestore.collection("users").doc(uid).update({
+            favoriteFolders:editedFavorites 
+        })
+    }else{
+        firestore.collection("users").doc(uid).update({
+            favoriteFolders:userDoc?.data()?.favoriteFolders?.concat([splitPath[1]]) ?? [splitPath[1]]
+        })
+    }
+}
 
 window.addEventListener('load',()=>{
     //event listener for the button that edits the list, and puts that data on firestore
@@ -870,6 +938,7 @@ function updateWindows(){
         updateFolderView(splitPath[1]);
     }else if(splitPath[0] == "favorites"){
         document.getElementById("content-favorites").style.display = "block";
+        updateFavorites(userDoc?.data().favoriteLists ?? [], userDoc?.data().favoriteFolders ?? [])
     }else if(splitPath[0] == "welcome"){
         document.getElementById("content-welcome").style.display = "block";
         document.title = "Cartographer";

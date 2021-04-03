@@ -115,6 +115,10 @@ span{
     white-space: nowrap;
 }
 
+#sidebar-container hr{
+    margin: 6px;
+}
+
 #sidebar-container h3{
     margin: 0px 5px;
     text-overflow: ellipsis;
@@ -127,7 +131,7 @@ span{
 
 #sidebar-container ul{
     padding: 0;
-    margin: 0 0 10px;
+    margin: 0 0;
 }
 
 #sidebar-container ul li{
@@ -138,16 +142,20 @@ span{
     text-overflow: ellipsis;
     font-weight: normal;
     overflow: hidden;
-    display: block;
+    display: flex;
+    align-items: center;
+
 }
 
 #sidebar-container ul li svg {
-    float: left;
     margin: 1px 2px;
+    display: block;
 }
 
 #sidebar-container ul li span {
-    margin: 1px 3px;
+    margin: 1px 2px;
+    margin-top: 2px;
+    display: block;
 }
 
 
@@ -565,6 +573,11 @@ span{
 
 .roles-list-item:hover .roles-list-select{
     transform: translate(0);
+}
+
+.favorites-toggle{
+    border: none;
+    background-color: transparent;
 }
 
 .panel{
