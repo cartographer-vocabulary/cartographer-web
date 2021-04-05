@@ -78,6 +78,7 @@
                 </svg>
             </button>
             <h1 onclick = "window.history.pushState('','','/welcome'); updateWindows()">Cartographer</h1>
+            <h1><span class="loader"></span></h1>
             <div class="spacer"></div>
             <button id="login-btn"  style="display: none"> Log In </button>
             <button id="open-profile-btn" class="user-full-name" style="display: none">Profile</button>
@@ -100,7 +101,8 @@
                     <button id="add-list-btn">＋</button>
                 </div>
                 <ul id="my-lists-container">
-
+                    <li class="loader">
+                    </li>
                 </ul>
                 <hr>
                 <div class="sidebar-header">
@@ -108,14 +110,15 @@
                     <button id="add-folder-btn">＋</button>
                 </div>
                 <ul id="my-folders-container">
-
+                    <li class="loader">
+                    </li>
                 </ul>
 
             </div>
             <div id="content-container">
                 <div id="content-list" class="content">
                     <div class="horizontal" style="margin: 5px 15px">
-                        <h1 class="content-header">placeholder</h1>
+                        <h1 class="content-header"><span class="loader"></span></h1>
                         <button onclick="toggleFavoriteList()" class="favorites-toggle">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-star" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -158,11 +161,11 @@
                             <div id="card-inner-flashcard-container">
                                 <div id="flashcard">
                                     <div id="flashcard-front">
-                                        <p id="flashcard-index">--</p>
-                                        <h1 id="flashcard-word">No card selected</h1>
+                                        <p id="flashcard-index"><span class="loader loader-small"></span></p>
+                                        <h1 id="flashcard-word"><span class="loader"></span></h1>
                                     </div>
                                     <div id="flashcard-back">
-                                        <p id="flashcard-definition">No card selected</p>
+                                        <p id="flashcard-definition"><span class="loader"></span></p>
                                     </div>
                                 </div>
                             </div>
@@ -191,7 +194,7 @@
                 </div>
                 <div id="content-folder" class="content">
                     <div class="horizontal" style="margin: 5px 15px">
-                        <h1 class="content-header">placeholder</h1>
+                        <h1 class="content-header"><span class="loader"></span></h1>
                         <button onclick="toggleFavoriteFolder()" class="favorites-toggle">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-star" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -208,7 +211,7 @@
                         </button>
                     </div>
                     <div id="folder-list-container">
-
+                        <div class="folder-list loader"></div>
                     </div>
                     <button id="add-folder-list-btn">
                         + Add list
@@ -220,11 +223,11 @@
                     </div>
                     <h3>LISTS</h3>
                     <div id="favorites-list-container">
-
+                        <div class="folder-list loader"></div>
                     </div>
                     <h3>FOLDERS</h3>
                     <div id="favorites-folder-container">
-
+                        <div class="folder-list loader"></div>
                     </div>
                 </div>
                 <div id="content-welcome" class="content">
@@ -251,7 +254,7 @@
             </div>
             <div id = "profile-panel" class="panel">
                 <div class="horizontal">
-                    <h1 class="user-full-name">Profile</h1>
+                    <h1 class="user-full-name"><span class="loader"></span></h1>
                     <div class="spacer"></div>
                     <button id="edit-user-display-name">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -312,7 +315,7 @@
             </div>
             <div id = "list-settings-panel" class="panel">
                 <div class="horizontal">
-                    <h1>Placeholder</h1>
+                    <h1><span class='loader'></span></h1>
                     <div class="spacer"></div>
                     <button id="list-edit-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -351,7 +354,7 @@
                     <h3>People</h3>
                     <div id="list-roles-list" class="roles-list">
                         <div class="roles-list-item horizontal">
-                            <span>--</span>
+                            <span><span class="loader"></span></span>
                             <div class="spacer"></div>
                             <select class="roles-list-select">
                                 <option value="viewer">viewer</option>
@@ -368,7 +371,7 @@
             </div>
             <div id = "folder-settings-panel" class="panel">
                 <div class="horizontal">
-                    <h1>Placeholder</h1>
+                    <h1><span class="loader"></span></h1>
                     <div class="spacer"></div>
                     <button id="folder-edit-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">

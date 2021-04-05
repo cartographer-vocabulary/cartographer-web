@@ -21,9 +21,12 @@ function updateListView(id){
     unsubscribeParentFolder?.()
 
     //resets the stuff that exists, empty the cards etc
-    document.querySelector("#content-list .content-header").innerHTML = "placeholder"
-    document.querySelector("#list-settings-panel h1").innerHTML = "placeholder";
-    document.getElementById("card-container").innerHTML = "";
+    document.querySelector("#content-list .content-header").innerHTML = "<span class='loader'></span>"
+    document.querySelector("#list-settings-panel h1").innerHTML = "<span class='loader'></span>";
+    document.getElementById("card-container").innerHTML = "<div class='card loader'>";
+    document.querySelector("#flashcard-word").innerHTML = "<span class='loader'></span>"
+    document.querySelector("#flashcard-definition").innerHTML = "<span class='loader'></span>"
+    document.querySelector("#list-roles-list").innerHTML = "<span class='loader'></span>"
 
     //gets the lists once, and after you get that, you subscribe to the parent folder, and use that to change the role and the viewable content
     firestore.collection("lists").doc(id).get().then((listDoc)=>{
@@ -882,9 +885,10 @@ function updateFolderView(id){
     unsubscribeFolderListView?.();
 
     //also resets the content that is in them
-    document.querySelector("#content-folder .content-header").innerHTML = "placeholder";
-    document.querySelector("#folder-settings-panel h1").innerHTML = "placeholder";
-    document.getElementById("folder-list-container").innerHTML = "";
+    document.querySelector("#content-folder .content-header").innerHTML = "<span class='loader'></span>";
+    document.querySelector("#folder-settings-panel h1").innerHTML = "<span class='loader'></span>";
+    document.getElementById("folder-list-container").innerHTML = "<div class='folder-list loader'></div>";
+    document.querySelector("#folder-roles-list").innerHTML = "<span class='loader'></span>"
 
     unsubscribeFolderView = firestore.collection('folders').doc(id)
         .onSnapshot((doc) => {
@@ -1082,40 +1086,51 @@ window.addEventListener('load',()=>{
                                                                       
 function updateFavorites(lists,folders){
     
-    //make an array of all the lists needed to be gotten
-    let listGets = lists.map((list)=>{
-        return firestore.collection("lists").doc(list).get()
-    })
+    document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>" 
+    document.getElementById("favorites-folder-container").innerHTML = "<div class='folder-list loader'></div>"
+    if(lists){
+        //make an array of all the lists needed to be gotten
+        let listGets = lists.map((list)=>{
+            return firestore.collection("lists").doc(list).get()
+        })
 
-    //map them and sorts them
-    Promise.allSettled(listGets).then((listDocs)=>{
-            let listItems = listDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
-                return(doc.exists ? `
-                    <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
-                        <h3>${doc.data().name}</h3>
-                        <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
-                    </div>
-                ` : "  ")
-            })
-            //adds it to container
-            document.getElementById("favorites-list-container").innerHTML = listItems.join(" ")
-        })    
+        //map them and sorts them
+        Promise.allSettled(listGets).then((listDocs)=>{
+                let listItems = listDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
+                    return(doc.exists ? `
+                        <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
+                            <h3>${doc.data().name}</h3>
+                            <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
+                        </div>
+                    ` : "  ")
+                })
+                //adds it to container
+                document.getElementById("favorites-list-container").innerHTML = listItems.join(" ")
+            })    
+    }else{
+        document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>" 
+    }
 
-    //same as lists
-    let folderGets = folders.map((folder)=>{
-        return firestore.collection("folders").doc(folder).get()
-    })
 
-    Promise.allSettled(folderGets).then((folderDocs)=>{
-            let folderItems = folderDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
-                return(doc.exists ? `
-                    <div class="folder-list" onclick="window.history.pushState('','','/folder/${doc.id}'); updateWindows()">
-                        <h3>${doc.data().name}</h3>
-                    </div>
-                ` : "  ")
-            })
-           document.getElementById("favorites-folder-container").innerHTML = folderItems.join(" ")
-        })    
+    if(folders){
+        //same as lists
+        let folderGets = folders.map((folder)=>{
+            return firestore.collection("folders").doc(folder).get()
+        })
+
+        Promise.allSettled(folderGets).then((folderDocs)=>{
+                let folderItems = folderDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
+                    return(doc.exists ? `
+                        <div class="folder-list" onclick="window.history.pushState('','','/folder/${doc.id}'); updateWindows()">
+                            <h3>${doc.data().name}</h3>
+                        </div>
+                    ` : "  ")
+                })
+               document.getElementById("favorites-folder-container").innerHTML = folderItems.join(" ")
+            })    
+    }else{
+       document.getElementById("favorites-folder-container").innerHTML = "<div class='folder-list loader'></div>"
+    }
 }
 
 
@@ -1126,46 +1141,49 @@ function updateFavorites(lists,folders){
 // ╚███╔███╔╝██║██║ ╚████║██████╔╝╚██████╔╝╚███╔███╔╝███████║    ██║  ██║██║ ╚████║██████╔╝    ╚██████╔╝██║  ██║███████╗
 //  ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚══════╝    ╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝      ╚═════╝ ╚═╝  ╚═╝╚══════╝
 
-
+let previousUrl;
 //gets the path of the url and updates the window layout
 function updateWindows(){
     //splits the url into array; example: hello.com/abc/xyz becomes ["abc","xyz"]
     window.splitPath = window.location.pathname.split('/');
     //removes null stuff
+    
     splitPath = splitPath.filter(element => {return element != null && element != ''})
     //checks if the url is a task, welcome, or if neither it sets it to welcome
-
-    //unsubscribes everything and resets stuff
-    unsubscribeListView?.();
-    unsubscribeAvailableFolders?.();
-    unsubscribeParentFolder?.();
-    unsubscribeFolderView?.();
-    unsubscribeFolderListView?.();
-    document.getElementById("content-list").style.display = "none";
-    document.getElementById("content-welcome").style.display = "none";
-    document.getElementById("content-folder").style.display = "none";
-    document.getElementById("content-favorites").style.display = "none";
-
-    //does stuff depending on the url
-    if(splitPath[0] == "list" && splitPath[1]){
-        document.getElementById("content-list").style.display = "block";
-        updateListView(splitPath[1]);
+    if(window.location.pathname != previousUrl){
+        //unsubscribes everything and resets stuff
+        unsubscribeListView?.();
+        unsubscribeAvailableFolders?.();
+        unsubscribeParentFolder?.();
+        unsubscribeFolderView?.();
+        unsubscribeFolderListView?.();
+        document.getElementById("content-list").style.display = "none";
+        document.getElementById("content-welcome").style.display = "none";
+        document.getElementById("content-folder").style.display = "none";
+        document.getElementById("content-favorites").style.display = "none";
 
 
-    }else if(splitPath[0] == "folder" && splitPath[1]){
-        document.getElementById("content-folder").style.display = "block";
-        updateFolderView(splitPath[1]);
-    }else if(splitPath[0] == "favorites"){
-        document.getElementById("content-favorites").style.display = "block";
-        updateFavorites(userDoc?.data().favoriteLists ?? [], userDoc?.data().favoriteFolders ?? [])
-    }else if(splitPath[0] == "welcome"){
-        document.getElementById("content-welcome").style.display = "block";
-        document.title = "Cartographer";
-    }else{
-        window.history.pushState("","","/welcome");
-        document.title = "Cartographer"
-        updateWindows();
+        //does stuff depending on the url
+        if(splitPath[0] == "list" && splitPath[1]){
+            document.getElementById("content-list").style.display = "block";
+            updateListView(splitPath[1]);
+
+        }else if(splitPath[0] == "folder" && splitPath[1]){
+            document.getElementById("content-folder").style.display = "block";
+            updateFolderView(splitPath[1]);
+        }else if(splitPath[0] == "favorites"){
+            document.getElementById("content-favorites").style.display = "block";
+            updateFavorites(userDoc?.data()?.favoriteLists, userDoc?.data()?.favoriteFolders)
+        }else if(splitPath[0] == "welcome"){
+            document.getElementById("content-welcome").style.display = "block";
+            document.title = "Cartographer";
+        }else{
+            window.history.pushState("","","/welcome");
+            document.title = "Cartographer"
+            updateWindows();
+        }
     }
+    previousUrl = window.location.pathname
 }
 
 //when to call updateWindows() function

@@ -46,6 +46,43 @@ span{
     margin:0;
 }
 
+.loader{
+    background-color: var(--border-2);
+    padding: 0px;
+    animation: load 1s ease-in-out infinite, fadeIn 0.2s ease-in;
+    opacity: 0.2;
+    border: none !important;
+}
+
+span.loader-small{
+    max-width: 40px;
+}
+
+span.loader{
+    width:200px;
+    height: 1em;
+    border-radius: 3px;
+    display: block;
+}
+
+
+@keyframes load {
+	0% {
+        background-color: var(--border-2);
+	}
+	50% {
+        background-color: var(--foreground-2);
+	}
+	100% {
+        background-color: var(--border-2);
+	}
+}
+
+@keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:0.2;}
+}
+
 .horizontal{
     display: flex;
     flex-direction: row;
@@ -144,6 +181,7 @@ span{
     overflow: hidden;
     display: flex;
     align-items: center;
+    height: 2.15em;
 
 }
 
@@ -171,13 +209,11 @@ span{
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-top: 4px;
     opacity: 0.5;
+    height:1em;
 }
 
 #add-list-btn, #add-folder-btn{
-    width: 15px;
-    height: 15px;
     padding: 0;
     border-radius: 10px;
     background-color: transparent;
