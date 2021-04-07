@@ -914,7 +914,6 @@ function updateFolderView(id){
                 document.getElementById("folder-edit-btn").style.display = "grid"
             }
             
-            document.getElementById("folder-list-container").innerHTML = ""
             updateFolderLists(id)
             
             //same thing as the users thing, changes the styles of public checkbox depending on if it's checked

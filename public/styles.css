@@ -1,3 +1,10 @@
+/* ███████╗██╗     ███████╗███╗   ███╗███████╗███╗   ██╗████████╗███████╗ */
+/* ██╔════╝██║     ██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ */
+/* █████╗  ██║     █████╗  ██╔████╔██║█████╗  ██╔██╗ ██║   ██║   ███████╗ */
+/* ██╔══╝  ██║     ██╔══╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   ╚════██║ */
+/* ███████╗███████╗███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   ███████║ */
+/* ╚══════╝╚══════╝╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝ */
+
 body, html{
     width: 100%;
     height: 100%;
@@ -46,6 +53,103 @@ span{
     margin:0;
 }
 
+button{
+    padding:5px 8px;
+    background-color: var(--background-1);
+    border-radius: 3px;
+    border:1px solid var(--border-1);
+    margin: 5px;
+    color: var(--foreground-1);
+    font-size: 14px;
+    transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    justify-content: center;
+   font-family: var(--font-1);
+}
+
+button *:first-child:not(span){
+    margin-left:-1px;
+}
+
+button *:last-child:not(span){
+    margin-right:-1px;
+}
+
+button:hover{
+    background-color: var(--background-2);
+    transform: scale(1.08);
+}
+
+button:active{
+    background-color: var(--background-3);
+    color: var(--foreground-1);
+    transform:  scale(0.95);
+}
+
+select{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding:5px;
+    background-color: var(--background-1);
+    border-radius: 3px;
+    border: 1px solid var(--border-1);
+    margin: 5px;
+    font-size: 14px;
+    color: var(--foreground-1);
+    outline: none;
+    text-align-last:center;
+    font-family: var(--font-1);
+    direction: rtl;
+    padding-right:8px;
+    transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    text-align: center;
+    text-align-last: center;
+    -moz-text-align-last: center;
+}
+
+select:hover{
+    background-color: var(--background-2);
+    transform: scale(1.08);
+}
+
+select:active{
+    background-color: var(--background-3);
+    color: var(--foreground-1);
+    transform:  scale(0.95);
+}
+
+/* ██████╗  █████╗ ███████╗██╗ ██████╗ */
+/* ██╔══██╗██╔══██╗██╔════╝██║██╔════╝ */
+/* ██████╔╝███████║███████╗██║██║      */
+/* ██╔══██╗██╔══██║╚════██║██║██║      */
+/* ██████╔╝██║  ██║███████║██║╚██████╗ */
+/* ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝ ╚═════╝ */
+
+
+.horizontal{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.spacer{
+    flex-grow: 1;
+}
+
+
+
+/* ██╗      ██████╗  █████╗ ██████╗ ███████╗██████╗  */
+/* ██║     ██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗ */
+/* ██║     ██║   ██║███████║██║  ██║█████╗  ██████╔╝ */
+/* ██║     ██║   ██║██╔══██║██║  ██║██╔══╝  ██╔══██╗ */
+/* ███████╗╚██████╔╝██║  ██║██████╔╝███████╗██║  ██║ */
+/* ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝ */
+                                                 
+
 .loader{
     background-color: var(--border-2);
     padding: 0px;
@@ -83,13 +187,13 @@ span.loader{
     100% {opacity:0.2;}
 }
 
-.horizontal{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
+/* ███╗   ██╗ █████╗ ██╗   ██╗██████╗  █████╗ ██████╗  */
+/* ████╗  ██║██╔══██╗██║   ██║██╔══██╗██╔══██╗██╔══██╗ */
+/* ██╔██╗ ██║███████║██║   ██║██████╔╝███████║██████╔╝ */
+/* ██║╚██╗██║██╔══██║╚██╗ ██╔╝██╔══██╗██╔══██║██╔══██╗ */
+/* ██║ ╚████║██║  ██║ ╚████╔╝ ██████╔╝██║  ██║██║  ██║ */
+/* ╚═╝  ╚═══╝╚═╝  ╚═╝  ╚═══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ */
+                                                   
 #navbar{
     position:fixed;
     top:0;
@@ -110,10 +214,6 @@ span.loader{
     margin: 14px 0.5em 0.5em 4px;
 }
 
-.spacer{
-    flex-grow: 1;
-}
-
 #navbar button{
     margin: 4px;
     background-color: var(--accent-1);
@@ -124,21 +224,20 @@ span.loader{
     border:none;
 }
 
+/* ███████╗██╗██████╗ ███████╗██████╗  █████╗ ██████╗  */
+/* ██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗ */
+/* ███████╗██║██║  ██║█████╗  ██████╔╝███████║██████╔╝ */
+/* ╚════██║██║██║  ██║██╔══╝  ██╔══██╗██╔══██║██╔══██╗ */
+/* ███████║██║██████╔╝███████╗██████╔╝██║  ██║██║  ██║ */
+/* ╚══════╝╚═╝╚═════╝ ╚══════╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ */
+                                                   
+
 #sidebar-toggle{
     font-size: 20px;
     padding: 7px 8px !important;
     margin-left: 5px !important;
 }
 
-#main-container{
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction:row;
-    padding-top: 3em;
-    overflow: hidden;
-}
 
 #sidebar-container{
     height:100%;
@@ -230,6 +329,25 @@ span.loader{
     opacity: 1;
 }
 
+
+
+/*  ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗ */
+/* ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝ */
+/* ██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║   ██║    */
+/* ██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║   ██║    */
+/* ╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗██║ ╚████║   ██║    */
+/*  ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝    */
+
+#main-container{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction:row;
+    padding-top: 3em;
+    overflow: hidden;
+}
+
 #content-container{
     height:100%;
     padding: 5px;
@@ -249,6 +367,13 @@ span.loader{
     margin: 0;
 }
 
+/* ██╗     ██╗███████╗████████╗███████╗ */
+/* ██║     ██║██╔════╝╚══██╔══╝██╔════╝ */
+/* ██║     ██║███████╗   ██║   ███████╗ */
+/* ██║     ██║╚════██║   ██║   ╚════██║ */
+/* ███████╗██║███████║   ██║   ███████║ */
+/* ╚══════╝╚═╝╚══════╝   ╚═╝   ╚══════╝ */
+                                    
 #content-list{
     padding-bottom: 40px;
 }
@@ -260,6 +385,20 @@ span.loader{
     font-weight: 400;
     color:var(--foreground-2)
 }
+
+#list-settings {
+    font-size: 25px;
+    width: 32px;
+}
+
+
+/* ██╗     ██╗███████╗████████╗     ██████╗ ██╗   ██╗██╗███████╗ */
+/* ██║     ██║██╔════╝╚══██╔══╝    ██╔═══██╗██║   ██║██║╚══███╔╝ */
+/* ██║     ██║███████╗   ██║       ██║   ██║██║   ██║██║  ███╔╝  */
+/* ██║     ██║╚════██║   ██║       ██║▄▄ ██║██║   ██║██║ ███╔╝   */
+/* ███████╗██║███████║   ██║       ╚██████╔╝╚██████╔╝██║███████╗ */
+/* ╚══════╝╚═╝╚══════╝   ╚═╝        ╚══▀▀═╝  ╚═════╝ ╚═╝╚══════╝ */
+                                                             
 
 #list-quiz-container{
     display: none;
@@ -309,10 +448,13 @@ span.loader{
     background-color: var(--background-3);
 }
 
-#list-settings {
-    font-size: 25px;
-    width: 32px;
-}
+/* ██╗     ██╗███████╗████████╗     ██████╗ █████╗ ██████╗ ██████╗ ███████╗ */
+/* ██║     ██║██╔════╝╚══██╔══╝    ██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝ */
+/* ██║     ██║███████╗   ██║       ██║     ███████║██████╔╝██║  ██║███████╗ */
+/* ██║     ██║╚════██║   ██║       ██║     ██╔══██║██╔══██╗██║  ██║╚════██║ */
+/* ███████╗██║███████║   ██║       ╚██████╗██║  ██║██║  ██║██████╔╝███████║ */
+/* ╚══════╝╚═╝╚══════╝   ╚═╝        ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝ */
+
 
 #card-container, #folder-list-container, #favorites-list-container, #favorites-folder-container{
     display: flex;
@@ -394,6 +536,53 @@ span.loader{
     perspective: 1000px;
 }
 
+#add-card-container{
+    width: calc(100% - 40px);
+    border: 1px solid var(--border-1);
+    margin: 0px 20px;
+    border-radius: 8px;
+    padding: 5px;
+    display: none;
+    flex-direction: column;
+}
+
+#add-card-container input{
+    display: block;
+    font-size: 25px;
+    padding: 5px;
+    border-radius: 3px;
+    margin: 5px;
+    border: 1px solid var(--border-1);
+    font-weight: bold;
+    background-color: var(--background-1);
+    color: var(--foreground-1);
+}
+
+#card-word-input{
+    font-family: var(--font-2);
+}
+
+#card-definition-input{
+    font-family: var(--font-1);
+}
+
+#add-card-container input::placeholder{
+    color: var(--foreground-1);
+    opacity: 0.1;
+}
+
+#card-definition-input{
+    font-weight: 400 !important;
+}
+
+
+/* ███████╗██╗      █████╗ ███████╗██╗  ██╗ ██████╗ █████╗ ██████╗ ██████╗  */
+/* ██╔════╝██║     ██╔══██╗██╔════╝██║  ██║██╔════╝██╔══██╗██╔══██╗██╔══██╗ */
+/* █████╗  ██║     ███████║███████╗███████║██║     ███████║██████╔╝██║  ██║ */
+/* ██╔══╝  ██║     ██╔══██║╚════██║██╔══██║██║     ██╔══██║██╔══██╗██║  ██║ */
+/* ██║     ███████╗██║  ██║███████║██║  ██║╚██████╗██║  ██║██║  ██║██████╔╝ */
+/* ╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  */
+
 #flashcard{
     position: relative;
     width: 100%;
@@ -442,45 +631,12 @@ span.loader{
     font-size: 20px;
 }
 
-
-#add-card-container{
-    width: calc(100% - 40px);
-    border: 1px solid var(--border-1);
-    margin: 0px 20px;
-    border-radius: 8px;
-    padding: 5px;
-    display: none;
-    flex-direction: column;
-}
-
-#add-card-container input{
-    display: block;
-    font-size: 25px;
-    padding: 5px;
-    border-radius: 3px;
-    margin: 5px;
-    border: 1px solid var(--border-1);
-    font-weight: bold;
-    background-color: var(--background-1);
-    color: var(--foreground-1);
-}
-
-#card-word-input{
-    font-family: var(--font-2);
-}
-
-#card-definition-input{
-    font-family: var(--font-1);
-}
-
-#add-card-container input::placeholder{
-    color: var(--foreground-1);
-    opacity: 0.1;
-}
-
-#card-definition-input{
-    font-weight: 400 !important;
-}
+/* ███████╗ ██████╗ ██╗     ██████╗ ███████╗██████╗ ███████╗ */
+/* ██╔════╝██╔═══██╗██║     ██╔══██╗██╔════╝██╔══██╗██╔════╝ */
+/* █████╗  ██║   ██║██║     ██║  ██║█████╗  ██████╔╝███████╗ */
+/* ██╔══╝  ██║   ██║██║     ██║  ██║██╔══╝  ██╔══██╗╚════██║ */
+/* ██║     ╚██████╔╝███████╗██████╔╝███████╗██║  ██║███████║ */
+/* ╚═╝      ╚═════╝ ╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝ */
 
 .folder-list{
     width:150px;
@@ -528,6 +684,64 @@ span.loader{
     font-weight: normal;
 }
 
+#card-container:empty::before{
+    content: "there's nothing here, go type something in the textfield to add a card!";
+    display: block;
+    width: 100%;
+    height: 200px;
+    line-height: 200px;
+    overflow: hidden;
+    text-align: center;
+    color: var(--foreground-2);
+}
+
+#folder-list-container:empty::before{
+    content: "there are no lists in this folder, click the \"Add list\" button or move another list here!";
+    display: block;
+    width: 100%;
+    height: 200px;
+    line-height: 200px;
+    overflow: hidden;
+    text-align: center;
+    color: var(--foreground-2);
+}
+
+/* ███████╗ █████╗ ██╗   ██╗ ██████╗ ██████╗ ██╗████████╗███████╗███████╗ */
+/* ██╔════╝██╔══██╗██║   ██║██╔═══██╗██╔══██╗██║╚══██╔══╝██╔════╝██╔════╝ */
+/* █████╗  ███████║██║   ██║██║   ██║██████╔╝██║   ██║   █████╗  ███████╗ */
+/* ██╔══╝  ██╔══██║╚██╗ ██╔╝██║   ██║██╔══██╗██║   ██║   ██╔══╝  ╚════██║ */
+/* ██║     ██║  ██║ ╚████╔╝ ╚██████╔╝██║  ██║██║   ██║   ███████╗███████║ */
+/* ╚═╝     ╚═╝  ╚═╝  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚══════╝╚══════╝ */
+                                                                      
+#favorites-list-container:empty::before{
+    content: "You have no favorite lists, go to a list and click the star button to favorite it!";
+    display: block;
+    width: 100%;
+    height: 120px;
+    line-height: 120px;
+    overflow: hidden;
+    text-align: center;
+    color: var(--foreground-2);
+}
+
+#favorites-folder-container:empty::before{
+    content: "You have no favorite folders, go to a list and click the star button to favorite it!";
+    display: block;
+    width: 100%;
+    height: 120px;
+    line-height: 120px;
+    overflow: hidden;
+    text-align: center;
+    color: var(--foreground-2);
+}
+
+/* ██████╗  █████╗ ███╗   ██╗███████╗██╗     ███████╗ */
+/* ██╔══██╗██╔══██╗████╗  ██║██╔════╝██║     ██╔════╝ */
+/* ██████╔╝███████║██╔██╗ ██║█████╗  ██║     ███████╗ */
+/* ██╔═══╝ ██╔══██║██║╚██╗██║██╔══╝  ██║     ╚════██║ */
+/* ██║     ██║  ██║██║ ╚████║███████╗███████╗███████║ */
+/* ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝╚══════╝ */
+
 #panel-container{
     width: 100%;
     height: 100%;
@@ -543,7 +757,7 @@ span.loader{
 }
 
 #sign-in-panel{
-    height: 450px;
+    height: 550px;
     width: 650px;
 }
 
@@ -658,71 +872,4 @@ span.loader{
     flex-grow: 1;
 }
 
-button{
-    padding:5px 8px;
-    background-color: var(--background-1);
-    border-radius: 3px;
-    border:1px solid var(--border-1);
-    margin: 5px;
-    color: var(--foreground-1);
-    font-size: 14px;
-    transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
-    display: grid;
-    grid-template-columns: auto auto;
-    align-items: center;
-    justify-content: center;
-   font-family: var(--font-1);
-}
-
-button *:first-child:not(span){
-    margin-left:-1px;
-}
-
-button *:last-child:not(span){
-    margin-right:-1px;
-}
-
-button:hover{
-    background-color: var(--background-2);
-    transform: scale(1.08);
-}
-
-button:active{
-    background-color: var(--background-3);
-    color: var(--foreground-1);
-    transform:  scale(0.95);
-}
-
-select{
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    padding:5px;
-    background-color: var(--background-1);
-    border-radius: 3px;
-    border: 1px solid var(--border-1);
-    margin: 5px;
-    font-size: 14px;
-    color: var(--foreground-1);
-    outline: none;
-    text-align-last:center;
-    font-family: var(--font-1);
-    direction: rtl;
-    padding-right:8px;
-    transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
-    text-align: center;
-    text-align-last: center;
-    -moz-text-align-last: center;
-}
-
-select:hover{
-    background-color: var(--background-2);
-    transform: scale(1.08);
-}
-
-select:active{
-    background-color: var(--background-3);
-    color: var(--foreground-1);
-    transform:  scale(0.95);
-}
 
