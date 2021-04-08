@@ -26,7 +26,7 @@ function updateListView(id){
     document.getElementById("card-container").innerHTML = "<div class='card loader'>";
     document.querySelector("#flashcard-word").innerHTML = "<span class='loader'></span>"
     document.querySelector("#flashcard-definition").innerHTML = "<span class='loader'></span>"
-    document.querySelector("#list-roles-list").innerHTML = "<span class='loader'></span>"
+    document.querySelector("#list-roles-list").innerHTML = "<div class='roles-list-item loader'></div>"
 
     //gets the lists once, and after you get that, you subscribe to the parent folder, and use that to change the role and the viewable content
     firestore.collection("lists").doc(id).get().then((listDoc)=>{
@@ -1172,7 +1172,11 @@ function updateWindows(){
             updateFolderView(splitPath[1]);
         }else if(splitPath[0] == "favorites"){
             document.getElementById("content-favorites").style.display = "block";
-            updateFavorites(userDoc?.data()?.favoriteLists, userDoc?.data()?.favoriteFolders)
+            if(userDoc){
+                updateFavorites(userDoc.data()?.favoriteLists ?? [], userDoc.data().favoriteLists ?? [])
+            }else{
+                updateFavorites(userDoc?.data()?.favoriteLists, userDoc?.data()?.favoriteFolders)
+            }
         }else if(splitPath[0] == "welcome"){
             document.getElementById("content-welcome").style.display = "block";
             document.title = "Cartographer";

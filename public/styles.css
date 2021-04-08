@@ -805,6 +805,7 @@ span.loader{
     border-radius: 8px;
     font-size: 20px;
     font-weight: bold;
+    height: 45px;
 }
 
 .roles-list-item:hover{
