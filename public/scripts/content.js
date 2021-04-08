@@ -1096,7 +1096,7 @@ function updateFavorites(lists,folders){
         //map them and sorts them
         Promise.allSettled(listGets).then((listDocs)=>{
                 let listItems = listDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
-                    return(doc.exists ? `
+                    return(doc?.exists ? `
                         <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
                             <h3>${doc.data().name}</h3>
                             <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
@@ -1119,7 +1119,7 @@ function updateFavorites(lists,folders){
 
         Promise.allSettled(folderGets).then((folderDocs)=>{
                 let folderItems = folderDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
-                    return(doc.exists ? `
+                    return(doc?.exists ? `
                         <div class="folder-list" onclick="window.history.pushState('','','/folder/${doc.id}'); updateWindows()">
                             <h3>${doc.data().name}</h3>
                         </div>
@@ -1148,6 +1148,13 @@ function updateWindows(){
     //removes null stuff
     
     splitPath = splitPath.filter(element => {return element != null && element != ''})
+
+    //if width is smaller than 650px, hide sidebar automatically
+    if(window.innerWidth <= 650){
+        document.querySelector('#sidebar-container').style.display = 'none'
+        localStorage.setItem("showSidebar","false");
+    }
+
     //checks if the url is a task, welcome, or if neither it sets it to welcome
     if(window.location.pathname != previousUrl){
         //unsubscribes everything and resets stuff

@@ -14,7 +14,6 @@ body, html{
     color: var(--foreground-1);
     font-weight: lighter;
     line-height: 1.35;
-    min-width: 600px;
 }
 
 h1,h2{
@@ -330,6 +329,17 @@ span.loader{
 }
 
 
+@media screen and (max-width: 650px){
+    body{
+        zoom: 75%
+    }
+    #main-container{
+        display:block !important;
+    }
+    #sidebar-container{
+        width:100%; 
+    }
+}
 
 /*  ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗ */
 /* ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝ */
