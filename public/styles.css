@@ -331,7 +331,7 @@ span.loader{
 
 @media screen and (max-width: 650px){
     body{
-        zoom: 75%
+        zoom: 80%
     }
     #main-container{
         display:block !important;
@@ -467,27 +467,26 @@ span.loader{
 
 
 #card-container, #folder-list-container, #favorites-list-container, #favorites-folder-container{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     padding: 5px 10px;
 }
 
 .card{
-    width:250px;
     height: 150px;
     border: 1px solid var(--border-1);
     border-radius: 8px;
     margin: 10px;
     padding: 15px;
     flex-grow: 1;
-    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out, border 0.15s ease-in-out;
+    transition-delay: 0.05s;
     overflow: auto;
     background-color: var(--background-1);
     user-select: none;
 }
 .card:hover{
-    transform: scale(1.01);
+    transform: scale(1.02);
     box-shadow: 0px 10px 20px var(--shadow-2);
 }
 
@@ -649,7 +648,6 @@ span.loader{
 /* ╚═╝      ╚═════╝ ╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝ */
 
 .folder-list{
-    width:150px;
     height: 100px;
     border: 1px solid var(--border-1);
     border-radius: 8px;
@@ -880,18 +878,15 @@ span.loader{
 }
 
 #color-scheme-container{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     margin: 10px 0px;
 }
 
 .color-scheme{
     padding: 5px;
     height: 2em;
-    width: 150px;
     border-radius: 5px;
-    flex-grow: 1;
 }
 
 

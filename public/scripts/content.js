@@ -470,7 +470,7 @@ function cardDragStart(e){
         element.style.transition = "transform 0s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out";
         element.style.zIndex = "10";
         element.style.pointerEvents = "none";
-        element.style.boxShadow = "0px 10px 20px var(--shadow-2)"
+        element.style.boxShadow = "0px 10px 30px var(--shadow-2)"
         //stops selecting other elements with that annoying blue highlight
         if(e.stopPropagation) e.stopPropagation();
         if(e.preventDefault) e.preventDefault();
@@ -485,25 +485,28 @@ function cardDrag(e){
     mouseX = e.pageX ?? mouseX;
     mouseY = e.pageY ?? mouseY;
     cardDragElement.style.boxShadow = "0px 10px 20px var(--shadow-2)"
-    cardDragElement.style.transform = `translate(${(e.pageX ?? mouseX) - cardXOffset}px,${ (e.pageY ?? mouseY) - cardYOffset + document.getElementById("content-list").scrollTop}px) scale(1.01)`
+    cardDragElement.style.transform = `translate(${(e.pageX ?? mouseX) - cardXOffset}px,${ (e.pageY ?? mouseY) - cardYOffset + document.getElementById("content-list").scrollTop}px) scale(1.02)`
 
 }
 
 //gets the card that is dragged over, and you can set the current dragged card to be before that
 function cardDragIndexSet(e){
-    document.getElementById(`${cardDragIndex}`).style.backgroundColor = "var(--background-1)"
-    document.getElementById(`${cardDragIndex}`).style.boxShadow = ""
-    document.getElementById(`${cardDragIndex}`).style.transform = ""
+    if(cardDragIndex != cardDragElement.id)
+        document.getElementById(`${cardDragIndex}`).removeAttribute("style")
     if(e.target.className === "card" || e.target.parentNode.className === "card" || e.target.parentNode.parentNode.className === "card"){
         cardDragIndex = parseInt(e.target.id) || parseInt(e.target.closest(".card").id);
         if(e.target.className === "card"){
             e.target.style.backgroundColor = "var(--background-2)"
-            e.target.style.boxShadow = "inset 0px 8px 15px var(--shadow-3)"
-            e.target.style.transform = "scale(0.95)"
+            if(cardDragIndex < cardDragElement.id)
+                e.target.style.borderLeft = "16px solid var(--accent-1)"
+            if(cardDragIndex > cardDragElement.id)
+                e.target.style.borderRight = "16px solid var(--accent-1)"
         }else{
             e.target.closest(".card").style.backgroundColor = "var(--background-2)"
-            e.target.closest(".card").style.boxShadow = "inset 0px 8px 15px var(--shadow-3)"
-            e.target.closest(".card").style.transform = "scale(0.95)"
+            if(cardDragIndex < cardDragElement.id)
+                e.target.closest(".card").style.borderLeft = "16px solid var(--accent-1)"
+            if(cardDragIndex > cardDragElement.id)
+                e.target.closest(".card").style.borderRight = "16px solid var(--accent-1)"
         }
     }else{
         cardDragIndex = parseInt(cardDragElement.id)
@@ -512,11 +515,7 @@ function cardDragIndexSet(e){
 
 //when the drag is done, remove the listeners, and reset the styles.
 function cardDragEnd(){
-    cardDragElement.style.pointerEvents = "auto";
-    cardDragElement.style.transform = ""
-    cardDragElement.style.transition = "transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out";
-    cardDragElement.style.zIndex = ""
-    cardDragElement.style.boxShadow = ""
+    cardDragElement.removeAttribute("style")
     document.removeEventListener("mousemove",cardDrag);
     document.removeEventListener("mouseup", cardDragEnd);
     document.removeEventListener("mouseover", cardDragIndexSet);
@@ -739,6 +738,9 @@ function updateUserInfo(){
             for(let themeBtn of document.getElementsByClassName("theme-toggle")){
                 themeBtn.style.backgroundColor = ""
                 themeBtn.style.border = ""
+                themeBtn.style.color = ""
+                themeBtn.style.fontWeight = ""
+                themeBtn.children[0].style.stroke = ""
             }
 
             for(let colorSchemeBtn of document.getElementsByClassName("color-scheme")){
@@ -750,17 +752,20 @@ function updateUserInfo(){
                 uiTheme = doc.data().theme
                 localStorage.setItem("uiTheme",uiTheme)
                 document.getElementById(`${uiTheme}-mode`).style.backgroundColor = "var(--accent-1)"
+                document.getElementById(`${uiTheme}-mode`).style.color = "var(--background-1)"
+                document.getElementById(`${uiTheme}-mode`).style.fontWeight = "500"
+                document.getElementById(`${uiTheme}-mode`).children[0].style.stroke = "var(--background-1)"
                 document.getElementById(`${uiTheme}-mode`).style.border = "1px solid var(--accent-1)"
 
                 //special thing for automatic color scheme
                 //changes attribte on html tag, and then css styles that
                 if(uiTheme != "automatic"){
-                    document.documentElement.setAttribute("color-scheme", `${colorScheme}-${uiTheme}`)
+                    document.documentElement.setAttribute("ui-theme", uiTheme)
                 }else{
                     if(window.matchMedia("(perfers-color-scheme: dark)").matches){
-                        document.documentElement.setAttribute("color-scheme", `${colorScheme}-dark`)
+                        document.documentElement.setAttribute("ui-theme", "dark")
                     }else{
-                        document.documentElement.setAttribute("color-scheme", `${colorScheme}-light`)
+                        document.documentElement.setAttribute("ui-theme", "light")
                     }
                 }
             }
@@ -769,16 +774,9 @@ function updateUserInfo(){
                 colorScheme = doc.data().colorScheme
                 localStorage.setItem("colorScheme",colorScheme)
                 document.getElementById(`${colorScheme}-color-scheme`).style.border = "2px solid var(--accent-1)"
-                //special case for automatic
-                if(uiTheme != "automatic"){
-                    document.documentElement.setAttribute("color-scheme", `${colorScheme}-${uiTheme}`)
-                }else{
-                    if(window.matchMedia("(perfers-color-scheme: dark)").matches){
-                        document.documentElement.setAttribute("color-scheme", `${colorScheme}-dark`)
-                    }else{
-                        document.documentElement.setAttribute("color-scheme", `${colorScheme}-light`)
-                    }
-                }
+
+                document.documentElement.setAttribute("color-scheme", colorScheme)
+              
             }
 
             //changes the stars on lists and folders here,
@@ -800,9 +798,9 @@ function updateUserInfo(){
 window.matchMedia("(prefers-color-scheme: dark)").addListener((e)=>{
         if(uiTheme == "automatic"){
             if(e.matches){
-                document.documentElement.setAttribute("color-scheme", `${colorScheme}-dark`)
+                document.documentElement.setAttribute("ui-theme", `dark`)
             }else{
-                document.documentElement.setAttribute("color-scheme", `${colorScheme}-light`)
+                document.documentElement.setAttribute("ui-theme", `light`)
             }
         }
     }
@@ -850,13 +848,14 @@ window.addEventListener('load',()=> {
             })
         }
     })
+    document.documentElement.setAttribute("color-scheme", colorScheme)
     if(uiTheme != "automatic"){
-        document.documentElement.setAttribute("color-scheme", `${colorScheme}-${uiTheme}`)
+        document.documentElement.setAttribute("ui-theme", uiTheme)
     }else{
         if(window.matchMedia("(perfers-color-scheme: dark)").matches){
-            document.documentElement.setAttribute("color-scheme", `${colorScheme}-dark`)
+            document.documentElement.setAttribute("ui-theme", "dark")
         }else{
-            document.documentElement.setAttribute("color-scheme", `${colorScheme}-light`)
+            document.documentElement.setAttribute("ui-theme", "light")
         }
     }
 })
