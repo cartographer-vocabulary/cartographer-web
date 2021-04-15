@@ -65,8 +65,8 @@ window.addEventListener('load',() => {
         }catch(error){
             console.log(error)
             //shows sign in panel
-            document.getElementById('panel-container').style.display = "flex";
-            document.getElementById("sign-in-panel").style.display = "block";
+            document.getElementById('panel-container').classList.remove("hidden");
+            document.getElementById("sign-in-panel").classList.remove("hidden");
         }
     })
 

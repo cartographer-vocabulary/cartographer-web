@@ -27,6 +27,7 @@ function updateListView(id){
     document.querySelector("#flashcard-word").innerHTML = "<span class='loader'></span>"
     document.querySelector("#flashcard-definition").innerHTML = "<span class='loader'></span>"
     document.querySelector("#list-roles-list").innerHTML = "<div class='roles-list-item loader'></div>"
+    document.querySelector("#list-settings").style.display="none"
     document.getElementById("list-edit-btn").style.display = "none"
     document.getElementById("list-folder-select-dropdown").parentNode.style.display = "none"
     document.getElementById("add-card-container").style.display = "none"
@@ -77,6 +78,7 @@ function updateListView(id){
     //actually subscribes to the changes in the list
     unsubscribeListView = firestore.collection("lists").doc(id)
         .onSnapshot((doc) => {
+            if(doc.exists){
             //list doc that can be accessed anywhere and other functions can read what it is
             listDoc = doc;
 
@@ -209,11 +211,13 @@ function updateListView(id){
             if(focusedElementId && focusedElementType){
                 document.getElementById(focusedElementId).querySelector(focusedElementType).focus();
             }
+                
+            }
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders
             document.querySelector("#content-list .content-header").innerHTML = "placeholder"
             document.querySelector("#list-settings-panel h1").innerHTML = "placeholder";
-            console.error(error);
+            console.warn(error);
             //changes it back to welcome and refreshes the page
             window.history.pushState("","","/welcome");
             updateWindows();
@@ -279,10 +283,10 @@ window.addEventListener('load',()=>{
         if(window.confirm("Delete this list?")){
             firestore.collection("lists").doc(splitPath[1]).delete()
             //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
-            let panelContainer = document.getElementById("panel-container");
-            panelContainer.style.display = "none";
+            let panelContainer = document.querySelector("#panel-container")
+            panelContainer.classList.add("hidden")
             for (let panel of panelContainer.children) {
-                panel.style.display = "none";
+                panel.classList.add("hidden")
             }
         }
     })
@@ -442,11 +446,12 @@ function quizletImport(){
     if(text){
         let cards = text.split("\n").map((card)=>{
             return {
-                word: card.split("\t")[0],
-                definition: card.split("\t")[1] 
+                word: card.split("\t")[0] ?? "no value",
+                definition: card.split("\t")[1] ?? "no value" 
             }
         })
         cards = listDoc.data().cards.concat(cards)
+        console.log(cards)
         firestore.collection("lists").doc(splitPath[1]).update({
             cards: cards
         })
@@ -915,6 +920,7 @@ function updateFolderView(id){
 
     unsubscribeFolderView = firestore.collection('folders').doc(id)
         .onSnapshot((doc) => {
+            if(doc.exists){
             folderDoc = doc;
             //changes the web page title 
             document.title = doc.data().name + " - Cartographer"
@@ -985,6 +991,8 @@ function updateFolderView(id){
             if(userDoc){
                 document.querySelector("#content-folder .favorites-toggle svg").style.fill = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
                 document.querySelector("#content-folder .favorites-toggle svg").style.stroke = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
+            }
+            
             }
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders
@@ -1063,7 +1071,7 @@ window.addEventListener('load',()=>{
             firestore.collection("folders").doc(splitPath[1]).delete()
             //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
             let panelContainer = document.getElementById("panel-container");
-            panelContainer.style.display = "none";
+            panelContainer.classList.add("hidden");
             for (let panel of panelContainer.children) {
                 panel.style.display = "none";
             }
@@ -1093,8 +1101,8 @@ window.addEventListener('load',()=>{
             }
         }catch{
             //shows sign in panel
-            document.getElementById('panel-container').style.display = "flex";
-            document.getElementById("sign-in-panel").style.display = "block";
+            document.getElementById('panel-container').classList.remove("hidden");
+            document.getElementById("sign-in-panel").classList.remove("hidden");
         }
     })
 })
