@@ -367,6 +367,7 @@
                         <button onclick="firebase.functions().httpsCallable('getUidFromEmail')({email: window.prompt('Enter Email:')}).then((data)=>{let updatedRoles = listDoc.data().roles;updatedRoles[data.data.user]='editor';firestore.collection('lists').doc(splitPath[1]).update({roles:updatedRoles})}) ">add editor</button>
                     </div>
                 </div>
+                <button id="import-from-quizlet" onclick="quizletImport()">import from quizlet</button>
             </div>
             <div id = "folder-settings-panel" class="panel hidden">
                 <div class="horizontal">

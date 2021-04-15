@@ -27,7 +27,9 @@ function updateListView(id){
     document.querySelector("#flashcard-word").innerHTML = "<span class='loader'></span>"
     document.querySelector("#flashcard-definition").innerHTML = "<span class='loader'></span>"
     document.querySelector("#list-roles-list").innerHTML = "<div class='roles-list-item loader'></div>"
-
+    document.getElementById("list-edit-btn").style.display = "none"
+    document.getElementById("list-folder-select-dropdown").parentNode.style.display = "none"
+    document.getElementById("add-card-container").style.display = "none"
     //gets the lists once, and after you get that, you subscribe to the parent folder, and use that to change the role and the viewable content
     firestore.collection("lists").doc(id).get().then((listDoc)=>{
         listRole = listDoc.data().roles[uid];
@@ -241,11 +243,13 @@ function updateListViewableContent(role,doc){
         document.getElementById("list-folder-select-dropdown").parentNode.style.display = "flex"
         //show the bottom input 
         document.getElementById("add-card-container").style.display = "flex"
+        document.querySelector("#list-settings").style.display="flex"
     }else{
         //don't show edit of cards
         items = doc.data().cards.map((card, index) => {
             return (`<div class="card" id="${index}"><div class="horizontal"><h3>${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3></div><hr><p>${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
         })
+        document.querySelector("#list-settings").style.display="none"
         //does the opposide of above andd hides stuff
         document.getElementById("list-edit-btn").style.display = "none"
         document.getElementById("list-folder-select-dropdown").parentNode.style.display = "none"
@@ -430,6 +434,23 @@ function updateListFolder(folder){
             folder: folder ||  firebase.firestore.FieldValue.delete()
         }
     )
+}
+
+function quizletImport(){
+    let text = prompt("To import from quizlet, open the list and press the more button (3 dots) and select export. paste the text here. this will not erase your other cards \n\nhttps://help.quizlet.com/hc/en-us/articles/360034345672-Exporting-your-sets")
+    text.trim();
+    if(text){
+        let cards = text.split("\n").map((card)=>{
+            return {
+                word: card.split("\t")[0],
+                definition: card.split("\t")[1] 
+            }
+        })
+        cards = listDoc.data().cards.concat(cards)
+        firestore.collection("lists").doc(splitPath[1]).update({
+            cards: cards
+        })
+    }
 }
 
 // ██████╗ ██████╗  █████╗  ██████╗      ██████╗ █████╗ ██████╗ ██████╗ ███████╗
@@ -888,6 +909,9 @@ function updateFolderView(id){
     document.querySelector("#folder-settings-panel h1").innerHTML = "<span class='loader'></span>";
     document.getElementById("folder-list-container").innerHTML = "<div class='folder-list loader'></div>";
     document.querySelector("#folder-roles-list").innerHTML = "<span class='loader'></span>"
+    document.getElementById("folder-delete-btn").style.display = "none"
+    document.getElementById("folder-edit-btn").style.display = "none"
+    document.getElementById("folder-settings").style.display = "none"
 
     unsubscribeFolderView = firestore.collection('folders').doc(id)
         .onSnapshot((doc) => {
@@ -909,8 +933,10 @@ function updateFolderView(id){
             }
             if(doc.data().roles[uid] !== "viewer"){
                 document.getElementById("folder-edit-btn").style.display = "grid"
+                document.getElementById("folder-settings").style.display = "flex"
             }else{
-                document.getElementById("folder-edit-btn").style.display = "grid"
+                document.getElementById("folder-edit-btn").style.display = "none"
+                document.getElementById("folder-settings").style.display = "none"
             }
             
             updateFolderLists(id)

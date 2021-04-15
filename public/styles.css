@@ -120,6 +120,29 @@ select:active{
     transform:  scale(0.95);
 }
 
+@media screen and (max-width: 650px){
+    #main-container{
+        display:block !important;
+    }
+    #sidebar-container{
+        width:100% !important; 
+        background-color: var(--background-1) !important;
+    }
+}
+
+@media screen and (max-width:500px){
+    body{
+        zoom:90%;
+    }
+}
+
+@media screen and (max-width: 420px){
+    body{
+        zoom: 80%;
+    }
+}
+
+
 /* ██████╗  █████╗ ███████╗██╗ ██████╗ */
 /* ██╔══██╗██╔══██╗██╔════╝██║██╔════╝ */
 /* ██████╔╝███████║███████╗██║██║      */
@@ -246,7 +269,6 @@ span.loader{
     padding: 6px;
     background-color: var(--background-2);
     overflow:hidden;
-
     white-space: nowrap;
 }
 
@@ -329,17 +351,6 @@ span.loader{
 }
 
 
-@media screen and (max-width: 650px){
-    body{
-        zoom: 80%
-    }
-    #main-container{
-        display:block !important;
-    }
-    #sidebar-container{
-        width:100%; 
-    }
-}
 
 /*  ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗ */
 /* ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝ */
@@ -399,6 +410,7 @@ span.loader{
 #list-settings {
     font-size: 25px;
     width: 32px;
+    display:none;
 }
 
 
@@ -659,6 +671,10 @@ span.loader{
     background-color: var(--background-1);
 }
 
+#folder-settings{
+    display:none;
+}
+
 .folder-list:hover{
     transform: scale(1.01);
     box-shadow: 0px 10px 20px var(--shadow-2);
@@ -857,6 +873,9 @@ span.loader{
     box-sizing: border-box;
     background-color: var(--background-1);
     transition: opacity 0.15s;
+    max-width:100%;
+    max-height:calc(100% - 200px);
+    overflow: auto;
 }
 .panel.hidden{
     opacity: 0;
@@ -876,6 +895,7 @@ span.loader{
     margin: 3px 3px 3px 10px ;
     font-weight: normal;
 }
+
 
 #color-scheme-container{
     display: grid;
