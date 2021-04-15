@@ -64,7 +64,7 @@ function updateListView(id){
                 let items = querySnapshot.docs.sort((a, b) => {
                     return ((a.data().roles[uid] < b.data().roles[uid]) ? -1 : 1)
                 }).map((doc) => {
-                    return (`<option value="${doc.id}">${doc.data().name}</option>`)
+                    return (`<option value="${doc.id}">${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</option>`)
                 })
                 //adds no folder to the beginning
                 items.unshift("<option value=''>None</option>")
@@ -74,7 +74,7 @@ function updateListView(id){
                 document.getElementById("list-folder-select-dropdown").value = listDoc.data().folder ?? ""
             })
     })
-    
+
     //actually subscribes to the changes in the list
     unsubscribeListView = firestore.collection("lists").doc(id)
         .onSnapshot((doc) => {
@@ -85,9 +85,9 @@ function updateListView(id){
             //containerElement that scrolls (content-list)
             let containerElement = document.querySelector("#content-list")
             //whether it should scroll to bottom
-            //only if it is closer than 80px to the bottom, add it's not at the top (for situations that it doesn't scroll), but then you have to scroll once at the time it first starts scrolling, so it also checks if you are focused on the inputs 
+            //only if it is closer than 80px to the bottom, add it's not at the top (for situations that it doesn't scroll), but then you have to scroll once at the time it first starts scrolling, so it also checks if you are focused on the inputs
             let scrollToBottom = containerElement.scrollHeight - containerElement.clientHeight <= containerElement.scrollTop + 80 && (containerElement.scrollTop != 0 || document.activeElement.closest("#add-card-container"));
-            
+
             //card that is focused
             let focusedElement = document?.activeElement;
             //gets the id which is the index of that card
@@ -109,7 +109,7 @@ function updateListView(id){
                 updateListViewableContent(doc.data().roles[uid], doc)
             }
 
-            //sets role for other functions to use 
+            //sets role for other functions to use
             listRole = doc.data().roles[uid];
 
             //only if the roles changed
@@ -122,14 +122,14 @@ function updateListView(id){
 
                 //when all those functions return
                 Promise.allSettled(names).then((result)=>{
-                    //puts the stuff in the roles list element. maps the result, and uses object destructuring to only get the value part 
+                    //puts the stuff in the roles list element. maps the result, and uses object destructuring to only get the value part
                     document.querySelector("#list-roles-list").innerHTML = result.map(({value:data}, index) => {
                         //if the person is not the role of yourself
                         if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != uid) {
-                            //returns something with options to delete and edit 
+                            //returns something with options to delete and edit
                             return (`
                             <div class="roles-list-item horizontal">
-                                <span>${data?.data?.name ?? "Unknown"}</span>
+                                <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
                                 <div class="spacer"></div>
                                 <select class="roles-list-select" onchange="let updatedRoles = listDoc.data().roles;updatedRoles[Object.entries(listDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('lists').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
                                     <option value="viewer" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "viewer" ? "selected" : ""}>viewer</option>
@@ -146,7 +146,7 @@ function updateListView(id){
                             //and: people are too stupid to figure out how this works anyways
                             return (`
                             <div class="roles-list-item horizontal">
-                                <span>${data?.data?.name ?? "Unknown"}</span>
+                                <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
                                 <div class="spacer"></div>
                             </div>
                             `)
@@ -154,8 +154,8 @@ function updateListView(id){
                     }).join("  ")
                 })
             }
-            
-            //previous roles assign after you do the comparision before 
+
+            //previous roles assign after you do the comparision before
             previousListRoles = doc.data().roles[uid];
             //if the user stuff has loaded, set the star to on/off
             if(userDoc){
@@ -166,11 +166,11 @@ function updateListView(id){
             //sets the title of the webpage (thing in tab bar)
             document.title = doc.data().name + " - Cartographer";
             //header of the list
-            document.querySelector("#content-list .content-header").innerHTML = doc.data().name;
+            document.querySelector("#content-list .content-header").innerText = doc.data().name;
             //header in the settings panel
-            document.querySelector("#list-settings-panel h1").innerHTML = doc.data().name;
+            document.querySelector("#list-settings-panel h1").innerText = doc.data().name;
             //if the list is public, set the check box to on
-            document.querySelector("#list-toggle-public-btn").innerHTML = doc.data().public ? "✔︎" : ""
+            document.querySelector("#list-toggle-public-btn").innerText = doc.data().public ? "✔︎" : ""
             //if yes, background is accent color
             document.querySelector("#list-toggle-public-btn").style.backgroundColor = doc.data().public ? "var(--accent-1)" : "var(--background-1)"
             //foreground color should be background color if background is accent
@@ -178,25 +178,25 @@ function updateListView(id){
             //removes the border if background is accent, because it looks weird
             document.querySelector("#list-toggle-public-btn").style.border = doc.data().public ? "none" : "1px solid var(--border-1)"
 
-            //basically does stuff with the flashcards 
+            //basically does stuff with the flashcards
             if(doc.data().cards[flashcardIndex]) {
-                document.getElementById("flashcard-word").innerHTML = doc.data().cards[flashcardIndex].word
-                document.getElementById("flashcard-definition").innerHTML = doc.data().cards[flashcardIndex].definition
-                document.getElementById("flashcard-index").innerHTML = flashcardIndex + 1;
+                document.getElementById("flashcard-word").innerText = doc.data().cards[flashcardIndex].word
+                document.getElementById("flashcard-definition").innerText = doc.data().cards[flashcardIndex].definition
+                document.getElementById("flashcard-index").innerText = flashcardIndex + 1;
             }else{
-                document.getElementById("flashcard-word").innerHTML = "No card selected"
-                document.getElementById("flashcard-definition").innerHTML = "No card selected"
-                document.getElementById("flashcard-index").innerHTML = "--";
+                document.getElementById("flashcard-word").innerText = "No card selected"
+                document.getElementById("flashcard-definition").innerText = "No card selected"
+                document.getElementById("flashcard-index").innerText = "--";
             }
-            
+
             //quiz mode doesn't work if there is less than 2 cards
             if(doc.data().cards.length >= 2) {
                 refreshQuizAnswers();
             }else{
-                document.getElementById("quiz-word").innerHTML = "--"
+                document.getElementById("quiz-word").innerText = "--"
                 for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
                     document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
-                    document.getElementsByClassName("quiz-answer")[quizAnswer].innerHTML= "--"
+                    document.getElementsByClassName("quiz-answer")[quizAnswer].innerText= "--"
                     document.getElementsByClassName("quiz-answer")[quizAnswer].style.border = "1px solid var(--border-1)"
                     document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = ()=>{}
                 }
@@ -206,17 +206,17 @@ function updateListView(id){
             if(scrollToBottom){
                 containerElement.scrollTop = containerElement.scrollHeight - containerElement.clientHeight;
             }
-            
+
             //focuses the flashcards, because when you update, they get redrawn
             if(focusedElementId && focusedElementType){
                 document.getElementById(focusedElementId).querySelector(focusedElementType).focus();
             }
-                
+
             }
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders
-            document.querySelector("#content-list .content-header").innerHTML = "placeholder"
-            document.querySelector("#list-settings-panel h1").innerHTML = "placeholder";
+            document.querySelector("#content-list .content-header").innerText = "placeholder"
+            document.querySelector("#list-settings-panel h1").innerText = "placeholder";
             console.warn(error);
             //changes it back to welcome and refreshes the page
             window.history.pushState("","","/welcome");
@@ -239,19 +239,19 @@ function updateListViewableContent(role,doc){
         //allow editing and delete if not viewer
         //dont worry i am just hiding this, but there are also security rules.
         items = doc.data().cards.map((card, index) => {
-            return (`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
+            return (`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</p></div>`)
         })
         //makes the edit buton exist
         document.getElementById("list-edit-btn").style.display = "grid"
         //makes the select thing elest
         document.getElementById("list-folder-select-dropdown").parentNode.style.display = "flex"
-        //show the bottom input 
+        //show the bottom input
         document.getElementById("add-card-container").style.display = "flex"
         document.querySelector("#list-settings").style.display="flex"
     }else{
         //don't show edit of cards
         items = doc.data().cards.map((card, index) => {
-            return (`<div class="card" id="${index}"><div class="horizontal"><h3>${card.word.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</h3></div><hr><p>${card.definition.replace('<','&lg;').replace('>','$gt;').replace('&','&amp;')}</p></div>`)
+            return (`<div class="card" id="${index}"><div class="horizontal"><h3>${card.word.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3></div><hr><p>${card.definition.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</p></div>`)
         })
         document.querySelector("#list-settings").style.display="none"
         //does the opposide of above andd hides stuff
@@ -259,7 +259,7 @@ function updateListViewableContent(role,doc){
         document.getElementById("list-folder-select-dropdown").parentNode.style.display = "none"
         document.getElementById("add-card-container").style.display = "none"
     }
-    
+
     //it's an array, so we join them, and stuff it in the container element
     document.getElementById("card-container").innerHTML = items.join("  ")
 }
@@ -302,24 +302,24 @@ window.addEventListener('load',()=>{
 // ██║     ██║╚════██║   ██║   ╚════██║    ██║     ██╔══██║██╔══██╗██║  ██║╚════██║
 // ███████╗██║███████║   ██║   ███████║    ╚██████╗██║  ██║██║  ██║██████╔╝███████║
 // ╚══════╝╚═╝╚══════╝   ╚═╝   ╚══════╝     ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝
-                                                                                
+
 
 //adding cards with input
 window.addEventListener('load',()=>{
     //variables for the fields
     let cardWord = "";
     let cardDefinition = "";
-    //elements 
+    //elements
     let cardWordElement = document.getElementById("card-word-input");
     let cardDefinitionElement = document.getElementById("card-definition-input");
 
-    //listen for when something is typing on the text field 
+    //listen for when something is typing on the text field
     cardWordElement.addEventListener('keyup',(e)=>{
         cardWord = cardWordElement.value
         //if enter key is pressed, and there is both definition and word, add the card
         if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
             addCard(cardWord,cardDefinition)
-            //reset the variables and empty the text field 
+            //reset the variables and empty the text field
             cardWord = ""
             cardDefinition = ""
             cardWordElement.value = ""
@@ -333,7 +333,7 @@ window.addEventListener('load',()=>{
     })
     cardDefinitionElement.addEventListener('keyup',(e)=>{
         cardDefinition = cardDefinitionElement.value
-        //same thing copy and pasted, too lazy to make a function 
+        //same thing copy and pasted, too lazy to make a function
         if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
             addCard(cardWord,cardDefinition)
             cardWord = ""
@@ -342,7 +342,7 @@ window.addEventListener('load',()=>{
             cardDefinitionElement.value = ""
             cardWordElement.focus();
         }else if((e.key === 'Enter' || e.keycCode === 13)){
-            //focus the word input this time 
+            //focus the word input this time
             cardWordElement.focus()
         }
     })
@@ -351,13 +351,13 @@ window.addEventListener('load',()=>{
 
 //function that's called when you press the star button
 function toggleFavoriteList(){
-    //if it's in favorites already, remove it from favorites. if it's not, put it in 
+    //if it's in favorites already, remove it from favorites. if it's not, put it in
     if(userDoc?.data()?.favoriteLists?.includes(splitPath[1])){
         let editedFavorites = userDoc.data().favoriteLists.filter(a=>{
             return a!=splitPath[1]
         })
         firestore.collection("users").doc(uid).update({
-            favoriteLists:editedFavorites 
+            favoriteLists:editedFavorites
         })
     }else{
         firestore.collection("users").doc(uid).update({
@@ -447,7 +447,7 @@ function quizletImport(){
         let cards = text.split("\n").map((card)=>{
             return {
                 word: card.split("\t")[0] ?? "no value",
-                definition: card.split("\t")[1] ?? "no value" 
+                definition: card.split("\t")[1] ?? "no value"
             }
         })
         cards = listDoc.data().cards.concat(cards)
@@ -464,7 +464,7 @@ function quizletImport(){
 // ██║  ██║██╔══██╗██╔══██║██║   ██║    ██║     ██╔══██║██╔══██╗██║  ██║╚════██║
 // ██████╔╝██║  ██║██║  ██║╚██████╔╝    ╚██████╗██║  ██║██║  ██║██████╔╝███████║
 // ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝      ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝
-                                                                             
+
 let cardXOffset=0; //the default offset of the elements
 let cardYOffset=0;
 let cardDragIndex=0;
@@ -568,7 +568,7 @@ function array_move(arr, old_index, new_index) {
     return arr; // for testing
 };
 
-//add event listener for mouse down 
+//add event listener for mouse down
 document.addEventListener("mousedown", cardDragStart)
 
 
@@ -591,17 +591,17 @@ function changeFlashcard(next){
 
         if(listDoc.data().cards[flashcardIndex+1]){
             flashcardIndex++
-            document.getElementById("flashcard-word").innerHTML = listDoc.data().cards[flashcardIndex].word
-            document.getElementById("flashcard-definition").innerHTML = listDoc.data().cards[flashcardIndex].definition
-            document.getElementById("flashcard-index").innerHTML = flashcardIndex+1;
+            document.getElementById("flashcard-word").innerText = listDoc.data().cards[flashcardIndex].word
+            document.getElementById("flashcard-definition").innerText = listDoc.data().cards[flashcardIndex].definition
+            document.getElementById("flashcard-index").innerText = flashcardIndex+1;
         }
     }else{
 
         if(listDoc.data().cards[flashcardIndex-1]){
             flashcardIndex--
-            document.getElementById("flashcard-word").innerHTML = listDoc.data().cards[flashcardIndex].word
-            document.getElementById("flashcard-definition").innerHTML = listDoc.data().cards[flashcardIndex].definition
-            document.getElementById("flashcard-index").innerHTML = flashcardIndex+1;
+            document.getElementById("flashcard-word").innerText = listDoc.data().cards[flashcardIndex].word
+            document.getElementById("flashcard-definition").innerText = listDoc.data().cards[flashcardIndex].definition
+            document.getElementById("flashcard-index").innerText = flashcardIndex+1;
         }
     }
 }
@@ -678,9 +678,9 @@ function refreshQuizAnswers(){
 
     //array of ansers
     let quizAnswers = [quizWord]
-    document.getElementById("quiz-word").innerHTML = listDoc.data().cards[quizWord].word;
+    document.getElementById("quiz-word").innerText = listDoc.data().cards[quizWord].word;
 
-    //removes all of them first, from the previous options 
+    //removes all of them first, from the previous options
     for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
         document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "none"
         document.getElementsByClassName("quiz-answer")[quizAnswer].style.border = "1px solid var(--border-1)"
@@ -698,7 +698,7 @@ function refreshQuizAnswers(){
             //appends this answer to that array
             quizAnswers.push(currentAnswer);
             //changes the html
-            document.getElementsByClassName("quiz-answer")[quizAnswer].innerHTML = listDoc.data().cards[currentAnswer].definition;
+            document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = listDoc.data().cards[currentAnswer].definition;
             //when it's clicked, all it does is get a red border
             document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = () => {
                 document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--wrong)"
@@ -706,7 +706,7 @@ function refreshQuizAnswers(){
         } else {
             //when you click the correct answer, give a green border, and change the answers after half a second
             document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
-            document.getElementsByClassName("quiz-answer")[quizAnswer].innerHTML = listDoc.data().cards[quizWord].definition;
+            document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = listDoc.data().cards[quizWord].definition;
             document.getElementsByClassName("quiz-answer")[quizAnswer].onclick =
                 () => {
                     document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--correct)";
@@ -759,7 +759,7 @@ function updateUserInfo(){
             //changes the user's name in a bunch of places
             //all elements with class user-full-name gets changed
             for(let userDisplayName of document.getElementsByClassName("user-full-name")){
-                userDisplayName.innerHTML = doc.data().displayName;
+                userDisplayName.innerText = doc.data().displayName;
             }
             for(let themeBtn of document.getElementsByClassName("theme-toggle")){
                 themeBtn.style.backgroundColor = ""
@@ -772,7 +772,7 @@ function updateUserInfo(){
             for(let colorSchemeBtn of document.getElementsByClassName("color-scheme")){
                 colorSchemeBtn.style.border = ""
             }
-            
+
             //deals with the color schemes and themes
             if(doc.data().theme){
                 uiTheme = doc.data().theme
@@ -802,7 +802,7 @@ function updateUserInfo(){
                 document.getElementById(`${colorScheme}-color-scheme`).style.border = "2px solid var(--accent-1)"
 
                 document.documentElement.setAttribute("color-scheme", colorScheme)
-              
+
             }
 
             //changes the stars on lists and folders here,
@@ -816,7 +816,7 @@ function updateUserInfo(){
                 document.querySelector("#content-folder .favorites-toggle svg").style.fill = doc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
                 document.querySelector("#content-folder .favorites-toggle svg").style.stroke = doc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
             }
-            
+
         })
 }
 
@@ -833,7 +833,7 @@ window.matchMedia("(prefers-color-scheme: dark)").addListener((e)=>{
 );
 
 
-//changes the color scheme, function called from a button 
+//changes the color scheme, function called from a button
 function updateColorScheme(name){
     colorScheme = name;
     firestore.collection('users').doc(uid).update({
@@ -856,7 +856,7 @@ window.addEventListener('load',()=> {
         if(uiTheme != "automatic"){
             firestore.collection('users').doc(uid).update({
                 theme: "automatic"
-                
+
             })
         }
     })
@@ -922,15 +922,15 @@ function updateFolderView(id){
         .onSnapshot((doc) => {
             if(doc.exists){
             folderDoc = doc;
-            //changes the web page title 
+            //changes the web page title
             document.title = doc.data().name + " - Cartographer"
             //header of the list thing
-            document.querySelector("#content-folder .content-header").innerHTML = doc.data().name;
+            document.querySelector("#content-folder .content-header").innerText = doc.data().name;
             //header in the settings panel
-            document.querySelector("#folder-settings-panel h1").innerHTML = doc.data().name;
+            document.querySelector("#folder-settings-panel h1").innerText = doc.data().name;
             //only shows the delete button if you are the creator, there isn't meant for security because people can change the css,
             //but only so that people don't really need to see something they can't press.
-            
+
             //in the folder settings popup, show the settings if creator
             if(doc.data().roles[uid] === "creator"){
                 document.getElementById("folder-delete-btn").style.display = "grid"
@@ -944,9 +944,9 @@ function updateFolderView(id){
                 document.getElementById("folder-edit-btn").style.display = "none"
                 document.getElementById("folder-settings").style.display = "none"
             }
-            
+
             updateFolderLists(id)
-            
+
             //same thing as the users thing, changes the styles of public checkbox depending on if it's checked
             document.querySelector("#folder-toggle-public-btn").innerHTML = doc.data().public ? "✔︎" : ""
             document.querySelector("#folder-toggle-public-btn").style.backgroundColor = doc.data().public ? "var(--accent-1)" : "var(--background-1)"
@@ -954,7 +954,7 @@ function updateFolderView(id){
             document.querySelector("#folder-toggle-public-btn").style.border = doc.data().public ? "none" : "1px solid var(--border-1)"
 
 
-            //updates roles, see user function, it's the same 
+            //updates roles, see user function, it's the same
             if(doc.data().roles != previousFolderRoles){
 
                 let names = Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)}).map(([uid,role])=>{
@@ -965,7 +965,7 @@ function updateFolderView(id){
                         if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != uid) {
                             return (`
                             <div class="roles-list-item horizontal">
-                                <span>${data?.data?.name ?? "Unknown"}</span>
+                                <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
                                 <div class="spacer"></div>
                                 <select class="roles-list-select" onchange="let updatedRoles = folderDoc.data().roles;updatedRoles[Object.entries(folderDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('folders').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
                                     <option value="viewer" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "viewer" ? "selected" : ""}>viewer</option>
@@ -978,7 +978,7 @@ function updateFolderView(id){
                         }else{
                             return (`
                             <div class="roles-list-item horizontal">
-                                <span>${data?.data?.name ?? "Unknown"}</span>
+                                <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
                                 <div class="spacer"></div>
                             </div>
                             `)
@@ -992,7 +992,7 @@ function updateFolderView(id){
                 document.querySelector("#content-folder .favorites-toggle svg").style.fill = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
                 document.querySelector("#content-folder .favorites-toggle svg").style.stroke = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
             }
-            
+
             }
         },(error) => {
             //does this when there is a error, probably because it was deleted and sets everything to placeholders
@@ -1016,7 +1016,7 @@ function updateFolderLists(id){
             let items = querySnapshot.docs.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).map(doc => {
                 return(doc.exists ? `
                     <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
-                        <h3>${doc.data().name}</h3>
+                        <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
                         <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
                     </div>
                 ` : "  ")
@@ -1029,7 +1029,7 @@ function updateFolderLists(id){
         })
 }
 
-//toggles whether folder is in favorites, 
+//toggles whether folder is in favorites,
 //same as toggleFavoriteList()
 function toggleFavoriteFolder(){
     if(userDoc?.data()?.favoriteFolders?.includes(splitPath[1])){
@@ -1037,7 +1037,7 @@ function toggleFavoriteFolder(){
             return a!=splitPath[1]
         })
         firestore.collection("users").doc(uid).update({
-            favoriteFolders:editedFavorites 
+            favoriteFolders:editedFavorites
         })
     }else{
         firestore.collection("users").doc(uid).update({
@@ -1115,10 +1115,10 @@ window.addEventListener('load',()=>{
 // ██╔══╝  ██╔══██║╚██╗ ██╔╝██║   ██║██╔══██╗██║   ██║   ██╔══╝  ╚════██║
 // ██║     ██║  ██║ ╚████╔╝ ╚██████╔╝██║  ██║██║   ██║   ███████╗███████║
 // ╚═╝     ╚═╝  ╚═╝  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚══════╝╚══════╝
-                                                                      
+
 function updateFavorites(lists,folders){
-    
-    document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>" 
+
+    document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>"
     document.getElementById("favorites-folder-container").innerHTML = "<div class='folder-list loader'></div>"
     if(lists){
         //make an array of all the lists needed to be gotten
@@ -1131,16 +1131,16 @@ function updateFavorites(lists,folders){
                 let listItems = listDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
                     return(doc?.exists ? `
                         <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
-                            <h3>${doc.data().name}</h3>
+                            <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
                             <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
                         </div>
                     ` : "  ")
                 })
                 //adds it to container
                 document.getElementById("favorites-list-container").innerHTML = listItems.join(" ")
-            })    
+            })
     }else{
-        document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>" 
+        document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>"
     }
 
 
@@ -1154,12 +1154,12 @@ function updateFavorites(lists,folders){
                 let folderItems = folderDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
                     return(doc?.exists ? `
                         <div class="folder-list" onclick="window.history.pushState('','','/folder/${doc.id}'); updateWindows()">
-                            <h3>${doc.data().name}</h3>
+                            <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
                         </div>
                     ` : "  ")
                 })
                document.getElementById("favorites-folder-container").innerHTML = folderItems.join(" ")
-            })    
+            })
     }else{
        document.getElementById("favorites-folder-container").innerHTML = "<div class='folder-list loader'></div>"
     }
@@ -1179,7 +1179,7 @@ function updateWindows(){
     //splits the url into array; example: hello.com/abc/xyz becomes ["abc","xyz"]
     window.splitPath = window.location.pathname.split('/');
     //removes null stuff
-    
+
     splitPath = splitPath.filter(element => {return element != null && element != ''})
 
     //if width is smaller than 650px, hide sidebar automatically
@@ -1232,5 +1232,3 @@ function updateWindows(){
 //when to call updateWindows() function
 window.addEventListener('popstate', updateWindows);
 window.addEventListener('load', updateWindows);
-
-

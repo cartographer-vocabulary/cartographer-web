@@ -6,7 +6,7 @@ function updateLists(querySnapshot){
     })
     //convert array into html basically
     let items = filtered.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map(doc => {
-                                                //this part changes the url when you click and calls update window function in content.js
+        //this part changes the url when you click and calls update window function in content.js
         return(doc.exists ? `
             <li onclick='window.history.pushState("","","/list/${doc.id}");updateWindows()'>
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-list" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -18,7 +18,7 @@ function updateLists(querySnapshot){
                     <line x1="5" y1="12" x2="5" y2="12.01" />
                     <line x1="5" y1="18" x2="5" y2="18.01" />
                 </svg>
-               <span> ${doc.data().name} </span>
+               <span> ${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')} </span>
             </li>
         ` : "  ")
     })
@@ -33,7 +33,7 @@ function updateFolders(querySnapshot){
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
                 </svg>
-                <span> ${doc.data().name} </span>
+                <span> ${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')} </span>
             </li>
         ` : '  ')
     })
