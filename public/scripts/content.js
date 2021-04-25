@@ -1073,7 +1073,7 @@ window.addEventListener('load',()=>{
             let panelContainer = document.getElementById("panel-container");
             panelContainer.classList.add("hidden");
             for (let panel of panelContainer.children) {
-                panel.style.display = "none";
+                panel.classList.add("hidden");
             }
 
         }
@@ -1217,6 +1217,8 @@ function updateWindows(){
             }else{
                 updateFavorites(userDoc?.data()?.favoriteLists, userDoc?.data()?.favoriteFolders)
             }
+        }else if(splitPath[0] == "applogin"){
+            appLogin = true
         }else if(splitPath[0] == "welcome"){
             document.getElementById("content-welcome").style.display = "block";
             document.title = "Cartographer";

@@ -10,6 +10,7 @@ let fullnameElements = document.getElementsByClassName("user-full-name");
 let signOutBtn = document.getElementById("signout-btn");
 let unsubscribeLists;
 let unsubscribeFolders;
+window.appLogin = false
 //kinda copy and pasted from somewhere
 function initApp() {
     //detects when the auth state changes
@@ -51,6 +52,12 @@ function initApp() {
             unsubscribeFolders = firestore.collection('folders')
                 .where(`roles.${uid}`,'in',['creator','editor','viewer'])
                 .onSnapshot(updateFolders);
+            
+            if(appLogin){
+                firebase.auth().currentUser.getIdToken().then((idToken)=>{
+                window.location.replace(`cartographer://idtoken/${idToken}`)
+                })       
+            }
         } else {
             // User is signed out. and makes them null so you can't have these variables
             window.displayName = null;
@@ -71,6 +78,10 @@ function initApp() {
             //clears the lists on the sidebar
             clearLists();
             clearFolders();
+            if(appLogin){
+                document.querySelector("#panel-container").classList.remove("hidden")
+                document.querySelector("#sign-in-panel").classList.remove("hidden")
+            }
         }
     }, function(error) {
         console.log(error);

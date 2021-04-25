@@ -25,6 +25,29 @@ exports.getDisplayName = functions.https.onCall((data, context) => {
         throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
     }
 })
+
+exports.signInWithToken = functions.https.onCall((data, context) => {
+    let token = data.token
+    
+    return admin
+        .auth()
+        .verifyIdToken(token)
+        .then((decodedToken)=>{
+            const uid = decodedToken.uid
+            return admin
+                .auth()
+                .createCustomToken(uid)
+                .then((customToken)=>{
+                    return {customToken: customToken}
+                })
+                .catch((error)=>{
+                    console.error(error)
+                })
+
+        })
+        .catch((error)=>{console.error(error)})
+
+})
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
