@@ -239,7 +239,7 @@ function updateListViewableContent(role,doc){
         //allow editing and delete if not viewer
         //dont worry i am just hiding this, but there are also security rules.
         items = doc.data().cards.map((card, index) => {
-            return (`<div class="card" id="${index}"><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</p></div>`)
+            return (`<div class="card" id="${index}" ><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</p></div>`)
         })
         //makes the edit buton exist
         document.getElementById("list-edit-btn").style.display = "grid"
@@ -465,12 +465,9 @@ function quizletImport(){
 // ██████╔╝██║  ██║██║  ██║╚██████╔╝    ╚██████╗██║  ██║██║  ██║██████╔╝███████║
 // ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝      ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 
-let cardXOffset=0; //the default offset of the elements
-let cardYOffset=0;
 let cardDragIndex=0;
+let cardStartIndex=0;
 let cardDragElement;
-let mouseX;
-let mouseY;
 function cardDragStart(e){
     let highestRole = "viewer";
     if (listRole === "editor" || parentFolderRole === "editor") {
@@ -482,73 +479,64 @@ function cardDragStart(e){
     if(e.target.className === "card" && highestRole !== "viewer") {
         let element = e.target
         cardDragIndex = parseInt(element.id);
+        cardStartIndex = cardDragIndex
         cardDragElement = element
-        cardXOffset = e.pageX;
-        cardYOffset = e.pageY + document.getElementById("content-list").scrollTop;
-        mouseX = e.pageX;
-        mouseY = e.pageY;
         //adds the event listeners for dragging
-        document.addEventListener('mousemove', cardDrag);
-        document.addEventListener("mouseup", cardDragEnd);
-        document.addEventListener('mouseover',cardDragIndexSet);
-        document.getElementById("content-list").addEventListener("scroll",cardDrag)
+        // document.addEventListener('mousemove', cardDrag);
+        document.addEventListener("dragend", cardDragEnd);
+        document.addEventListener('dragover',cardDragIndexSet);
+        // document.getElementById("content-list").addEventListener("scroll",cardDrag)
         //do some style changes
-        element.style.transition = "transform 0s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out";
-        element.style.zIndex = "10";
-        element.style.pointerEvents = "none";
-        element.style.boxShadow = "0px 10px 30px var(--shadow-2)"
-        //stops selecting other elements with that annoying blue highlight
-        if(e.stopPropagation) e.stopPropagation();
-        if(e.preventDefault) e.preventDefault();
-        e.cancelBubble=true;
-        e.returnValue=false;
+        requestAnimationFrame(()=>{
+            element.style.opacity = "0"
+            element.style.pointerEvents = "none"
+        })
         return false;
     }
-}
-
-function cardDrag(e){
-    //moves the element to the mouse
-    mouseX = e.pageX ?? mouseX;
-    mouseY = e.pageY ?? mouseY;
-    cardDragElement.style.boxShadow = "0px 10px 20px var(--shadow-2)"
-    cardDragElement.style.transform = `translate(${(e.pageX ?? mouseX) - cardXOffset}px,${ (e.pageY ?? mouseY) - cardYOffset + document.getElementById("content-list").scrollTop}px) scale(1.02)`
-
+    console.log("hello")
 }
 
 //gets the card that is dragged over, and you can set the current dragged card to be before that
 function cardDragIndexSet(e){
-    if(cardDragIndex != cardDragElement.id)
-        document.getElementById(`${cardDragIndex}`).removeAttribute("style")
+
+    e.preventDefault()
     if(e.target.className === "card" || e.target.parentNode.className === "card" || e.target.parentNode.parentNode.className === "card"){
+        let tempIndex = cardDragIndex
         cardDragIndex = parseInt(e.target.id) || parseInt(e.target.closest(".card").id);
-        if(e.target.className === "card"){
-            e.target.style.backgroundColor = "var(--background-2)"
-            if(cardDragIndex < cardDragElement.id)
-                e.target.style.borderLeft = "16px solid var(--accent-1)"
-            if(cardDragIndex > cardDragElement.id)
-                e.target.style.borderRight = "16px solid var(--accent-1)"
-        }else{
-            e.target.closest(".card").style.backgroundColor = "var(--background-2)"
-            if(cardDragIndex < cardDragElement.id)
-                e.target.closest(".card").style.borderLeft = "16px solid var(--accent-1)"
-            if(cardDragIndex > cardDragElement.id)
-                e.target.closest(".card").style.borderRight = "16px solid var(--accent-1)"
+        
+        if(cardDragElement.id > cardDragIndex){
+            cardDragElement.parentNode.insertBefore(cardDragElement,document.getElementById(cardDragIndex))
+            for(let element of document.getElementsByClassName("card")){
+                if(element.id < tempIndex && element.id >= cardDragIndex){
+                    element.id = parseInt(element.id)+1
+                }
+            }
+            cardDragElement.id = cardDragIndex
         }
-    }else{
-        cardDragIndex = parseInt(cardDragElement.id)
+        if(cardDragElement.id < cardDragIndex){
+            cardDragElement.parentNode.insertBefore(cardDragElement,document.getElementById(cardDragIndex).nextSibling)
+
+            for(let element of document.getElementsByClassName("card")){
+                if(element.id > tempIndex && element.id <= cardDragIndex){
+                    element.id = parseInt(element.id)-1
+                }
+            }
+            cardDragElement.id = cardDragIndex
+        }
     }
 }
 
 //when the drag is done, remove the listeners, and reset the styles.
-function cardDragEnd(){
+function cardDragEnd(e){
+    e.preventDefault()
     cardDragElement.removeAttribute("style")
-    document.removeEventListener("mousemove",cardDrag);
+    cardDragElement.removeAttribute("draggable")
     document.removeEventListener("mouseup", cardDragEnd);
     document.removeEventListener("mouseover", cardDragIndexSet);
-    document.getElementById("content-list").removeEventListener('scroll',cardDrag);
-    if(parseInt(cardDragElement.id) != cardDragIndex){
+
+    if(cardStartIndex != cardDragIndex){
         let editedArray = listDoc.data().cards;
-        array_move(editedArray,parseInt(cardDragElement.id),cardDragIndex);
+        array_move(editedArray,parseInt(cardStartIndex),cardDragIndex);
         firestore.collection("lists").doc(splitPath[1]).set({
             cards: editedArray
         },{merge:true})
@@ -569,8 +557,13 @@ function array_move(arr, old_index, new_index) {
 };
 
 //add event listener for mouse down
-document.addEventListener("mousedown", cardDragStart)
+document.addEventListener("dragstart", cardDragStart)
 
+document.addEventListener("mousedown", (e)=>{
+    if(e.target.className == "card"){
+        e.target.setAttribute("draggable","true")
+    }
+})
 
 
 
