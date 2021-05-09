@@ -79,138 +79,138 @@ function updateListView(id){
     unsubscribeListView = firestore.collection("lists").doc(id)
         .onSnapshot((doc) => {
             if(doc.exists){
-            //list doc that can be accessed anywhere and other functions can read what it is
-            listDoc = doc;
+                //list doc that can be accessed anywhere and other functions can read what it is
+                listDoc = doc;
 
-            //containerElement that scrolls (content-list)
-            let containerElement = document.querySelector("#content-list")
-            //whether it should scroll to bottom
-            //only if it is closer than 80px to the bottom, add it's not at the top (for situations that it doesn't scroll), but then you have to scroll once at the time it first starts scrolling, so it also checks if you are focused on the inputs
-            let scrollToBottom = containerElement.scrollHeight - containerElement.clientHeight <= containerElement.scrollTop + 80 && (containerElement.scrollTop != 0 || document.activeElement.closest("#add-card-container"));
+                //containerElement that scrolls (content-list)
+                let containerElement = document.querySelector("#content-list")
+                //whether it should scroll to bottom
+                //only if it is closer than 80px to the bottom, add it's not at the top (for situations that it doesn't scroll), but then you have to scroll once at the time it first starts scrolling, so it also checks if you are focused on the inputs
+                let scrollToBottom = containerElement.scrollHeight - containerElement.clientHeight <= containerElement.scrollTop + 80 && (containerElement.scrollTop != 0 || document.activeElement.closest("#add-card-container"));
 
-            //card that is focused
-            let focusedElement = document?.activeElement;
-            //gets the id which is the index of that card
-            let focusedElementId = focusedElement?.closest(".card")?.id
-            //gets whether it's the description or the card name
-            let focusedElementType = focusedElement.tagName
+                //card that is focused
+                let focusedElement = document?.activeElement;
+                //gets the id which is the index of that card
+                let focusedElementId = focusedElement?.closest(".card")?.id
+                //gets whether it's the description or the card name
+                let focusedElementType = focusedElement.tagName
 
-            //terrible code to get the highest role the person has and updates content that depends on the role
-            try{
-                let highestRole = "viewer";
-                if (doc.data().roles[uid] === "editor" || parentFolderRole === "editor") {
-                    highestRole = "editor"
+                //terrible code to get the highest role the person has and updates content that depends on the role
+                try{
+                    let highestRole = "viewer";
+                    if (doc.data().roles[uid] === "editor" || parentFolderRole === "editor") {
+                        highestRole = "editor"
+                    }
+                    if (doc.data().roles[uid] === "creator" || parentFolderRole === "creator") {
+                        highestRole = "creator"
+                    }
+                    updateListViewableContent(highestRole, doc)
+                }catch(err){
+                    updateListViewableContent(doc.data().roles[uid], doc)
                 }
-                if (doc.data().roles[uid] === "creator" || parentFolderRole === "creator") {
-                    highestRole = "creator"
-                }
-                updateListViewableContent(highestRole, doc)
-            }catch(err){
-                updateListViewableContent(doc.data().roles[uid], doc)
-            }
 
-            //sets role for other functions to use
-            listRole = doc.data().roles[uid];
+                //sets role for other functions to use
+                listRole = doc.data().roles[uid];
 
-            //only if the roles changed
-            if(doc.data().roles != previousListRoles){
+                //only if the roles changed
+                if(doc.data().roles != previousListRoles){
 
-                //gets the roles, sorts them by creator, editor, and viewer (which is conveniently alphabetical) and calls a cloud function to get their names (it's a promise so it's not actually called)
-                let names = Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)}).map(([uid,role])=>{
-                    return firebase.functions().httpsCallable('getDisplayName')({uid: uid})
-                })
+                    //gets the roles, sorts them by creator, editor, and viewer (which is conveniently alphabetical) and calls a cloud function to get their names (it's a promise so it's not actually called)
+                    let names = Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)}).map(([uid,role])=>{
+                        return firebase.functions().httpsCallable('getDisplayName')({uid: uid})
+                    })
 
-                //when all those functions return
-                Promise.allSettled(names).then((result)=>{
-                    //puts the stuff in the roles list element. maps the result, and uses object destructuring to only get the value part
-                    document.querySelector("#list-roles-list").innerHTML = result.map(({value:data}, index) => {
-                        //if the person is not the role of yourself
-                        if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != uid) {
-                            //returns something with options to delete and edit
-                            return (`
-                            <div class="roles-list-item horizontal">
-                                <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
-                                <div class="spacer"></div>
-                                <select class="roles-list-select" onchange="let updatedRoles = listDoc.data().roles;updatedRoles[Object.entries(listDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('lists').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
+                    //when all those functions return
+                    Promise.allSettled(names).then((result)=>{
+                        //puts the stuff in the roles list element. maps the result, and uses object destructuring to only get the value part
+                        document.querySelector("#list-roles-list").innerHTML = result.map(({value:data}, index) => {
+                            //if the person is not the role of yourself
+                            if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != uid) {
+                                //returns something with options to delete and edit
+                                return (`
+                                    <div class="roles-list-item horizontal">
+                                    <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
+                                    <div class="spacer"></div>
+                                    <select class="roles-list-select" onchange="let updatedRoles = listDoc.data().roles;updatedRoles[Object.entries(listDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('lists').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
                                     <option value="viewer" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "viewer" ? "selected" : ""}>viewer</option>
                                     <option value="editor" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "editor" ? "selected" : ""}>editor</option>
                                     <option value="creator" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "creator" ? "selected" : ""}>creator</option>
-                                </select>
-                                <button class="roles-list-delete-btn" onclick="let deletedRoles = listDoc.data().roles;delete deletedRoles[Object.entries(listDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]];firestore.collection('lists').doc(splitPath[1]).update({roles:deletedRoles})">×</button>
-                            </div>
-                            `)
-                        }else{
-                            //don't allow editing of your own rule
-                            //i know this probably isn't secure but i also have security rules in firebase
-                            //and you can only do this if you are an editor anyways, and you should be able to trust people you make editor
-                            //and: people are too stupid to figure out how this works anyways
-                            return (`
-                            <div class="roles-list-item horizontal">
-                                <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
-                                <div class="spacer"></div>
-                            </div>
-                            `)
-                        }
-                    }).join("  ")
-                })
-            }
-
-            //previous roles assign after you do the comparision before
-            previousListRoles = doc.data().roles[uid];
-            //if the user stuff has loaded, set the star to on/off
-            if(userDoc){
-                document.querySelector("#content-list .favorites-toggle svg").style.fill = userDoc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
-                document.querySelector("#content-list .favorites-toggle svg").style.stroke = userDoc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
-            }
-
-            //sets the title of the webpage (thing in tab bar)
-            document.title = doc.data().name + " - Cartographer";
-            //header of the list
-            document.querySelector("#content-list .content-header").innerText = doc.data().name;
-            //header in the settings panel
-            document.querySelector("#list-settings-panel h1").innerText = doc.data().name;
-            //if the list is public, set the check box to on
-            document.querySelector("#list-toggle-public-btn").innerText = doc.data().public ? "✔︎" : ""
-            //if yes, background is accent color
-            document.querySelector("#list-toggle-public-btn").style.backgroundColor = doc.data().public ? "var(--accent-1)" : "var(--background-1)"
-            //foreground color should be background color if background is accent
-            document.querySelector("#list-toggle-public-btn").style.color = doc.data().public ? "var(--background-1)" : "var(--foreground-1)"
-            //removes the border if background is accent, because it looks weird
-            document.querySelector("#list-toggle-public-btn").style.border = doc.data().public ? "none" : "1px solid var(--border-1)"
-
-            //basically does stuff with the flashcards
-            if(doc.data().cards[flashcardIndex]) {
-                document.getElementById("flashcard-word").innerText = doc.data().cards[flashcardIndex].word
-                document.getElementById("flashcard-definition").innerText = doc.data().cards[flashcardIndex].definition
-                document.getElementById("flashcard-index").innerText = flashcardIndex + 1;
-            }else{
-                document.getElementById("flashcard-word").innerText = "No card selected"
-                document.getElementById("flashcard-definition").innerText = "No card selected"
-                document.getElementById("flashcard-index").innerText = "--";
-            }
-
-            //quiz mode doesn't work if there is less than 2 cards
-            if(doc.data().cards.length >= 2) {
-                refreshQuizAnswers();
-            }else{
-                document.getElementById("quiz-word").innerText = "--"
-                for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
-                    document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
-                    document.getElementsByClassName("quiz-answer")[quizAnswer].innerText= "--"
-                    document.getElementsByClassName("quiz-answer")[quizAnswer].style.border = "1px solid var(--border-1)"
-                    document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = ()=>{}
+                                    </select>
+                                    <button class="roles-list-delete-btn" onclick="let deletedRoles = listDoc.data().roles;delete deletedRoles[Object.entries(listDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]];firestore.collection('lists').doc(splitPath[1]).update({roles:deletedRoles})">×</button>
+                                    </div>
+                                    `)
+                            }else{
+                                //don't allow editing of your own rule
+                                //i know this probably isn't secure but i also have security rules in firebase
+                                //and you can only do this if you are an editor anyways, and you should be able to trust people you make editor
+                                //and: people are too stupid to figure out how this works anyways
+                                return (`
+                                    <div class="roles-list-item horizontal">
+                                    <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
+                                    <div class="spacer"></div>
+                                    </div>
+                                    `)
+                            }
+                        }).join("  ")
+                    })
                 }
-            }
 
-            //uses the scroll to bottom from before, after the elements have been added
-            if(scrollToBottom){
-                containerElement.scrollTop = containerElement.scrollHeight - containerElement.clientHeight;
-            }
+                //previous roles assign after you do the comparision before
+                previousListRoles = doc.data().roles[uid];
+                //if the user stuff has loaded, set the star to on/off
+                if(userDoc){
+                    document.querySelector("#content-list .favorites-toggle svg").style.fill = userDoc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
+                    document.querySelector("#content-list .favorites-toggle svg").style.stroke = userDoc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
+                }
 
-            //focuses the flashcards, because when you update, they get redrawn
-            if(focusedElementId && focusedElementType){
-                document.getElementById(focusedElementId).querySelector(focusedElementType).focus();
-            }
+                //sets the title of the webpage (thing in tab bar)
+                document.title = doc.data().name + " - Cartographer";
+                //header of the list
+                document.querySelector("#content-list .content-header").innerText = doc.data().name;
+                //header in the settings panel
+                document.querySelector("#list-settings-panel h1").innerText = doc.data().name;
+                //if the list is public, set the check box to on
+                document.querySelector("#list-toggle-public-btn").innerText = doc.data().public ? "✔︎" : ""
+                //if yes, background is accent color
+                document.querySelector("#list-toggle-public-btn").style.backgroundColor = doc.data().public ? "var(--accent-1)" : "var(--background-1)"
+                //foreground color should be background color if background is accent
+                document.querySelector("#list-toggle-public-btn").style.color = doc.data().public ? "var(--background-1)" : "var(--foreground-1)"
+                //removes the border if background is accent, because it looks weird
+                document.querySelector("#list-toggle-public-btn").style.border = doc.data().public ? "none" : "1px solid var(--border-1)"
+
+                //basically does stuff with the flashcards
+                if(doc.data().cards[flashcardIndex]) {
+                    document.getElementById("flashcard-word").innerText = doc.data().cards[flashcardIndex].word
+                    document.getElementById("flashcard-definition").innerText = doc.data().cards[flashcardIndex].definition
+                    document.getElementById("flashcard-index").innerText = flashcardIndex + 1;
+                }else{
+                    document.getElementById("flashcard-word").innerText = "No card selected"
+                    document.getElementById("flashcard-definition").innerText = "No card selected"
+                    document.getElementById("flashcard-index").innerText = "--";
+                }
+
+                //quiz mode doesn't work if there is less than 2 cards
+                if(doc.data().cards.length >= 2) {
+                    refreshQuizAnswers();
+                }else{
+                    document.getElementById("quiz-word").innerText = "--"
+                    for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
+                        document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
+                        document.getElementsByClassName("quiz-answer")[quizAnswer].innerText= "--"
+                        document.getElementsByClassName("quiz-answer")[quizAnswer].style.border = "1px solid var(--border-1)"
+                        document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = ()=>{}
+                    }
+                }
+
+                //uses the scroll to bottom from before, after the elements have been added
+                if(scrollToBottom){
+                    containerElement.scrollTop = containerElement.scrollHeight - containerElement.clientHeight;
+                }
+
+                //focuses the flashcards, because when you update, they get redrawn
+                if(focusedElementId && focusedElementType){
+                    document.getElementById(focusedElementId).querySelector(focusedElementType).focus();
+                }
 
             }
         },(error) => {
@@ -238,9 +238,9 @@ function updateListViewableContent(role,doc){
     if(role != "viewer") {
         //allow editing and delete if not viewer
         //dont worry i am just hiding this, but there are also security rules.
-        items = doc.data().cards.map((card, index) => {
-            return (`<div class="card" id="${index}" ><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</p></div>`)
-        })
+            items = doc.data().cards.map((card, index) => {
+                return (`<div class="card" id="${index}" ><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</p></div>`)
+            })
         //makes the edit buton exist
         document.getElementById("list-edit-btn").style.display = "grid"
         //makes the select thing elest
@@ -352,18 +352,18 @@ window.addEventListener('load',()=>{
 //function that's called when you press the star button
 function toggleFavoriteList(){
     //if it's in favorites already, remove it from favorites. if it's not, put it in
-    if(userDoc?.data()?.favoriteLists?.includes(splitPath[1])){
-        let editedFavorites = userDoc.data().favoriteLists.filter(a=>{
-            return a!=splitPath[1]
-        })
-        firestore.collection("users").doc(uid).update({
-            favoriteLists:editedFavorites
-        })
-    }else{
-        firestore.collection("users").doc(uid).update({
-            favoriteLists:userDoc?.data()?.favoriteLists?.concat([splitPath[1]]) ?? [splitPath[1]]
-        })
-    }
+        if(userDoc?.data()?.favoriteLists?.includes(splitPath[1])){
+            let editedFavorites = userDoc.data().favoriteLists.filter(a=>{
+                return a!=splitPath[1]
+            })
+            firestore.collection("users").doc(uid).update({
+                favoriteLists:editedFavorites
+            })
+        }else{
+            firestore.collection("users").doc(uid).update({
+                favoriteLists:userDoc?.data()?.favoriteLists?.concat([splitPath[1]]) ?? [splitPath[1]]
+            })
+        }
 }
 
 //deletes card, i don't think there is a good way to change arrays, so i made a new variable and set the entire array
@@ -432,13 +432,13 @@ function updateCardDefinition(definition,index){
 }
 
 //updates the folder that the list is in
-function updateListFolder(folder){
-    firestore.collection("lists").doc(splitPath[1]).update(
-        {
-            folder: folder ||  firebase.firestore.FieldValue.delete()
-        }
-    )
-}
+    function updateListFolder(folder){
+        firestore.collection("lists").doc(splitPath[1]).update(
+            {
+                folder: folder ||  firebase.firestore.FieldValue.delete()
+            }
+        )
+    }
 
 function quizletImport(){
     let text = prompt("To import from quizlet, open the list and press the more button (3 dots) and select export. paste the text here. this will not erase your other cards \n\nhttps://help.quizlet.com/hc/en-us/articles/360034345672-Exporting-your-sets")
@@ -503,7 +503,7 @@ function cardDragIndexSet(e){
     if(e.target.className === "card" || e.target.parentNode.className === "card" || e.target.parentNode.parentNode.className === "card"){
         let tempIndex = cardDragIndex
         cardDragIndex = parseInt(e.target.id) || parseInt(e.target.closest(".card").id);
-        
+
         if(cardDragElement.id > cardDragIndex){
             cardDragElement.parentNode.insertBefore(cardDragElement,document.getElementById(cardDragIndex))
             for(let element of document.getElementsByClassName("card")){
@@ -527,21 +527,21 @@ function cardDragIndexSet(e){
 }
 
 //when the drag is done, remove the listeners, and reset the styles.
-function cardDragEnd(e){
-    e.preventDefault()
-    cardDragElement.removeAttribute("style")
-    cardDragElement.removeAttribute("draggable")
-    document.removeEventListener("mouseup", cardDragEnd);
-    document.removeEventListener("mouseover", cardDragIndexSet);
+    function cardDragEnd(e){
+        e.preventDefault()
+        cardDragElement.removeAttribute("style")
+        cardDragElement.removeAttribute("draggable")
+        document.removeEventListener("mouseup", cardDragEnd);
+        document.removeEventListener("mouseover", cardDragIndexSet);
 
-    if(cardStartIndex != cardDragIndex){
-        let editedArray = listDoc.data().cards;
-        array_move(editedArray,parseInt(cardStartIndex),cardDragIndex);
-        firestore.collection("lists").doc(splitPath[1]).set({
-            cards: editedArray
-        },{merge:true})
+        if(cardStartIndex != cardDragIndex){
+            let editedArray = listDoc.data().cards;
+            array_move(editedArray,parseInt(cardStartIndex),cardDragIndex);
+            firestore.collection("lists").doc(splitPath[1]).set({
+                cards: editedArray
+            },{merge:true})
+        }
     }
-}
 
 //function for moving an index from one place to another
 //posisibly copied from stackoverflow
@@ -799,7 +799,7 @@ function updateUserInfo(){
             }
 
             //changes the stars on lists and folders here,
-            //because the favorites are stored on the user
+                //because the favorites are stored on the user
             if(splitPath[0] == "favorites"){
                 updateFavorites(doc?.data()?.favoriteLists ?? [], doc?.data()?.favoriteFolders ?? [])
             }else if(splitPath[0] == "list"){
@@ -815,14 +815,14 @@ function updateUserInfo(){
 
 //for automatic uiTheme
 window.matchMedia("(prefers-color-scheme: dark)").addListener((e)=>{
-        if(uiTheme == "automatic"){
-            if(e.matches){
-                document.documentElement.setAttribute("ui-theme", `dark`)
-            }else{
-                document.documentElement.setAttribute("ui-theme", `light`)
-            }
+    if(uiTheme == "automatic"){
+        if(e.matches){
+            document.documentElement.setAttribute("ui-theme", `dark`)
+        }else{
+            document.documentElement.setAttribute("ui-theme", `light`)
         }
     }
+}
 );
 
 
@@ -835,49 +835,49 @@ function updateColorScheme(name){
 }
 
 //when the window loads, change the color scheme.
-window.addEventListener('load',()=> {
-    document.getElementById("edit-user-display-name").addEventListener("click", () => {
-        let newName = window.prompt("Enter new name:", userDoc.data().displayName)
-        newName.trim()
-        if(newName){
-            firestore.collection('users').doc(uid).set({
-                displayName:`${newName}`
-            },{merge:true})
-        }
-    })
-    document.getElementById('automatic-mode').addEventListener("click",()=>{
-        if(uiTheme != "automatic"){
-            firestore.collection('users').doc(uid).update({
-                theme: "automatic"
+    window.addEventListener('load',()=> {
+        document.getElementById("edit-user-display-name").addEventListener("click", () => {
+            let newName = window.prompt("Enter new name:", userDoc.data().displayName)
+            newName.trim()
+            if(newName){
+                firestore.collection('users').doc(uid).set({
+                    displayName:`${newName}`
+                },{merge:true})
+            }
+        })
+        document.getElementById('automatic-mode').addEventListener("click",()=>{
+            if(uiTheme != "automatic"){
+                firestore.collection('users').doc(uid).update({
+                    theme: "automatic"
 
-            })
-        }
-    })
-    document.getElementById('light-mode').addEventListener("click",()=>{
-        if(uiTheme != "light"){
-            firestore.collection('users').doc(uid).update({
-                theme: "light"
-            })
-        }
-    })
-    document.getElementById('dark-mode').addEventListener("click",()=>{
-        if(uiTheme != "dark"){
-            firestore.collection('users').doc(uid).update({
-                theme: "dark"
-            })
-        }
-    })
-    document.documentElement.setAttribute("color-scheme", colorScheme)
-    if(uiTheme != "automatic"){
-        document.documentElement.setAttribute("ui-theme", uiTheme)
-    }else{
-        if(window.matchMedia("(perfers-color-scheme: dark)").matches){
-            document.documentElement.setAttribute("ui-theme", "dark")
+                })
+            }
+        })
+        document.getElementById('light-mode').addEventListener("click",()=>{
+            if(uiTheme != "light"){
+                firestore.collection('users').doc(uid).update({
+                    theme: "light"
+                })
+            }
+        })
+        document.getElementById('dark-mode').addEventListener("click",()=>{
+            if(uiTheme != "dark"){
+                firestore.collection('users').doc(uid).update({
+                    theme: "dark"
+                })
+            }
+        })
+        document.documentElement.setAttribute("color-scheme", colorScheme)
+        if(uiTheme != "automatic"){
+            document.documentElement.setAttribute("ui-theme", uiTheme)
         }else{
-            document.documentElement.setAttribute("ui-theme", "light")
+            if(window.matchMedia("(perfers-color-scheme: dark)").matches){
+                document.documentElement.setAttribute("ui-theme", "dark")
+            }else{
+                document.documentElement.setAttribute("ui-theme", "light")
+            }
         }
-    }
-})
+    })
 
 
 
@@ -914,77 +914,77 @@ function updateFolderView(id){
     unsubscribeFolderView = firestore.collection('folders').doc(id)
         .onSnapshot((doc) => {
             if(doc.exists){
-            folderDoc = doc;
-            //changes the web page title
-            document.title = doc.data().name + " - Cartographer"
-            //header of the list thing
-            document.querySelector("#content-folder .content-header").innerText = doc.data().name;
-            //header in the settings panel
-            document.querySelector("#folder-settings-panel h1").innerText = doc.data().name;
-            //only shows the delete button if you are the creator, there isn't meant for security because people can change the css,
-            //but only so that people don't really need to see something they can't press.
+                folderDoc = doc;
+                //changes the web page title
+                document.title = doc.data().name + " - Cartographer"
+                //header of the list thing
+                document.querySelector("#content-folder .content-header").innerText = doc.data().name;
+                //header in the settings panel
+                document.querySelector("#folder-settings-panel h1").innerText = doc.data().name;
+                //only shows the delete button if you are the creator, there isn't meant for security because people can change the css,
+                    //but only so that people don't really need to see something they can't press.
 
-            //in the folder settings popup, show the settings if creator
-            if(doc.data().roles[uid] === "creator"){
-                document.getElementById("folder-delete-btn").style.display = "grid"
-            }else{
-                document.getElementById("folder-delete-btn").style.display = "none"
-            }
-            if(doc.data().roles[uid] !== "viewer"){
-                document.getElementById("folder-edit-btn").style.display = "grid"
-                document.getElementById("folder-settings").style.display = "flex"
-            }else{
-                document.getElementById("folder-edit-btn").style.display = "none"
-                document.getElementById("folder-settings").style.display = "none"
-            }
+                    //in the folder settings popup, show the settings if creator
+                if(doc.data().roles[uid] === "creator"){
+                    document.getElementById("folder-delete-btn").style.display = "grid"
+                }else{
+                    document.getElementById("folder-delete-btn").style.display = "none"
+                }
+                if(doc.data().roles[uid] !== "viewer"){
+                    document.getElementById("folder-edit-btn").style.display = "grid"
+                    document.getElementById("folder-settings").style.display = "flex"
+                }else{
+                    document.getElementById("folder-edit-btn").style.display = "none"
+                    document.getElementById("folder-settings").style.display = "none"
+                }
 
-            updateFolderLists(id)
+                updateFolderLists(id)
 
-            //same thing as the users thing, changes the styles of public checkbox depending on if it's checked
-            document.querySelector("#folder-toggle-public-btn").innerHTML = doc.data().public ? "✔︎" : ""
-            document.querySelector("#folder-toggle-public-btn").style.backgroundColor = doc.data().public ? "var(--accent-1)" : "var(--background-1)"
-            document.querySelector("#folder-toggle-public-btn").style.color = doc.data().public ? "var(--background-1)" : "var(--foreground-1)"
-            document.querySelector("#folder-toggle-public-btn").style.border = doc.data().public ? "none" : "1px solid var(--border-1)"
+                //same thing as the users thing, changes the styles of public checkbox depending on if it's checked
+                document.querySelector("#folder-toggle-public-btn").innerHTML = doc.data().public ? "✔︎" : ""
+                document.querySelector("#folder-toggle-public-btn").style.backgroundColor = doc.data().public ? "var(--accent-1)" : "var(--background-1)"
+                document.querySelector("#folder-toggle-public-btn").style.color = doc.data().public ? "var(--background-1)" : "var(--foreground-1)"
+                document.querySelector("#folder-toggle-public-btn").style.border = doc.data().public ? "none" : "1px solid var(--border-1)"
 
 
-            //updates roles, see user function, it's the same
-            if(doc.data().roles != previousFolderRoles){
+                //updates roles, see user function, it's the same
+                if(doc.data().roles != previousFolderRoles){
 
-                let names = Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)}).map(([uid,role])=>{
-                    return firebase.functions().httpsCallable('getDisplayName')({uid: uid})
-                })
-                Promise.allSettled(names).then((result)=>{
-                    document.querySelector("#folder-roles-list").innerHTML = result.map(({value:data}, index) => {
-                        if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != uid) {
-                            return (`
-                            <div class="roles-list-item horizontal">
-                                <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
-                                <div class="spacer"></div>
-                                <select class="roles-list-select" onchange="let updatedRoles = folderDoc.data().roles;updatedRoles[Object.entries(folderDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('folders').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
+                    let names = Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)}).map(([uid,role])=>{
+                        return firebase.functions().httpsCallable('getDisplayName')({uid: uid})
+                    })
+                    Promise.allSettled(names).then((result)=>{
+                        document.querySelector("#folder-roles-list").innerHTML = result.map(({value:data}, index) => {
+                            if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != uid) {
+                                return (`
+                                    <div class="roles-list-item horizontal">
+                                    <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
+                                    <div class="spacer"></div>
+                                    <select class="roles-list-select" onchange="let updatedRoles = folderDoc.data().roles;updatedRoles[Object.entries(folderDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('folders').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
                                     <option value="viewer" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "viewer" ? "selected" : ""}>viewer</option>
                                     <option value="editor" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "editor" ? "selected" : ""}>editor</option>
                                     <option value="creator" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "creator" ? "selected" : ""}>creator</option>
-                                </select>
-                                <button class="roles-list-delete-btn" onclick="let deletedRoles = folderDoc.data().roles;delete deletedRoles[Object.entries(folderDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]];firestore.collection('folders').doc(splitPath[1]).update({roles:deletedRoles})">×</button>
-                            </div>
-                            `)
-                        }else{
-                            return (`
-                            <div class="roles-list-item horizontal">
-                                <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
-                                <div class="spacer"></div>
-                            </div>
-                            `)
-                        }
-                    }).join("  ")
-                })
-            }
-            previousFolderRoles = doc.data().roles;
+                                    </select>
+                                    <button class="roles-list-delete-btn" onclick="let deletedRoles = folderDoc.data().roles;delete deletedRoles[Object.entries(folderDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]];firestore.collection('folders').doc(splitPath[1]).update({roles:deletedRoles})">×</button>
+                                    </div>
+                                    `)
+                            }else{
+                                return (`
+                                    <div class="roles-list-item horizontal">
+                                    <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
+                                    <div class="spacer"></div>
+                                    </div>
+                                    `)
+                            }
+                        }).join("  ")
+                    })
+                }
+                previousFolderRoles = doc.data().roles;
 
-            if(userDoc){
-                document.querySelector("#content-folder .favorites-toggle svg").style.fill = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
-                document.querySelector("#content-folder .favorites-toggle svg").style.stroke = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
-            }
+                if(userDoc){
+                    document.querySelector("#content-folder .favorites-toggle svg").style.fill = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
+                    document.querySelector("#content-folder .favorites-toggle svg").style.stroke = userDoc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
+                }
 
             }
         },(error) => {
@@ -1009,10 +1009,10 @@ function updateFolderLists(id){
             let items = querySnapshot.docs.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).map(doc => {
                 return(doc.exists ? `
                     <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
-                        <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
-                        <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
+                    <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
+                    <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
                     </div>
-                ` : "  ")
+                    ` : "  ")
             })
             //puts it in the element
             document.getElementById("folder-list-container").innerHTML = items.join(" ")
@@ -1023,7 +1023,7 @@ function updateFolderLists(id){
 }
 
 //toggles whether folder is in favorites,
-//same as toggleFavoriteList()
+    //same as toggleFavoriteList()
 function toggleFavoriteFolder(){
     if(userDoc?.data()?.favoriteFolders?.includes(splitPath[1])){
         let editedFavorites = userDoc.data().favoriteFolders.filter(a=>{
@@ -1121,17 +1121,17 @@ function updateFavorites(lists,folders){
 
         //map them and sorts them
         Promise.allSettled(listGets).then((listDocs)=>{
-                let listItems = listDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
-                    return(doc?.exists ? `
-                        <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
-                            <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
-                            <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
-                        </div>
+            let listItems = listDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
+                return(doc?.exists ? `
+                    <div class="folder-list" onclick="window.history.pushState('','','/list/${doc.id}'); updateWindows()">
+                    <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
+                    <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
+                    </div>
                     ` : "  ")
-                })
-                //adds it to container
-                document.getElementById("favorites-list-container").innerHTML = listItems.join(" ")
             })
+            //adds it to container
+            document.getElementById("favorites-list-container").innerHTML = listItems.join(" ")
+        })
     }else{
         document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>"
     }
@@ -1144,17 +1144,17 @@ function updateFavorites(lists,folders){
         })
 
         Promise.allSettled(folderGets).then((folderDocs)=>{
-                let folderItems = folderDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
-                    return(doc?.exists ? `
-                        <div class="folder-list" onclick="window.history.pushState('','','/folder/${doc.id}'); updateWindows()">
-                            <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
-                        </div>
+            let folderItems = folderDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
+                return(doc?.exists ? `
+                    <div class="folder-list" onclick="window.history.pushState('','','/folder/${doc.id}'); updateWindows()">
+                    <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
+                    </div>
                     ` : "  ")
-                })
-               document.getElementById("favorites-folder-container").innerHTML = folderItems.join(" ")
             })
+            document.getElementById("favorites-folder-container").innerHTML = folderItems.join(" ")
+        })
     }else{
-       document.getElementById("favorites-folder-container").innerHTML = "<div class='folder-list loader'></div>"
+        document.getElementById("favorites-folder-container").innerHTML = "<div class='folder-list loader'></div>"
     }
 }
 
