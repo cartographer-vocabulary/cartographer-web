@@ -781,7 +781,7 @@ function updateUserInfo(){
                 if(uiTheme != "automatic"){
                     document.documentElement.setAttribute("ui-theme", uiTheme)
                 }else{
-                    if(window.matchMedia("(perfers-color-scheme: dark)").matches){
+                    if(window.matchMedia("(prefers-color-scheme: dark)").matches){
                         document.documentElement.setAttribute("ui-theme", "dark")
                     }else{
                         document.documentElement.setAttribute("ui-theme", "light")
@@ -820,10 +820,10 @@ window.matchMedia("(prefers-color-scheme: dark)").addListener((e)=>{
             document.documentElement.setAttribute("ui-theme", `dark`)
         }else{
             document.documentElement.setAttribute("ui-theme", `light`)
+            console.log("light")
         }
     }
-}
-);
+});
 
 
 //changes the color scheme, function called from a button
@@ -871,7 +871,7 @@ function updateColorScheme(name){
         if(uiTheme != "automatic"){
             document.documentElement.setAttribute("ui-theme", uiTheme)
         }else{
-            if(window.matchMedia("(perfers-color-scheme: dark)").matches){
+            if(window.matchMedia("(prefers-color-scheme: dark)").matches){
                 document.documentElement.setAttribute("ui-theme", "dark")
             }else{
                 document.documentElement.setAttribute("ui-theme", "light")

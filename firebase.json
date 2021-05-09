@@ -20,6 +20,15 @@
                         "value": "max-age=604800"
                     }
                 ]
+            },
+            {
+                "source": "**/*firebase*.js",
+                "headers": [
+                    {
+                        "key": "Cache-Control",
+                        "value": "max-age=604800"
+                    }
+                ]
             }
         ],
         "rewrites": [
