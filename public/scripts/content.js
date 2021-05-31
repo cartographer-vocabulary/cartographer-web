@@ -1110,7 +1110,9 @@ window.addEventListener('load',()=>{
 // ╚═╝     ╚═╝  ╚═╝  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚══════╝╚══════╝
 
 function updateFavorites(lists,folders){
-
+    console.log(lists)
+    console.log(folders)
+    console.trace("update")
     document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>"
     document.getElementById("favorites-folder-container").innerHTML = "<div class='folder-list loader'></div>"
     if(lists){
@@ -1206,9 +1208,7 @@ function updateWindows(){
         }else if(splitPath[0] == "favorites"){
             document.getElementById("content-favorites").style.display = "block";
             if(userDoc){
-                updateFavorites(userDoc.data()?.favoriteLists ?? [], userDoc.data().favoriteLists ?? [])
-            }else{
-                updateFavorites(userDoc?.data()?.favoriteLists, userDoc?.data()?.favoriteFolders)
+                updateFavorites(userDoc.data()?.favoriteLists ?? [], userDoc.data().favoriteFolders ?? [])
             }
         }else if(splitPath[0] == "applogin"){
             appLogin = true

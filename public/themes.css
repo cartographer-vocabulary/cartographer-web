@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500');
+@import url('https://fonts.googleapis.com/css2?family=Suez+One&display=swap');
+
+:root{
+    --font-1: "Roboto", sans-serif;
+    --font-2: "Montserrat", sans-serif;
+    --background-1: white;
+    --background-2: rgb(250, 250, 250);
+    --background-3: rgb(240, 240, 240);
+    --background-transparent-1: rgba(255,255,255,0.5);
+    --accent-1: rgb(255,200,20);
+    --wrong: rgb(255, 67, 20);
+    --correct: rgb(139, 213, 50);
+    --foreground-1: black;
+    --foreground-2: rgb(180,180,180);
+    --border-1: rgb(235,235,235);
+    --border-2: rgb(240,240,240);
+    --shadow-1: rgba(0,0,0,0.3);
+    --shadow-2: rgba(0,0,0,0.06);
+    --shadow-3: rgba(0,0,0,0.02);
+}
+
+[color-scheme="default"][ui-theme="light"]{
+    --font-1: "Roboto", sans-serif;
+    --font-2: "Montserrat", sans-serif;
+    --background-1: white;
+    --background-2: rgb(250, 250, 250);
+    --background-3: rgb(240, 240, 240);
+    --background-transparent-1: rgba(255,255,255,0.5);
+    --accent-1: rgb(255,200,20);
+    --wrong: rgb(255, 67, 20);
+    --correct: rgb(139, 213, 50);
+    --foreground-1: black;
+    --foreground-2: rgb(180,180,180);
+    --border-1: rgb(235,235,235);
+    --border-2: rgb(240,240,240);
+    --shadow-1: rgba(0,0,0,0.3);
+    --shadow-2: rgba(0,0,0,0.06);
+    --shadow-3: rgba(0,0,0,0.02);
+}
+
+[color-scheme="default"][ui-theme="dark"]{
+    --font-1: "Roboto", sans-serif;
+    --font-2: "Montserrat", sans-serif;
+    --background-1: rgb(30,32,35);
+    --background-2: rgb(26, 28, 31);
+    --background-3: rgb(33, 35, 38);
+    --background-transparent-1: rgba(30,32,35,0.5);
+    --accent-1: rgb(245,180,20);
+    --wrong: rgb(255, 67, 20);
+    --correct: rgb(139, 213, 50);
+    --foreground-1: white;
+    --foreground-2: rgb(140,140,140);
+    --border-1: rgb(44,46,50);
+    --border-2: rgb(38,40,46);
+    --shadow-1: rgba(0,0,0,0.5);
+    --shadow-2: rgba(0,0,0,0.25);
+    --shadow-3: rgba(0,0,0,0.1);
+}
+
+[color-scheme="nord"][ui-theme="light"]{
+    --font-1: "Roboto", sans-serif;
+    --font-2: "Montserrat", sans-serif;
+    --background-1: #e1e5eb;
+    --background-2: rgb(219, 223, 230);
+    --background-3: rgb(207, 213, 223);
+    --background-transparent-1: rgba(225, 229, 235,0.5);
+    --accent-1: rgb(156, 181, 136);
+    --wrong: rgb(183, 94, 104);
+    --correct: rgb(156, 181, 136);
+    --foreground-1: #2d333f;
+    --foreground-2: rgb(120, 132, 161);
+    --border-1: rgb(198, 203, 213);
+    --border-2: rgb(204, 212, 220);
+    --shadow-1: rgba(0, 0, 0, 0.3);
+    --shadow-2: rgba(0,0,0,0.06);
+    --shadow-3: rgba(0,0,0,0.02);
+}
+
+[color-scheme="nord"][ui-theme="dark"]{
+    --font-1: "Roboto", sans-serif;
+    --font-2: "Montserrat", sans-serif;
+    --background-1: rgb(58, 65, 80);
+    --background-2: rgb(45, 51, 63);
+    --background-3: rgb(64, 74, 92);
+    --background-transparent-1: rgba(58, 65, 80, 0.5);
+    --accent-1: rgb(156, 181, 136);
+    --wrong: rgb(183, 94, 104);
+    --correct: rgb(156, 181, 136);
+    --foreground-1: #e1e5eb;
+    --foreground-2: rgb(136, 141, 160);
+    --border-1: rgb(43, 47, 61);
+    --border-2: rgb(46, 54, 64);
+    --shadow-1: rgba(0,0,0,0.3);
+    --shadow-2: rgba(0,0,0,0.18);
+    --shadow-3: rgba(0,0,0,0.07);
+}
+
+[color-scheme="solarized"][ui-theme="light"]{
+    --font-1: "Roboto", sans-serif;
+    --font-2: "Montserrat", sans-serif;
+    --background-1: #f2ebda;
+    --background-2: rgb(228, 222, 204);
+    --background-3: rgb(210, 203, 185);
+    --background-transparent-1: rgba(242, 235, 218,0.5);
+    --accent-1: rgb(128, 147, 10);
+    --wrong: rgb(210, 51, 47);
+    --correct: rgb(128, 147, 10);
+    --foreground-1: #022b35;
+    --foreground-2: rgb(126, 141, 146);
+    --border-1: rgb(217, 216, 193);
+    --border-2: rgb(223, 220, 204);
+    --shadow-1: rgba(0,0,0,0.3);
+    --shadow-2: rgba(0,0,0,0.06);
+    --shadow-3: rgba(0,0,0,0.02);
+}
+
+[color-scheme="solarized"][ui-theme="dark"]{
+    --font-1: "Roboto", sans-serif;
+    --font-2: "Montserrat", sans-serif;
+    --background-1: rgb(10, 53, 65);
+    --background-2: rgb(2, 43, 53);
+    --background-3: rgb(12, 72, 90);
+    --background-transparent-1: rgba(10, 53, 65,0.5);
+    --accent-1: rgb(128, 147, 10);
+    --wrong: rgb(210, 51, 47);
+    --correct: rgb(128, 147, 10);
+    --foreground-1: #f2ebda;
+    --foreground-2: rgb(97, 118, 127);
+    --border-1: rgb(4, 40, 46);
+    --border-2: rgb(5, 44, 50);
+    --shadow-1: rgba(0,0,0,0.8);
+    --shadow-2: rgba(0,0,0,0.4);
+    --shadow-3: rgba(0,0,0,0.15);
+}
+
+[color-scheme="vintage"][ui-theme="light"]{
+    --font-1: "IBM Plex Mono", sans-serif;
+    --font-2: "Suez one", serif;
+    --background-1: rgb(255,250,230);
+    --background-2: rgb(251, 244, 224);
+    --background-3: rgb(245, 235, 215);
+    --background-transparent-1: rgba(255,250,230,0.5);
+    --accent-1: rgb(255,180,120);
+    --wrong: rgb(255, 127, 100);
+    --correct: rgb(139, 213, 120);
+    --foreground-1: rgb(60,90,105);
+    --foreground-2: rgb(160,170,190);
+    --border-1: rgb(235,230,220);
+    --border-2: rgb(240,235,224);
+    --shadow-1: rgba(0,0,0,0.3);
+    --shadow-2: rgba(0,0,0,0.06);
+    --shadow-3: rgba(0,0,0,0.02);
+}
+
+[color-scheme="vintage"][ui-theme="dark"]{
+    --font-1: "IBM Plex Mono", sans-serif;
+    --font-2: "Suez one", sans-serif;
+    --background-1: rgb(40, 40, 40);
+    --background-2: rgb(36, 36, 36);
+    --background-3: rgb(42, 42, 42);
+    --background-transparent-1: rgba(40,40,40,0.5);
+    --accent-1: rgb(160,130,100);
+    --wrong: rgb(255, 127, 100);
+    --correct: rgb(139, 213, 120);
+    --foreground-1: rgb(208, 204, 201);
+    --foreground-2: rgb(111, 111, 111);
+    --border-1: rgb(28, 27, 27);
+    --border-2: rgb(33, 33, 33);
+    --shadow-1: rgba(0,0,0,0.3);
+    --shadow-2: rgba(0,0,0,0.15);
+    --shadow-3: rgba(0,0,0,0.05);
+}
+
+
