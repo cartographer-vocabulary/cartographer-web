@@ -620,6 +620,7 @@ window.addEventListener("load", ()=>{
 
 //localstorage to store whether the card mode is open, or the quiz mode
 let listCardQuizMode = localStorage.getItem("listCardQuizMode") ?? "card"
+let quizWordDefinitionMode = localStorage.getItem("quizWordDefinitionMode") ?? "word"
 
 
 window.addEventListener("load",()=>{
@@ -634,6 +635,11 @@ window.addEventListener("load",()=>{
         listCardQuizMode = "quiz"
         localStorage.setItem("listCardQuizMode",listCardQuizMode)
         updateListCardQuizMode()
+    })
+    document.getElementById("quiz-word-definition-toggle").addEventListener('click', ()=>{
+        localStorage.setItem("quizWordDefinitionMode",quizWordDefinitionMode == "word" ? "definition" : "word")
+        quizWordDefinitionMode = quizWordDefinitionMode == "word" ? "definition" : "word"
+        refreshQuizAnswers()
     })
 })
 
@@ -671,7 +677,12 @@ function refreshQuizAnswers(){
 
     //array of ansers
     let quizAnswers = [quizWord]
-    document.getElementById("quiz-word").innerText = listDoc.data().cards[quizWord].word;
+    if(quizWordDefinitionMode == "word"){
+        document.getElementById("quiz-word").innerText = listDoc.data().cards[quizWord].word;
+    }else{
+        document.getElementById("quiz-word").innerText = listDoc.data().cards[quizWord].definition;
+    }
+    
 
     //removes all of them first, from the previous options
     for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
@@ -691,7 +702,7 @@ function refreshQuizAnswers(){
             //appends this answer to that array
             quizAnswers.push(currentAnswer);
             //changes the html
-            document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = listDoc.data().cards[currentAnswer].definition;
+            document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = (quizWordDefinitionMode == "word") ? listDoc.data().cards[currentAnswer].definition : listDoc.data().cards[currentAnswer].word;
             //when it's clicked, all it does is get a red border
             document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = () => {
                 document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--wrong)"
@@ -699,7 +710,7 @@ function refreshQuizAnswers(){
         } else {
             //when you click the correct answer, give a green border, and change the answers after half a second
             document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
-            document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = listDoc.data().cards[quizWord].definition;
+            document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = (quizWordDefinitionMode == "word") ? listDoc.data().cards[quizWord].definition : listDoc.data().cards[quizWord].word;
             document.getElementsByClassName("quiz-answer")[quizAnswer].onclick =
                 () => {
                     document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--correct)";
