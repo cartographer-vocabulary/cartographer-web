@@ -2,7 +2,7 @@
 function updateLists(querySnapshot){
     let filtered = querySnapshot.docs
     filtered = filtered.filter(item => {
-        return(!(item.data().folder || item.data().folder == ""))
+        return((!item.data().folder) || item.data().folder == "")
     })
     //convert array into html basically
     let items = filtered.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map(doc => {

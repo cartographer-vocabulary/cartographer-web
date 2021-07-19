@@ -48,6 +48,7 @@ exports.signInWithToken = functions.https.onCall((data, context) => {
         .catch((error)=>{console.error(error)})
 
 })
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //

@@ -172,4 +172,23 @@
     --shadow-3: rgba(0,0,0,0.05);
 }
 
+[color-scheme="neumorphic"][ui-theme="light"]{
+    --accent-1: rgb(255,74,128);
+    --background-1: rgb(240,240,240);
+    --background-2: rgb(240,240,240);
+    --background-3: rgb(240,240,240);
+    --background-transparent-1: rgba(240,240,240,0.5);
+}
+
+[color-scheme="neumorphic"] #main-container > *{
+    /* margin: 20px; */
+}
+
+[color-scheme="neumorphic"] #sidebar-container{
+    margin: 25px;
+    border: none;
+    box-shadow: 6px 10px 20px rgba(0,0,0,0.1), -6px -10px 20px rgb(255,255,255);
+    border-radius: 8px;
+    height: calc(100% - 50px);
+}
 
