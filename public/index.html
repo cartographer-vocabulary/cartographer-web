@@ -13,11 +13,6 @@
         <link rel="stylesheet" href="/themes.css">
         <link rel="stylesheet" href="/styles.css">
 
-        <script src="/scripts/content.js"></script>
-        <script src="/scripts/sidebar.js"></script>
-        <script defer src="/scripts/panel.js"></script>
-        <script defer src="/scripts/auth.js"></script>
-
         <!-- firebase scripts -->
         <script src="https://www.gstatic.com/firebasejs/ui/4.7.3/firebase-ui-auth.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.2.5/firebase-app.js"></script>
@@ -65,6 +60,10 @@
             // The start method will wait until the DOM is loaded.
             ui.start('#firebaseui-auth-container', uiConfig);
         </script>
+        <script src="/scripts/auth.js"></script>
+        <!-- <script src="/scripts/sidebar.js"></script> -->
+        <!-- <script src="/scripts/content.js"></script> -->
+        <!-- <script src="/scripts/panel.js"></script> -->
         <title>Cartographer</title>
     </head>
     <body>
@@ -274,7 +273,7 @@
                         </svg>
                         <span> edit name </span>
                     </button>
-                    <button id="signout-btn">
+                    <button id="signout-btn" onclick="signOut()">
                         <span>sign out</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
