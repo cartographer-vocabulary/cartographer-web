@@ -60,15 +60,15 @@
             // The start method will wait until the DOM is loaded.
             ui.start('#firebaseui-auth-container', uiConfig);
         </script>
-        <script src="/scripts/auth.js"></script>
-        <!-- <script src="/scripts/sidebar.js"></script> -->
+        <script defer src="/scripts/auth.js"></script>
+        <script defer src="/scripts/sidebar.js"></script>
         <!-- <script src="/scripts/content.js"></script> -->
-        <!-- <script src="/scripts/panel.js"></script> -->
+        <script defer src="/scripts/panel.js"></script>
         <title>Cartographer</title>
     </head>
     <body>
         <nav id="navbar">
-            <button id="sidebar-toggle">
+            <button id="sidebar-toggle" onclick="sidebar.toggle()">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="16" height="16" viewBox="0 0 24 24" stroke-width="3" stroke="var(--background-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <line x1="4" y1="6" x2="20" y2="6" />
@@ -78,8 +78,8 @@
             </button>
             <h1 onclick = "window.history.pushState('','','/welcome'); updateWindows()">Cartographer</h1>
             <div class="spacer"></div>
-            <button id="login-btn"  style="display: none"> Log In </button>
-            <button id="open-profile-btn" class="user-full-name" style="display: none">Profile</button>
+            <button id="login-btn" onclick="panel.show('sign-in-panel')" style="display: none"> Log In </button>
+            <button id="open-profile-btn" onclick="panel.show('profile-panel')" class="user-full-name" style="display: none">Profile</button>
             <div style="width:3px"></div>
         </nav>
         <div id="main-container">
@@ -96,7 +96,7 @@
                 <hr>
                 <div class="sidebar-header">
                     <h3>My lists</h3>
-                    <button id="add-list-btn">＋</button>
+                    <button id="add-list-btn" onclick="addNewList()">＋</button>
                 </div>
                 <ul id="my-lists-container">
                     <li class="loader">
@@ -105,7 +105,7 @@
                 <hr>
                 <div class="sidebar-header">
                     <h3>My Folders</h3>
-                    <button id="add-folder-btn">＋</button>
+                    <button id="add-folder-btn" onclick="addNewFolder()">＋</button>
                 </div>
                 <ul id="my-folders-container">
                     <li class="loader">
@@ -144,7 +144,7 @@
                             </svg>
                             <span>quiz</span>
                         </button>
-                        <button id="list-settings">
+                        <button id="list-settings" onclick="panel.show('list-settings-panel')">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <path  d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
@@ -211,7 +211,7 @@
                             </svg>
                         </button>
                         <div class="spacer"></div>
-                        <button id="folder-settings">
+                        <button id="folder-settings" onclick="panel.show('folder-settings-panel')">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <path  d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
@@ -273,7 +273,7 @@
                         </svg>
                         <span> edit name </span>
                     </button>
-                    <button id="signout-btn" onclick="signOut()">
+                    <button id="signout-btn" onclick="auth.signOut()">
                         <span>sign out</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
