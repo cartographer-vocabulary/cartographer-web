@@ -61,8 +61,10 @@
             ui.start('#firebaseui-auth-container', uiConfig);
         </script>
         <script defer src="/scripts/auth.js"></script>
+        <script defer src="/scripts/user.js"></script>
         <script defer src="/scripts/sidebar.js"></script>
         <!-- <script src="/scripts/content.js"></script> -->
+        <script defer src="/scripts/window.js"></script>
         <script defer src="/scripts/panel.js"></script>
         <title>Cartographer</title>
     </head>
@@ -76,7 +78,7 @@
                     <line x1="4" y1="18" x2="20" y2="18" />
                 </svg>
             </button>
-            <h1 onclick = "window.history.pushState('','','/welcome'); updateWindows()">Cartographer</h1>
+            <h1 onclick = "windows.update('/welcome')">Cartographer</h1>
             <div class="spacer"></div>
             <button id="login-btn" onclick="panel.show('sign-in-panel')" style="display: none"> Log In </button>
             <button id="open-profile-btn" onclick="panel.show('profile-panel')" class="user-full-name" style="display: none">Profile</button>
@@ -85,7 +87,7 @@
         <div id="main-container">
             <div id="sidebar-container">
                 <ul>
-                    <li onclick='window.history.pushState("","","/favorites");updateWindows()'>
+                    <li onclick="windows.update('/favorites')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-star" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" />
@@ -265,7 +267,7 @@
                 <div class="horizontal">
                     <h1 class="user-full-name"><span class="loader"></span></h1>
                     <div class="spacer"></div>
-                    <button id="edit-user-display-name">
+                    <button id="edit-user-display-name" onclick="user.updateDisplayName()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -287,7 +289,7 @@
                 <div class="horizontal">
                     <h3>Theme</h3>
                     <div class="spacer"></div>
-                    <button id="automatic-mode" class="theme-toggle">
+                    <button id="automatic-mode" class="theme-toggle" onclick="user.updateTheme('automatic')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brightness" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <circle cx="12" cy="12" r="9" />
@@ -298,7 +300,7 @@
                         </svg>
                         <span>system</span>
                     </button>
-                    <button id="light-mode" class="theme-toggle">
+                    <button id="light-mode" class="theme-toggle" onclick="user.updateTheme('light')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <circle cx="12" cy="12" r="4" />
@@ -306,7 +308,7 @@
                         </svg>
                         <span>light</span>
                     </button>
-                    <button id="dark-mode" class="theme-toggle">
+                    <button id="dark-mode" class="theme-toggle" onclick="user.updateTheme('dark')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -316,11 +318,11 @@
                 </div>
                 <h3>Color scheme</h3>
                 <div id="color-scheme-container">
-                    <button class="color-scheme" id="default-color-scheme" onclick="updateColorScheme('default')"> default </button>
-                    <button class="color-scheme" id="solarized-color-scheme" onclick="updateColorScheme('solarized')"> solarized </button>
-                    <button class="color-scheme" id="nord-color-scheme" onclick="updateColorScheme('nord')"> nord </button>
-                    <button class="color-scheme" id="vintage-color-scheme" onclick="updateColorScheme('vintage')"> vintage </button>
-                    <button class="color-scheme" id="neumorphic-color-scheme" onclick="updateColorScheme('neumorphic')"> neumorphic </button>
+                    <button class="color-scheme" id="default-color-scheme" onclick="user.updateColorScheme('default')"> default </button>
+                    <button class="color-scheme" id="solarized-color-scheme" onclick="user.updateColorScheme('solarized')"> solarized </button>
+                    <button class="color-scheme" id="nord-color-scheme" onclick="user.updateColorScheme('nord')"> nord </button>
+                    <button class="color-scheme" id="vintage-color-scheme" onclick="user.updateColorScheme('vintage')"> vintage </button>
+                    <button class="color-scheme" id="neumorphic-color-scheme" onclick="user.updateColorScheme('neumorphic')"> neumorphic </button>
                 </div>
             </div>
             <div id = "list-settings-panel" class="panel hidden">

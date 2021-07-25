@@ -1,10 +1,14 @@
-var sidebar = {
-    toggle:function(){
+class Sidebar {
+    toggle(){
+
         let showingSidebar = localStorage.getItem("showingSidebar") ?? "true"
+        
         if(showingSidebar =="true"){
             localStorage.setItem("showingSidebar","false");
+            showingSidebar = "false"
         }else{
             localStorage.setItem("showingSidebar","true");
+            showingSidebar = "true"
         }
 
         if(showingSidebar == "true"){
@@ -12,8 +16,16 @@ var sidebar = {
         }else{
             document.getElementById('sidebar-container').style.display = "none";
         }
-    },
-    updateLists:function(){
+    }
+    open(){
+        localStorage.setItem("showingSidebar","true");
+        document.getElementById('sidebar-container').style.display = "block";
+    }
+    collapse(){
+        localStorage.setItem("showingSidebar","false");
+        document.getElementById('sidebar-container').style.display = "none";
+    }
+    updateLists(){
         subscriptions.sidebarLists = firestore.collection('lists')
             .where(`roles.${user.uid}`,'in',['creator','editor','viewer'])
             .onSnapshot(querySnapshot =>{
@@ -25,7 +37,7 @@ var sidebar = {
                 let items = filtered.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map(doc => {
                     //this part changes the url when you click and calls update window function in content.js
                     return(doc.exists ? `
-                        <li onclick='window.history.pushState("","","/list/${doc.id}");updateWindows()'>
+                        <li onclick="windows.update('/list/${doc.id}')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-list" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <line x1="9" y1="6" x2="20" y2="6" />
@@ -42,14 +54,14 @@ var sidebar = {
                 document.getElementById("my-lists-container").innerHTML=items.join(' ');
 
             });
-    },
-    updateFolders:function(){
+    }
+    updateFolders(){
         subscriptions.siderbarFolders = firestore.collection('folders')
             .where(`roles.${user.uid}`,'in',['creator','editor','viewer'])
             .onSnapshot(querySnapshot=>{
                 let items = querySnapshot.docs.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).sort((a,b)=>{return((a.data().roles[user.uid] < b.data().roles[user.uid])? -1 : 1)}).map(doc => {
                     return(doc.exists ? `
-                        <li onclick="window.history.pushState('','','/folder/${doc.id}');updateWindows()">
+                        <li onclick="windows.update('/folder/${doc.id}')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
@@ -64,10 +76,12 @@ var sidebar = {
 
 }
 
+var sidebar = new Sidebar()
+
 function addNewList(){
     try{
         //cause error if you don't have uid
-        if(!user.uid){lmao}
+        if(!user){lmao}
         //prompt user to enter name of list
         let name = window.prompt("Enter name for list", "New List")
         if (name){
@@ -83,16 +97,14 @@ function addNewList(){
         }
     }catch(error){
         console.log(error)
-        //shows sign in panel
-        document.getElementById('panel-container').classList.remove("hidden");
-        document.getElementById("sign-in-panel").classList.remove("hidden");
+        panel.show("sign-in-panel")
     }
 }
 
 function addNewFolder(){
     try{
         //cause error if you don't have uid
-        if(!user.uid){lmao}
+        if(!user){lmao}
         //prompt user to enter name of list
         let name = window.prompt("Enter name for folder", "New Folder")
         if (name){
@@ -106,9 +118,7 @@ function addNewFolder(){
             })
         }
     }catch(error){
-        //shows sign in panel
-        document.getElementById('panel-container').style.display = "flex";
-        document.getElementById("sign-in-panel").style.display = "block";
+        panel.show("sign-in-panel")
     }
 }
 
