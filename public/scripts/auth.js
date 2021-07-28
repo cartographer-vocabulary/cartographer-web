@@ -8,21 +8,24 @@ let subscriptions = {}
 
 let appLogin = false
 
-//detects when the auth state changes
-firebase.auth().onAuthStateChanged(
-    function(_user){
-        if (_user) {
-
-            auth.signedIn(_user)
-        } else {
-            auth.signedOut()
-        }
-    }, function(error) {
-        console.log(error);
-    }
-);
 
 class Auth {
+    constructor(){
+        //detects when the auth state changes
+        firebase.auth().onAuthStateChanged(
+            function(_user){
+                if (_user) {
+
+                    auth.signedIn(_user)
+                } else {
+                    auth.signedOut()
+                }
+            }, function(error) {
+                console.log(error);
+            }
+        );
+    }
+
     signedIn(_user){
 
         window.user = new User(_user)

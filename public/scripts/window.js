@@ -1,4 +1,10 @@
 class Windows {
+
+    constructor(){
+        this.update()
+        window.addEventListener('popstate', this.update());
+    }
+
     update(url){
         
         if(url){
@@ -29,13 +35,13 @@ class Windows {
 
             case 'folder':
                 document.getElementById("content-folder").style.display = "block";
-                updateFolderView(splitPath[1]);
+                // updateFolderView(splitPath[1]);
                 break;
 
             case 'favorites':
                 document.getElementById("content-favorites").style.display = "block";
                 if(userDoc){
-                    updateFavorites(userDoc.data()?.favoriteLists ?? [], userDoc.data().favoriteFolders ?? [])
+                    // updateFavorites(userDoc.data()?.favoriteLists ?? [], userDoc.data().favoriteFolders ?? [])
                 }
                 break;
 
@@ -59,8 +65,5 @@ class Windows {
 
 windows = new Windows()
 
-
-windows.update()
-window.addEventListener('popstate', windows.update());
 
 
