@@ -5,14 +5,30 @@
 // ███████╗██║███████║   ██║   ███████║
 // ╚══════╝╚═╝╚══════╝   ╚═╝   ╚══════╝
 
+let list
+
 class List{
 
     constructor(listId){
         this.id = listId
+        this.flashcardIndex = 0
 
+        window.addEventListener("unload", ()=>{
+            localStorage.setItem("flashcard-index", `${this.flashcardIndex}`);
+        })
+
+        if(parseInt(localStorage.getItem("flashcard-index"))){
+            this.flashcardIndex =parseInt(localStorage.getItem("flashcard-index"))
+        }
+
+
+        //localstorage to store whether the card mode is open, or the quiz mode
+        this.cardQuizMode = localStorage.getItem("listCardQuizMode") ?? "card"
+        this.quizWordDefinitionMode = localStorage.getItem("quizWordDefinitionMode") ?? "word"
         subscriptions.listDoc?.()
         subscriptions.listAvailableFolders?.()
         subscriptions.listParentFolder?.()
+
 
         //resets the stuff that exists, empty the cards etc
         document.querySelector("#content-list .content-header").innerHTML = "<span class='loader'></span>"
@@ -29,12 +45,184 @@ class List{
         this.subscribeParentFolder()
         this.subscribeAvailableFolders()
         this.subscribeList()
+
+        //event listener for the button that edits the list, and puts that data on firestore
+        document.querySelector("#list-edit-btn").addEventListener('click',()=>{
+            let newName = window.prompt("Rename List:",this.data.name);
+            if(newName || newName ==""){
+                firestore.collection("lists").doc(this.id).update(
+                    {
+                        name: newName,
+                    }
+                )
+            }
+        })
+        //for deleting the list
+        document.querySelector('#list-delete-btn').addEventListener('click',()=>{
+            if(window.confirm("Delete this list?")){
+                firestore.collection("lists").doc(this.id).delete()
+                //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
+                let panelContainer = document.querySelector("#panel-container")
+                panelContainer.classList.add("hidden")
+                for (let panel of panelContainer.children) {
+                    panel.classList.add("hidden")
+                }
+            }
+        })
+
+        //variables for the fields
+        let cardWord = "";
+        let cardDefinition = "";
+        //elements
+        let cardWordElement = document.getElementById("card-word-input");
+        let cardDefinitionElement = document.getElementById("card-definition-input");
+
+        //listen for when something is typing on the text field
+        cardWordElement.addEventListener('keyup',(e)=>{
+            cardWord = cardWordElement.value
+            //if enter key is pressed, and there is both definition and word, add the card
+            if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
+                addCard(cardWord,cardDefinition)
+                //reset the variables and empty the text field
+                cardWord = ""
+                cardDefinition = ""
+                cardWordElement.value = ""
+                cardDefinitionElement.value = ""
+                //focus the first word element
+                cardWordElement.focus();
+            }else if((e.key == 'Enter' || e.keyCode ===13)){
+                //if definition is not filled in, focus that
+                cardDefinitionElement.focus()
+            }
+        })
+        cardDefinitionElement.addEventListener('keyup',(e)=>{
+            cardDefinition = cardDefinitionElement.value
+            //same thing copy and pasted, too lazy to make a function
+            if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
+                addCard(cardWord,cardDefinition)
+                cardWord = ""
+                cardDefinition = ""
+                cardWordElement.value = ""
+                cardDefinitionElement.value = ""
+                cardWordElement.focus();
+            }else if((e.key === 'Enter' || e.keycCode === 13)){
+                //focus the word input this time
+                cardWordElement.focus()
+            }
+        })
+
+
+        let cardDragIndex=0;
+        let cardStartIndex=0;
+        let cardDragElement;
+        function cardDragStart(e){
+            if(e.target.className === "card" && this.role !== "viewer") {
+                let element = e.target
+                cardDragIndex = parseInt(element.id);
+                cardStartIndex = cardDragIndex
+                cardDragElement = element
+                //adds the event listeners for dragging
+                // document.addEventListener('mousemove', cardDrag);
+                document.addEventListener("dragend", cardDragEnd);
+                document.addEventListener('dragover',cardDragIndexSet);
+                // document.getElementById("content-list").addEventListener("scroll",cardDrag)
+                //do some style changes
+                requestAnimationFrame(()=>{
+                    element.style.opacity = "0"
+                    element.style.pointerEvents = "none"
+                })
+                return false;
+            }
+        }
+
+        //gets the card that is dragged over, and you can set the current dragged card to be before that
+        function cardDragIndexSet(e){
+            e.preventDefault()
+            if(e.target.className === "card" || e.target.parentNode.className === "card" || e.target.parentNode.parentNode.className === "card"){
+                let tempIndex = cardDragIndex
+                cardDragIndex = parseInt(e.target.id) || parseInt(e.target.closest(".card").id);
+
+                if(cardDragElement.id > cardDragIndex){
+                    cardDragElement.parentNode.insertBefore(cardDragElement,document.getElementById(cardDragIndex))
+                    for(let element of document.getElementsByClassName("card")){
+                        if(element.id < tempIndex && element.id >= cardDragIndex){
+                            element.id = parseInt(element.id)+1
+                        }
+                    }
+                    cardDragElement.id = cardDragIndex
+                }
+                if(cardDragElement.id < cardDragIndex){
+                    cardDragElement.parentNode.insertBefore(cardDragElement,document.getElementById(cardDragIndex).nextSibling)
+
+                    for(let element of document.getElementsByClassName("card")){
+                        if(element.id > tempIndex && element.id <= cardDragIndex){
+                            element.id = parseInt(element.id)-1
+                        }
+                    }
+                    cardDragElement.id = cardDragIndex
+                }
+            }
+        }
+
+        function cardDragEnd(e){
+            e.preventDefault()
+            cardDragElement.removeAttribute("style")
+            cardDragElement.removeAttribute("draggable")
+            document.removeEventListener("mouseup", cardDragEnd);
+            document.removeEventListener("mouseover", cardDragIndexSet);
+
+            if(cardStartIndex != cardDragIndex){
+                let editedArray = listDoc.data().cards;
+                array_move(editedArray,parseInt(cardStartIndex),cardDragIndex);
+                firestore.collection("lists").doc(splitPath[1]).set({
+                    cards: editedArray
+                },{merge:true})
+            }
+        }
+
+        function array_move(arr, old_index, new_index) {
+            if (new_index >= arr.length) {
+                var k = new_index - arr.length + 1;
+                while (k--) {
+                    arr.push(undefined);
+                }
+            }
+            arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+            return arr; // for testing
+        };
+
+        //add event listener for mouse down
+        document.addEventListener("dragstart", cardDragStart)
+
+        document.addEventListener("mousedown", (e)=>{
+            if(e.target.className == "card"){
+                e.target.setAttribute("draggable","true")
+            }
+        })
+
+        this.updateListCardQuizMode()
+        document.getElementById("list-card-toggle").addEventListener('click',()=>{
+            this.cardQuizMode = "card"
+            localStorage.setItem("listCardQuizMode",this.cardQuizMode)
+            this.updateListCardQuizMode()
+        })
+        document.getElementById("list-quiz-toggle").addEventListener('click',()=>{
+            this.cardQuizMode = "quiz"
+            this.localStorage.setItem("listCardQuizMode",this.cardQuizMode)
+            this.updateListCardQuizMode()
+        })
+        document.getElementById("quiz-word-definition-toggle").addEventListener('click', ()=>{
+            localStorage.setItem("quizWordDefinitionMode",this.quizWordDefinitionMode == "word" ? "definition" : "word")
+            this.quizWordDefinitionMode = this.quizWordDefinitionMode == "word" ? "definition" : "word"
+            refreshQuizAnswers()
+        })
+
     }
 
     subscribeParentFolder(){
         //gets the lists once, and after you get that, you subscribe to the parent folder, and use that to change the role and the viewable content
         firestore.collection("lists").doc(this.id).get().then((listDoc)=>{
-            listRole = listDoc.data().roles[user.uid];
+            this.listRole = listDoc.data().roles[user.uid];
             subscriptions.listParentFolder = firestore.collection("folders").doc(listDoc.data().folder)
                 .onSnapshot((doc)=>{
                     this.parentFolderRole = doc.data().roles[user.uid]
@@ -118,7 +306,7 @@ class List{
                     }
 
                     //sets role for other functions to use
-                    listRole = doc.data().roles[user.uid];
+                    this.role = doc.data().roles[user.uid];
 
                     //only if the roles changed
                     if(doc.data().roles != this.previousListRoles){
@@ -133,7 +321,7 @@ class List{
                             //puts the stuff in the roles list element. maps the result, and uses object destructuring to only get the value part
                             document.querySelector("#list-roles-list").innerHTML = result.map(({value:data}, index) => {
                                 //if the person is not the role of yourself
-                                if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != uid) {
+                                if(Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][0] != user.uid) {
                                     //returns something with options to delete and edit
                                     return (`
                                         <div class="roles-list-item horizontal">
@@ -167,8 +355,8 @@ class List{
                     this.previousListRoles = doc.data().roles[user.uid];
                     //if the user stuff has loaded, set the star to on/off
                     if(user){
-                        document.querySelector("#content-list .favorites-toggle svg").style.fill = userDoc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
-                        document.querySelector("#content-list .favorites-toggle svg").style.stroke = userDoc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
+                        document.querySelector("#content-list .favorites-toggle svg").style.fill = user?.data?.favoriteLists?.includes(this.id) ? "var(--accent-1)" : "none"
+                        document.querySelector("#content-list .favorites-toggle svg").style.stroke = user?.data?.favoriteLists?.includes(this.id) ? "var(--accent-1)" : "var(--foreground-1)"
                     }
 
                     //sets the title of the webpage (thing in tab bar)
@@ -187,10 +375,10 @@ class List{
                     document.querySelector("#list-toggle-public-btn").style.border = doc.data().public ? "none" : "1px solid var(--border-1)"
 
                     //basically does stuff with the flashcards
-                    if(doc.data().cards[flashcardIndex]) {
-                        document.getElementById("flashcard-word").innerText = doc.data().cards[flashcardIndex].word
-                        document.getElementById("flashcard-definition").innerText = doc.data().cards[flashcardIndex].definition
-                        document.getElementById("flashcard-index").innerText = flashcardIndex + 1;
+                    if(doc.data().cards[this.flashcardIndex]) {
+                        document.getElementById("flashcard-word").innerText = doc.data().cards[this.flashcardIndex].word
+                        document.getElementById("flashcard-definition").innerText = doc.data().cards[this.flashcardIndex].definition
+                        document.getElementById("flashcard-index").innerText = this.flashcardIndex + 1;
                     }else{
                         document.getElementById("flashcard-word").innerText = "No card selected"
                         document.getElementById("flashcard-definition").innerText = "No card selected"
@@ -248,7 +436,7 @@ class List{
             //allow editing and delete if not viewer
             //dont worry i am just hiding this, but there are also security rules.
                 items = doc.data().cards.map((card, index) => {
-                    return (`<div class="card" id="${index}" ><div class="horizontal"><h3 contenteditable="true" onblur="updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="deleteCard(this)" >×</button></div><hr><p contenteditable="true" onblur="updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</p></div>`)
+                    return (`<div class="card" id="${index}" ><div class="horizontal"><h3 contenteditable="true" onblur="list.updateCardWord(this.innerText, parseInt(this.parentNode.parentNode.id))" onbeforeunload="return this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.word.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3><div class="spacer"></div><button class="card-delete-btn" onclick="list.deleteCard(parseInt(this.parentNode.parentNode.id))" >×</button></div><hr><p contenteditable="true" onblur="list.updateCardDefinition(this.innerText, parseInt(this.parentNode.id))"  onbeforeunload="this.onblur" onpaste="setTimeout(()=>{this.innerHTML=this.innerText},10)">${card.definition.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</p></div>`)
                 })
             //makes the edit buton exist
             document.getElementById("list-edit-btn").style.display = "grid"
@@ -273,419 +461,149 @@ class List{
         document.getElementById("card-container").innerHTML = items.join("  ")
     }
 
-}
-
-
-//you have to "unsubscribe" to these continously listening updates
-var unsubscribeListView;
-var unsubscribeAvailableFolders;
-var listDoc;
-var flashcardIndex = 0;
-var listRole;
-var unsubscribeParentFolder;
-var parentFolderRole;
-var previousListRoles;
-
-//editing the name of the list, and deleting the list, in the list settings popup
-window.addEventListener('load',()=>{
-    //event listener for the button that edits the list, and puts that data on firestore
-    document.querySelector("#list-edit-btn").addEventListener('click',()=>{
-        let newName = window.prompt("Rename List:",listDoc.data().name);
-        if(newName || newName ==""){
-            firestore.collection("lists").doc(splitPath[1]).update(
-                {
-                    name: newName,
-                }
-            )
-        }
-    })
-    //for deleting the list
-    document.querySelector('#list-delete-btn').addEventListener('click',()=>{
-        if(window.confirm("Delete this list?")){
-            firestore.collection("lists").doc(splitPath[1]).delete()
-            //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
-            let panelContainer = document.querySelector("#panel-container")
-            panelContainer.classList.add("hidden")
-            for (let panel of panelContainer.children) {
-                panel.classList.add("hidden")
-            }
-        }
-    })
-})
-
-
-
-
-
-// ██╗     ██╗███████╗████████╗███████╗     ██████╗ █████╗ ██████╗ ██████╗ ███████╗
-// ██║     ██║██╔════╝╚══██╔══╝██╔════╝    ██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝
-// ██║     ██║███████╗   ██║   ███████╗    ██║     ███████║██████╔╝██║  ██║███████╗
-// ██║     ██║╚════██║   ██║   ╚════██║    ██║     ██╔══██║██╔══██╗██║  ██║╚════██║
-// ███████╗██║███████║   ██║   ███████║    ╚██████╗██║  ██║██║  ██║██████╔╝███████║
-// ╚══════╝╚═╝╚══════╝   ╚═╝   ╚══════╝     ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝
-
-
-//adding cards with input
-window.addEventListener('load',()=>{
-    //variables for the fields
-    let cardWord = "";
-    let cardDefinition = "";
-    //elements
-    let cardWordElement = document.getElementById("card-word-input");
-    let cardDefinitionElement = document.getElementById("card-definition-input");
-
-    //listen for when something is typing on the text field
-    cardWordElement.addEventListener('keyup',(e)=>{
-        cardWord = cardWordElement.value
-        //if enter key is pressed, and there is both definition and word, add the card
-        if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
-            addCard(cardWord,cardDefinition)
-            //reset the variables and empty the text field
-            cardWord = ""
-            cardDefinition = ""
-            cardWordElement.value = ""
-            cardDefinitionElement.value = ""
-            //focus the first word element
-            cardWordElement.focus();
-        }else if((e.key == 'Enter' || e.keyCode ===13)){
-            //if definition is not filled in, focus that
-            cardDefinitionElement.focus()
-        }
-    })
-    cardDefinitionElement.addEventListener('keyup',(e)=>{
-        cardDefinition = cardDefinitionElement.value
-        //same thing copy and pasted, too lazy to make a function
-        if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
-            addCard(cardWord,cardDefinition)
-            cardWord = ""
-            cardDefinition = ""
-            cardWordElement.value = ""
-            cardDefinitionElement.value = ""
-            cardWordElement.focus();
-        }else if((e.key === 'Enter' || e.keycCode === 13)){
-            //focus the word input this time
-            cardWordElement.focus()
-        }
-    })
-
-})
-
-//function that's called when you press the star button
-function toggleFavoriteList(){
-    //if it's in favorites already, remove it from favorites. if it's not, put it in
-        if(userDoc?.data()?.favoriteLists?.includes(splitPath[1])){
-            let editedFavorites = userDoc.data().favoriteLists.filter(a=>{
-                return a!=splitPath[1]
+    toggleFavorite(){
+        if(user?.data?.favoriteLists?.includes(this.id)){
+            let editedFavorites = user.data.favoriteLists.filter(a=>{
+                return a!=this.id
             })
-            firestore.collection("users").doc(uid).update({
+            firestore.collection("users").doc(user.uid).update({
                 favoriteLists:editedFavorites
             })
         }else{
-            firestore.collection("users").doc(uid).update({
+            firestore.collection("users").doc(user.uid).update({
                 favoriteLists:userDoc?.data()?.favoriteLists?.concat([splitPath[1]]) ?? [splitPath[1]]
             })
         }
-}
+    }
 
-//deletes card, i don't think there is a good way to change arrays, so i made a new variable and set the entire array
-function deleteCard(element){
-    let splicedCards = listDoc.data().cards
-    splicedCards.splice(parseInt(element.parentNode.parentNode.id), 1)
-    firestore.collection('lists').doc(splitPath[1]).update(
-        {
-            cards:splicedCards
-        }
-    )
-}
-
-//adds cards
-function addCard(word,definition){
-    word.trim()
-    //weird code that changes depending on if there is a card
-    if(listDoc.data().cards) {
-        firestore.collection('lists').doc(splitPath[1]).update(
+    deleteCard(id){
+        let splicedCards = this.data.cards
+        splicedCards.splice(id, 1)
+        firestore.collection('lists').doc(this.id).update(
             {
-                cards: listDoc.data().cards.concat([{
-                    word: word.trim(),
-                    definition: definition.trim(),
+                cards:splicedCards
+            }
+        )
+    }
+
+    addCard(word,definition){
+        word.trim()
+        //weird code that changes depending on if there is a card
+        if(this.data.cards) {
+            firestore.collection('lists').doc(this.id).update(
+                {
+                    cards: this.data.cards.concat([{
+                        word: word.trim(),
+                        definition: definition.trim(),
+                    }
+                    ])
                 }
-                ])
-            }
-        )
-    }else{
-        firestore.collection('lists').doc(splitPath[1]).set(
-            {
-                cards:[{
-                    word: word.trim(),
-                    definition: definition.trim(),
-                }]
-            },{merge:true}
-        )
+            )
+        }else{
+            firestore.collection('lists').doc(this.id).set(
+                {
+                    cards:[{
+                        word: word.trim(),
+                        definition: definition.trim(),
+                    }]
+                },{merge:true}
+            )
+        }
     }
-}
 
-//update card's word
-function updateCardWord(word,index){
-    word.trim();
-    let editedArray = listDoc.data().cards
-    if(editedArray[index].word != word.trim()) {
-        editedArray[index].word = word.trim();
-        firestore.collection('lists').doc(splitPath[1]).update(
-            {
-                cards: editedArray
-            }
-        )
+    updateCardWord(word,index){
+        word.trim();
+        let editedArray = this.data.cards
+        if(editedArray[index].word != word.trim()) {
+            editedArray[index].word = word.trim();
+            firestore.collection('lists').doc(this.id).update(
+                {
+                    cards: editedArray
+                }
+            )
+        }
     }
-}
 
-//update card's definition
-function updateCardDefinition(definition,index){
-    definition.trim()
-    let editedArray = listDoc.data().cards
-    if(editedArray[index].definition != definition.trim()) {
-        editedArray[index].definition = definition.trim();
-        firestore.collection('lists').doc(splitPath[1]).update(
-            {
-                cards: editedArray
-            }
-        )
+    updateCardDefinition(definition,index){
+        definition.trim()
+        let editedArray = this.data.cards
+        if(editedArray[index].definition != definition.trim()) {
+            editedArray[index].definition = definition.trim();
+            firestore.collection('lists').doc(this.id).update(
+                {
+                    cards: editedArray
+                }
+            )
+        }
     }
-}
 
-//updates the folder that the list is in
-    function updateListFolder(folder){
-        firestore.collection("lists").doc(splitPath[1]).update(
+    updateListFolder(folder){
+        firestore.collection("lists").doc(this.id).update(
             {
                 folder: folder ||  firebase.firestore.FieldValue.delete()
             }
         )
     }
 
-function quizletImport(){
-    let text = prompt("To import from quizlet, open the list and press the more button (3 dots) and select export. paste the text here. this will not erase your other cards \n\nhttps://help.quizlet.com/hc/en-us/articles/360034345672-Exporting-your-sets")
-    text.trim();
-    if(text){
-        let cards = text.split("\n").map((card)=>{
-            return {
-                word: card.split("\t")[0] ?? "no value",
-                definition: card.split("\t")[1] ?? "no value"
-            }
-        })
-        cards = listDoc.data().cards.concat(cards)
-        console.log(cards)
-        firestore.collection("lists").doc(splitPath[1]).update({
-            cards: cards
-        })
-    }
-}
-
-// ██████╗ ██████╗  █████╗  ██████╗      ██████╗ █████╗ ██████╗ ██████╗ ███████╗
-// ██╔══██╗██╔══██╗██╔══██╗██╔════╝     ██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝
-// ██║  ██║██████╔╝███████║██║  ███╗    ██║     ███████║██████╔╝██║  ██║███████╗
-// ██║  ██║██╔══██╗██╔══██║██║   ██║    ██║     ██╔══██║██╔══██╗██║  ██║╚════██║
-// ██████╔╝██║  ██║██║  ██║╚██████╔╝    ╚██████╗██║  ██║██║  ██║██████╔╝███████║
-// ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝      ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝
-
-let cardDragIndex=0;
-let cardStartIndex=0;
-let cardDragElement;
-function cardDragStart(e){
-    let highestRole = "viewer";
-    if (listRole === "editor" || parentFolderRole === "editor") {
-        highestRole = "editor"
-    }
-    if (listRole === "creator" || parentFolderRole === "creator") {
-        highestRole = "creator"
-    }
-    if(e.target.className === "card" && highestRole !== "viewer") {
-        let element = e.target
-        cardDragIndex = parseInt(element.id);
-        cardStartIndex = cardDragIndex
-        cardDragElement = element
-        //adds the event listeners for dragging
-        // document.addEventListener('mousemove', cardDrag);
-        document.addEventListener("dragend", cardDragEnd);
-        document.addEventListener('dragover',cardDragIndexSet);
-        // document.getElementById("content-list").addEventListener("scroll",cardDrag)
-        //do some style changes
-        requestAnimationFrame(()=>{
-            element.style.opacity = "0"
-            element.style.pointerEvents = "none"
-        })
-        return false;
-    }
-    console.log("hello")
-}
-
-//gets the card that is dragged over, and you can set the current dragged card to be before that
-function cardDragIndexSet(e){
-
-    e.preventDefault()
-    if(e.target.className === "card" || e.target.parentNode.className === "card" || e.target.parentNode.parentNode.className === "card"){
-        let tempIndex = cardDragIndex
-        cardDragIndex = parseInt(e.target.id) || parseInt(e.target.closest(".card").id);
-
-        if(cardDragElement.id > cardDragIndex){
-            cardDragElement.parentNode.insertBefore(cardDragElement,document.getElementById(cardDragIndex))
-            for(let element of document.getElementsByClassName("card")){
-                if(element.id < tempIndex && element.id >= cardDragIndex){
-                    element.id = parseInt(element.id)+1
+    quizletImport(){
+        let text = prompt("To import from quizlet, open the list and press the more button (3 dots) and select export. paste the text here. this will not erase your other cards \n\nhttps://help.quizlet.com/hc/en-us/articles/360034345672-Exporting-your-sets")
+        text.trim();
+        if(text){
+            let cards = text.split("\n").map((card)=>{
+                return {
+                    word: card.split("\t")[0] ?? "no value",
+                    definition: card.split("\t")[1] ?? "no value"
                 }
+            })
+            cards = this.data.cards.concat(cards)
+            firestore.collection("lists").doc(this.id).update({
+                cards: cards
+            })
+        }
+    }
+    changeFlashcard(next){
+        if (this.flashcardIndex < 0){this.flashcardIndex = 0}
+        if (this.flashcardIndex >= list.data.cards.length){this.flashcardIndex = list.data.cards.length-1}
+        if (next){
+            if(list.data.cards[this.flashcardIndex+1]){
+                this.flashcardIndex++
+                document.getElementById("flashcard-word").innerText = list.data.cards[this.flashcardIndex].word
+                document.getElementById("flashcard-definition").innerText = list.data.cards[this.flashcardIndex].definition
+                document.getElementById("flashcard-index").innerText = this.flashcardIndex+1;
             }
-            cardDragElement.id = cardDragIndex
-        }
-        if(cardDragElement.id < cardDragIndex){
-            cardDragElement.parentNode.insertBefore(cardDragElement,document.getElementById(cardDragIndex).nextSibling)
+        }else{
 
-            for(let element of document.getElementsByClassName("card")){
-                if(element.id > tempIndex && element.id <= cardDragIndex){
-                    element.id = parseInt(element.id)-1
-                }
+            if(list.data.cards[this.flashcardIndex-1]){
+                this.flashcardIndex--
+                document.getElementById("flashcard-word").innerText = list.data.cards[this.flashcardIndex].word
+                document.getElementById("flashcard-definition").innerText = list.data.cards[this.flashcardIndex].definition
+                document.getElementById("flashcard-index").innerText = this.flashcardIndex+1;
             }
-            cardDragElement.id = cardDragIndex
         }
     }
+
+    updateListCardQuizMode(){
+        if (this.cardQuizMode == "card"){
+            document.getElementById("list-card-toggle").style.border = "2px solid var(--accent-1)"
+            document.getElementById("list-quiz-toggle").style.border = "1px solid var(--border-1)"
+            document.getElementById("list-card-container").style.display = "block"
+            document.getElementById("list-quiz-container").style.display = "none"
+        }else{
+            document.getElementById("list-quiz-toggle").style.border = "2px solid var(--accent-1)"
+            document.getElementById("list-card-toggle").style.border = "1px solid var(--border-1)"
+            document.getElementById("list-quiz-container").style.display = "block"
+            document.getElementById("list-card-container").style.display = "none"
+        }
+    }
+
 }
-
-//when the drag is done, remove the listeners, and reset the styles.
-    function cardDragEnd(e){
-        e.preventDefault()
-        cardDragElement.removeAttribute("style")
-        cardDragElement.removeAttribute("draggable")
-        document.removeEventListener("mouseup", cardDragEnd);
-        document.removeEventListener("mouseover", cardDragIndexSet);
-
-        if(cardStartIndex != cardDragIndex){
-            let editedArray = listDoc.data().cards;
-            array_move(editedArray,parseInt(cardStartIndex),cardDragIndex);
-            firestore.collection("lists").doc(splitPath[1]).set({
-                cards: editedArray
-            },{merge:true})
-        }
-    }
-
-//function for moving an index from one place to another
-//posisibly copied from stackoverflow
-function array_move(arr, old_index, new_index) {
-    if (new_index >= arr.length) {
-        var k = new_index - arr.length + 1;
-        while (k--) {
-            arr.push(undefined);
-        }
-    }
-    arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-    return arr; // for testing
-};
-
-//add event listener for mouse down
-document.addEventListener("dragstart", cardDragStart)
-
-document.addEventListener("mousedown", (e)=>{
-    if(e.target.className == "card"){
-        e.target.setAttribute("draggable","true")
-    }
-})
-
-
-
-
-// ███████╗██╗      █████╗ ███████╗██╗  ██╗ ██████╗ █████╗ ██████╗ ██████╗ ███████╗
-// ██╔════╝██║     ██╔══██╗██╔════╝██║  ██║██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝
-// █████╗  ██║     ███████║███████╗███████║██║     ███████║██████╔╝██║  ██║███████╗
-// ██╔══╝  ██║     ██╔══██║╚════██║██╔══██║██║     ██╔══██║██╔══██╗██║  ██║╚════██║
-// ██║     ███████╗██║  ██║███████║██║  ██║╚██████╗██║  ██║██║  ██║██████╔╝███████║
-// ╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝
-
-//function called from the arrows on the side of the card, and flips the card and does stuff
-//next is a boolean that decides whether you change to the previous or next card
-function changeFlashcard(next){
-    if (flashcardIndex < 0){flashcardIndex = 0}
-    if (flashcardIndex >= listDoc.data().cards.length){flashcardIndex = listDoc.data().cards.length-1}
-    if (next){
-
-        if(listDoc.data().cards[flashcardIndex+1]){
-            flashcardIndex++
-            document.getElementById("flashcard-word").innerText = listDoc.data().cards[flashcardIndex].word
-            document.getElementById("flashcard-definition").innerText = listDoc.data().cards[flashcardIndex].definition
-            document.getElementById("flashcard-index").innerText = flashcardIndex+1;
-        }
-    }else{
-
-        if(listDoc.data().cards[flashcardIndex-1]){
-            flashcardIndex--
-            document.getElementById("flashcard-word").innerText = listDoc.data().cards[flashcardIndex].word
-            document.getElementById("flashcard-definition").innerText = listDoc.data().cards[flashcardIndex].definition
-            document.getElementById("flashcard-index").innerText = flashcardIndex+1;
-        }
-    }
-}
-
-//saves the flashcard index to localStorage, i don't want to store it in firebase, it's not that important anyways
-window.addEventListener("unload", ()=>{
-    localStorage.setItem("flashcard-index", `${flashcardIndex}`);
-})
-
-//sets the flashcard index on load
-window.addEventListener("load", ()=>{
-    if(parseInt(localStorage.getItem("flashcard-index"))){
-        flashcardIndex =parseInt(localStorage.getItem("flashcard-index"))
-    }
-})
-
-//  ██████╗ ██╗   ██╗██╗███████╗    ███╗   ███╗ ██████╗ ██████╗ ███████╗
-// ██╔═══██╗██║   ██║██║╚══███╔╝    ████╗ ████║██╔═══██╗██╔══██╗██╔════╝
-// ██║   ██║██║   ██║██║  ███╔╝     ██╔████╔██║██║   ██║██║  ██║█████╗
-// ██║▄▄ ██║██║   ██║██║ ███╔╝      ██║╚██╔╝██║██║   ██║██║  ██║██╔══╝
-// ╚██████╔╝╚██████╔╝██║███████╗    ██║ ╚═╝ ██║╚██████╔╝██████╔╝███████╗
-//  ╚══▀▀═╝  ╚═════╝ ╚═╝╚══════╝    ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
-
-//localstorage to store whether the card mode is open, or the quiz mode
-let listCardQuizMode = localStorage.getItem("listCardQuizMode") ?? "card"
-let quizWordDefinitionMode = localStorage.getItem("quizWordDefinitionMode") ?? "word"
-
-
-window.addEventListener("load",()=>{
-
-    updateListCardQuizMode()
-    document.getElementById("list-card-toggle").addEventListener('click',()=>{
-        listCardQuizMode = "card"
-        localStorage.setItem("listCardQuizMode",listCardQuizMode)
-        updateListCardQuizMode()
-    })
-    document.getElementById("list-quiz-toggle").addEventListener('click',()=>{
-        listCardQuizMode = "quiz"
-        localStorage.setItem("listCardQuizMode",listCardQuizMode)
-        updateListCardQuizMode()
-    })
-    document.getElementById("quiz-word-definition-toggle").addEventListener('click', ()=>{
-        localStorage.setItem("quizWordDefinitionMode",quizWordDefinitionMode == "word" ? "definition" : "word")
-        quizWordDefinitionMode = quizWordDefinitionMode == "word" ? "definition" : "word"
-        refreshQuizAnswers()
-    })
-})
-
-//changes the mode, by toggling visibility, and changing the buttons that are selected
-function updateListCardQuizMode(){
-    if (listCardQuizMode == "card"){
-        document.getElementById("list-card-toggle").style.border = "2px solid var(--accent-1)"
-        document.getElementById("list-quiz-toggle").style.border = "1px solid var(--border-1)"
-        document.getElementById("list-card-container").style.display = "block"
-        document.getElementById("list-quiz-container").style.display = "none"
-    }else{
-        document.getElementById("list-quiz-toggle").style.border = "2px solid var(--accent-1)"
-        document.getElementById("list-card-toggle").style.border = "1px solid var(--border-1)"
-        document.getElementById("list-quiz-container").style.display = "block"
-        document.getElementById("list-card-container").style.display = "none"
-    }
-}
-
 
 
 //terrible code for quiz mode
 let quizPreviousWord;
 function refreshQuizAnswers(){
     //random index from length of array
-    let quizWord = Math.floor(Math.random()*listDoc.data().cards.length);
+    let quizWord = Math.floor(Math.random()*list.data.cards.length);
     //stores correct answer
     //this means that you can cheat if you know how to code, but it's not like you win anything from it
     let correctQuizAnswer = ((listDoc.data().cards.length >= 4) ?  Math.floor(Math.random()*4)  : Math.floor(Math.random()*listDoc.data().cards.length));

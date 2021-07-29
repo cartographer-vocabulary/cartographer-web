@@ -30,7 +30,7 @@ class Windows {
         switch (splitPath[0]) {
             case 'list':
                 document.getElementById("content-list").style.display = "block";
-                updateListView(splitPath[1]);
+                list = new List(splitPath[1])
                 break;
 
             case 'folder':
@@ -56,14 +56,14 @@ class Windows {
 
             default:
                 document.title = "Cartographer"
-                windows.update("/welcome");
+                this.update("/welcome");
         }
 
         this.previousUrl = window.location.pathname
     }
 }
 
-windows = new Windows()
+let windows = new Windows()
 
 
 
