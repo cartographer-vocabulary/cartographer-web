@@ -65,7 +65,7 @@ class User {
             //changes the stars on lists and folders here,
                 //because the favorites are stored on the user
             if(splitPath[0] == "favorites"){
-                updateFavorites(doc?.data()?.favoriteLists ?? [], doc?.data()?.favoriteFolders ?? [])
+                this.updateFavorites(doc?.data()?.favoriteLists ?? [], doc?.data()?.favoriteFolders ?? [])
             }else if(splitPath[0] == "list"){
                 document.querySelector("#content-list .favorites-toggle svg").style.fill = doc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "none"
                 document.querySelector("#content-list .favorites-toggle svg").style.stroke = doc?.data()?.favoriteLists?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
@@ -74,8 +74,8 @@ class User {
                 document.querySelector("#content-folder .favorites-toggle svg").style.stroke = doc?.data()?.favoriteFolders?.includes(splitPath[1]) ? "var(--accent-1)" : "var(--foreground-1)"
             }
 
+            this.updateFavorites(this.data?.favoriteLists, this.data?.favoriteFolders) 
         })
-        
     }
 
     updateColorScheme(colorScheme){
@@ -126,6 +126,57 @@ class User {
         }
     }
     
+    updateFavorites(lists,folders){
+        console.log(lists)
+        console.log(folders)
+        console.trace("update")
+        document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>"
+        document.getElementById("favorites-folder-container").innerHTML = "<div class='folder-list loader'></div>"
+        if(lists){
+            //make an array of all the lists needed to be gotten
+            let listGets = lists.map((list)=>{
+                return firestore.collection("lists").doc(list).get()
+            })
+
+            //map them and sorts them
+            Promise.allSettled(listGets).then((listDocs)=>{
+                let listItems = listDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
+                    return(doc?.exists ? `
+                        <div class="folder-list" onclick="windows.update('/list/${doc.id}')">
+                        <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
+                        <p>${doc.data().cards.length} ${(doc.data().cards.length == 1) ? "term" : "terms"}</p>
+                        </div>
+                        ` : "  ")
+                })
+                //adds it to container
+                document.getElementById("favorites-list-container").innerHTML = listItems.join(" ")
+            })
+        }else{
+            document.getElementById("favorites-list-container").innerHTML = "<div class='folder-list loader'></div>"
+        }
+
+
+        if(folders){
+            //same as lists
+            let folderGets = folders.map((folder)=>{
+                return firestore.collection("folders").doc(folder).get()
+            })
+
+            Promise.allSettled(folderGets).then((folderDocs)=>{
+                let folderItems = folderDocs.sort(({value:a},{value:b})=>{return((a?.data().name.toLowerCase() < b?.data().name.toLowerCase()) ? -1 : 1)})?.map(({value:doc}) => {
+                    return(doc?.exists ? `
+                        <div class="folder-list" onclick="windows.update('/folder/${doc.id}');">
+                        <h3>${doc.data().name.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</h3>
+                        </div>
+                        ` : "  ")
+                })
+                document.getElementById("favorites-folder-container").innerHTML = folderItems.join(" ")
+            })
+        }else{
+            document.getElementById("favorites-folder-container").innerHTML = "<div class='folder-list loader'></div>"
+        }
+    }
+
 }
 
 

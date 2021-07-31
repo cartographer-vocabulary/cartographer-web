@@ -21,27 +21,14 @@ class List{
             this.flashcardIndex =parseInt(localStorage.getItem("flashcard-index"))
         }
 
-
         //localstorage to store whether the card mode is open, or the quiz mode
         this.cardQuizMode = localStorage.getItem("listCardQuizMode") ?? "card"
         this.quizWordDefinitionMode = localStorage.getItem("quizWordDefinitionMode") ?? "word"
+
+
         subscriptions.listDoc?.()
         subscriptions.listAvailableFolders?.()
         subscriptions.listParentFolder?.()
-
-
-        //resets the stuff that exists, empty the cards etc
-        document.querySelector("#content-list .content-header").innerHTML = "<span class='loader'></span>"
-        document.querySelector("#list-settings-panel h1").innerHTML = "<span class='loader'></span>";
-        document.getElementById("card-container").innerHTML = "<div class='card loader'>";
-        document.querySelector("#flashcard-word").innerHTML = "<span class='loader'></span>"
-        document.querySelector("#flashcard-definition").innerHTML = "<span class='loader'></span>"
-        document.querySelector("#list-roles-list").innerHTML = "<div class='roles-list-item loader'></div>"
-        document.querySelector("#list-settings").style.display="none"
-        document.getElementById("list-edit-btn").style.display = "none"
-        document.getElementById("list-folder-select-dropdown").parentNode.style.display = "none"
-        document.getElementById("add-card-container").style.display = "none"
-
         this.subscribeParentFolder()
         this.subscribeAvailableFolders()
         this.subscribeList()
@@ -49,25 +36,10 @@ class List{
         //event listener for the button that edits the list, and puts that data on firestore
         document.querySelector("#list-edit-btn").addEventListener('click',()=>{
             let newName = window.prompt("Rename List:",this.data.name);
-            if(newName || newName ==""){
-                firestore.collection("lists").doc(this.id).update(
-                    {
-                        name: newName,
-                    }
-                )
-            }
+            this.updateName(newName)
         })
         //for deleting the list
         document.querySelector('#list-delete-btn').addEventListener('click',()=>{
-            if(window.confirm("Delete this list?")){
-                firestore.collection("lists").doc(this.id).delete()
-                //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
-                let panelContainer = document.querySelector("#panel-container")
-                panelContainer.classList.add("hidden")
-                for (let panel of panelContainer.children) {
-                    panel.classList.add("hidden")
-                }
-            }
         })
 
         //variables for the fields
@@ -82,7 +54,7 @@ class List{
             cardWord = cardWordElement.value
             //if enter key is pressed, and there is both definition and word, add the card
             if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
-                addCard(cardWord,cardDefinition)
+                this.addCard(cardWord,cardDefinition)
                 //reset the variables and empty the text field
                 cardWord = ""
                 cardDefinition = ""
@@ -99,7 +71,7 @@ class List{
             cardDefinition = cardDefinitionElement.value
             //same thing copy and pasted, too lazy to make a function
             if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
-                addCard(cardWord,cardDefinition)
+                this.addCard(cardWord,cardDefinition)
                 cardWord = ""
                 cardDefinition = ""
                 cardWordElement.value = ""
@@ -172,7 +144,7 @@ class List{
             document.removeEventListener("mouseover", cardDragIndexSet);
 
             if(cardStartIndex != cardDragIndex){
-                let editedArray = listDoc.data().cards;
+                let editedArray = this.data.cards;
                 array_move(editedArray,parseInt(cardStartIndex),cardDragIndex);
                 firestore.collection("lists").doc(splitPath[1]).set({
                     cards: editedArray
@@ -208,15 +180,20 @@ class List{
         })
         document.getElementById("list-quiz-toggle").addEventListener('click',()=>{
             this.cardQuizMode = "quiz"
-            this.localStorage.setItem("listCardQuizMode",this.cardQuizMode)
+            localStorage.setItem("listCardQuizMode",this.cardQuizMode)
             this.updateListCardQuizMode()
         })
         document.getElementById("quiz-word-definition-toggle").addEventListener('click', ()=>{
             localStorage.setItem("quizWordDefinitionMode",this.quizWordDefinitionMode == "word" ? "definition" : "word")
             this.quizWordDefinitionMode = this.quizWordDefinitionMode == "word" ? "definition" : "word"
-            refreshQuizAnswers()
+            this.refreshQuizAnswers()
         })
 
+        window.addEventListener("keydown",(e)=>{
+            if(this.cardQuizMode === "quiz" && document.activeElement == document.body && splitPath[0] == "list"){
+                document.getElementById(`quiz-definition-${parseInt(e.key)-1}`).click()
+            }
+        })
     }
 
     subscribeParentFolder(){
@@ -270,6 +247,19 @@ class List{
     }
 
     subscribeList(){
+
+        //resets the stuff that exists, empty the cards etc
+        document.querySelector("#content-list .content-header").innerHTML = "<span class='loader'></span>"
+        document.querySelector("#list-settings-panel h1").innerHTML = "<span class='loader'></span>";
+        document.getElementById("card-container").innerHTML = "<div class='card loader'>";
+        document.querySelector("#flashcard-word").innerHTML = "<span class='loader'></span>"
+        document.querySelector("#flashcard-definition").innerHTML = "<span class='loader'></span>"
+        document.querySelector("#list-roles-list").innerHTML = "<div class='roles-list-item loader'></div>"
+        document.querySelector("#list-settings").style.display="none"
+        document.getElementById("list-edit-btn").style.display = "none"
+        document.getElementById("list-folder-select-dropdown").parentNode.style.display = "none"
+        document.getElementById("add-card-container").style.display = "none"
+
         //actually subscribes to the changes in the list
         subscriptions.listDoc = firestore.collection("lists").doc(this.id)
             .onSnapshot((doc) => {
@@ -327,12 +317,12 @@ class List{
                                         <div class="roles-list-item horizontal">
                                         <span>${data?.data?.name?.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') ?? "Unknown"}</span>
                                         <div class="spacer"></div>
-                                        <select class="roles-list-select" onchange="let updatedRoles = listDoc.data().roles;updatedRoles[Object.entries(listDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('lists').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
+                                        <select class="roles-list-select" onchange="let updatedRoles = this.data.roles;updatedRoles[Object.entries(list.data.roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]] = this.options[this.selectedIndex].value;firestore.collection('lists').doc(splitPath[1]).set({roles:updatedRoles},{merge:true}) ">
                                         <option value="viewer" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "viewer" ? "selected" : ""}>viewer</option>
                                         <option value="editor" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "editor" ? "selected" : ""}>editor</option>
                                         <option value="creator" ${Object.entries(doc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[index][1] == "creator" ? "selected" : ""}>creator</option>
                                         </select>
-                                        <button class="roles-list-delete-btn" onclick="let deletedRoles = listDoc.data().roles;delete deletedRoles[Object.entries(listDoc.data().roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]];firestore.collection('lists').doc(splitPath[1]).update({roles:deletedRoles})">×</button>
+                                        <button class="roles-list-delete-btn" onclick="let deletedRoles = this.data.roles;delete deletedRoles[Object.entries(this.data.roles).sort((a,b)=>{return((a[1] < b[1]) ? -1 : 1)})[${index}][0]];firestore.collection('lists').doc(splitPath[1]).update({roles:deletedRoles})">×</button>
                                         </div>
                                         `)
                                 }else{
@@ -387,7 +377,7 @@ class List{
 
                     //quiz mode doesn't work if there is less than 2 cards
                     if(doc.data().cards.length >= 2) {
-                        refreshQuizAnswers();
+                        this.refreshQuizAnswers();
                     }else{
                         document.getElementById("quiz-word").innerText = "--"
                         for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
@@ -461,6 +451,22 @@ class List{
         document.getElementById("card-container").innerHTML = items.join("  ")
     }
 
+    updateName(newName){
+        if(newName || newName ==""){
+            firestore.collection("lists").doc(this.id).update(
+                {
+                    name: newName,
+                }
+            )
+        }
+    }
+
+    deleteList(){
+        if(window.confirm("Delete this list?")){
+            firestore.collection("lists").doc(this.id).delete()
+            panel.hide()
+        }
+    }
     toggleFavorite(){
         if(user?.data?.favoriteLists?.includes(this.id)){
             let editedFavorites = user.data.favoriteLists.filter(a=>{
@@ -471,9 +477,13 @@ class List{
             })
         }else{
             firestore.collection("users").doc(user.uid).update({
-                favoriteLists:userDoc?.data()?.favoriteLists?.concat([splitPath[1]]) ?? [splitPath[1]]
+                favoriteLists:user?.data?.favoriteLists?.concat([splitPath[1]]) ?? [splitPath[1]]
             })
         }
+    }
+
+    togglePublic(){
+        firestore.collection('lists').doc(this.id).update({public: !this.data.public})
     }
 
     deleteCard(id){
@@ -596,77 +606,66 @@ class List{
         }
     }
 
-}
+    refreshQuizAnswers(){
+        //random index from length of array
+        let quizWord = Math.floor(Math.random()*this.data.cards.length);
+        //stores correct answer
+        //this means that you can cheat if you know how to code, but it's not like you win anything from it
+        let correctQuizAnswer = ((this.data.cards.length >= 4) ?  Math.floor(Math.random()*4)  : Math.floor(Math.random()*this.data.cards.length));
+        //keeps choosing random words if the word happens to be the same as the previous one
+        while(quizWord == this.quizPreviousWord){
+            quizWord = Math.floor(Math.random()*list.data.cards.length);
+        }
+        //sets the previous word after we used it
+        this.quizPreviousWord = quizWord
+
+        //array of ansers
+        let quizAnswers = [quizWord]
+        if(this.quizWordDefinitionMode == "word"){
+            document.getElementById("quiz-word").innerText = this.data.cards[quizWord].word;
+        }else{
+            document.getElementById("quiz-word").innerText = this.data.cards[quizWord].definition;
+        }
 
 
-//terrible code for quiz mode
-let quizPreviousWord;
-function refreshQuizAnswers(){
-    //random index from length of array
-    let quizWord = Math.floor(Math.random()*list.data.cards.length);
-    //stores correct answer
-    //this means that you can cheat if you know how to code, but it's not like you win anything from it
-    let correctQuizAnswer = ((listDoc.data().cards.length >= 4) ?  Math.floor(Math.random()*4)  : Math.floor(Math.random()*listDoc.data().cards.length));
-    //keeps choosing random words if the word happens to be the same as the previous one
-    while(quizWord == quizPreviousWord){
-        quizWord = Math.floor(Math.random()*listDoc.data().cards.length);
-    }
-    //sets the previous word after we used it
-    quizPreviousWord = quizWord
-
-    //array of ansers
-    let quizAnswers = [quizWord]
-    if(quizWordDefinitionMode == "word"){
-        document.getElementById("quiz-word").innerText = listDoc.data().cards[quizWord].word;
-    }else{
-        document.getElementById("quiz-word").innerText = listDoc.data().cards[quizWord].definition;
-    }
-    
-
-    //removes all of them first, from the previous options
-    for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
-        document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "none"
-        document.getElementsByClassName("quiz-answer")[quizAnswer].style.border = "1px solid var(--border-1)"
-    }
-    //loops through the 4 choices
-    for (let quizAnswer = 0; quizAnswer < ((listDoc.data().cards.length < 4) ? listDoc.data().cards.length : 4); quizAnswer++) {
-        //if it isn't te correct answer
-        if (quizAnswer != correctQuizAnswer) {
-            document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
-            let currentAnswer = Math.floor(Math.random() * listDoc.data().cards.length);
-            //choses a random one that isn't any of the previous answers
-            while (quizAnswers.includes(currentAnswer)) {
-                currentAnswer = Math.floor(Math.random() * listDoc.data().cards.length)
-            }
-            //appends this answer to that array
-            quizAnswers.push(currentAnswer);
-            //changes the html
-            document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = (quizWordDefinitionMode == "word") ? listDoc.data().cards[currentAnswer].definition : listDoc.data().cards[currentAnswer].word;
-            //when it's clicked, all it does is get a red border
-            document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = () => {
-                document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--wrong)"
-            }
-        } else {
-            //when you click the correct answer, give a green border, and change the answers after half a second
-            document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
-            document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = (quizWordDefinitionMode == "word") ? listDoc.data().cards[quizWord].definition : listDoc.data().cards[quizWord].word;
-            document.getElementsByClassName("quiz-answer")[quizAnswer].onclick =
-                () => {
-                    document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--correct)";
-                    setTimeout(function () {
-                        refreshQuizAnswers()
-                    }, 500);
+        //removes all of them first, from the previous options
+        for(let quizAnswer = 0; quizAnswer < document.getElementsByClassName("quiz-answer").length; quizAnswer ++) {
+            document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "none"
+            document.getElementsByClassName("quiz-answer")[quizAnswer].style.border = "1px solid var(--border-1)"
+        }
+        //loops through the 4 choices
+        for (let quizAnswer = 0; quizAnswer < ((this.data.cards.length < 4) ? this.data.cards.length : 4); quizAnswer++) {
+            //if it isn't te correct answer
+            if (quizAnswer != correctQuizAnswer) {
+                document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
+                let currentAnswer = Math.floor(Math.random() * this.data.cards.length);
+                //choses a random one that isn't any of the previous answers
+                while (quizAnswers.includes(currentAnswer)) {
+                    currentAnswer = Math.floor(Math.random() * this.data.cards.length)
                 }
+                //appends this answer to that array
+                quizAnswers.push(currentAnswer);
+                //changes the html
+                document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = (this.quizWordDefinitionMode == "word") ? this.data.cards[currentAnswer].definition : this.data.cards[currentAnswer].word;
+                //when it's clicked, all it does is get a red border
+                document.getElementsByClassName("quiz-answer")[quizAnswer].onclick = () => {
+                    document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--wrong)"
+                }
+            } else {
+                //when you click the correct answer, give a green border, and change the answers after half a second
+                document.getElementsByClassName("quiz-answer")[quizAnswer].style.display = "block"
+                document.getElementsByClassName("quiz-answer")[quizAnswer].innerText = (this.quizWordDefinitionMode == "word") ? this.data.cards[quizWord].definition : this.data.cards[quizWord].word;
+                document.getElementsByClassName("quiz-answer")[quizAnswer].onclick =
+                    () => {
+                        document.getElementById(`quiz-definition-${quizAnswer}`).style.border = "2px solid var(--correct)";
+                        setTimeout(function () {
+                            list.refreshQuizAnswers()
+                        }, 500);
+                    }
+            }
         }
     }
+
 }
-
-
-//also allows you to select options with number keys
-window.addEventListener("keydown",(e)=>{
-    if(listCardQuizMode === "quiz" && document.activeElement == document.body && splitPath[0] == "list"){
-        document.getElementById(`quiz-definition-${parseInt(e.key)-1}`).click()
-    }
-})
 
 

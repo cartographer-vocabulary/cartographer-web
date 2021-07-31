@@ -27,6 +27,10 @@ class Windows {
         document.getElementById("content-folder").style.display = "none";
         document.getElementById("content-favorites").style.display = "none";
 
+        subscriptions.listDoc?.()
+        subscriptions.listAvailableFolders?.()
+        subscriptions.listParentFolder?.()
+
         switch (splitPath[0]) {
             case 'list':
                 document.getElementById("content-list").style.display = "block";
@@ -36,13 +40,11 @@ class Windows {
             case 'folder':
                 document.getElementById("content-folder").style.display = "block";
                 // updateFolderView(splitPath[1]);
+                folder = new Folder(splitPath[1])
                 break;
 
             case 'favorites':
                 document.getElementById("content-favorites").style.display = "block";
-                if(userDoc){
-                    // updateFavorites(userDoc.data()?.favoriteLists ?? [], userDoc.data().favoriteFolders ?? [])
-                }
                 break;
 
             case 'applogin':

@@ -65,6 +65,7 @@
         <script defer src="/scripts/sidebar.js"></script>
         <!-- <script src="/scripts/content.js"></script> -->
         <script defer src="/scripts/list.js"></script>
+        <script defer src="/scripts/folder.js"></script>
         <script defer src="/scripts/window.js"></script>
         <script defer src="/scripts/panel.js"></script>
         <title>Cartographer</title>
@@ -362,7 +363,7 @@
                     <div class="horizontal">
                         <h3>Public</h3>
                         <div class="spacer"></div>
-                        <button id="list-toggle-public-btn" onclick="firestore.collection('lists').doc(splitPath[1]).update({public: !listDoc.data().public})"></button>
+                        <button id="list-toggle-public-btn" onclick="list.togglePublic()"></button>
                     </div>
                     <h3>People</h3>
                     <div id="list-roles-list" class="roles-list">
@@ -381,7 +382,7 @@
                         <button onclick="firebase.functions().httpsCallable('getUidFromEmail')({email: window.prompt('Enter Email:')}).then((data)=>{let updatedRoles = listDoc.data().roles;updatedRoles[data.data.user]='editor';firestore.collection('lists').doc(splitPath[1]).update({roles:updatedRoles})}) ">add editor</button>
                     </div>
                 </div>
-                <button id="import-from-quizlet" onclick="quizletImport()">import from quizlet</button>
+                <button id="import-from-quizlet" onclick="list.quizletImport()">import from quizlet</button>
             </div>
             <div id = "folder-settings-panel" class="panel hidden">
                 <div class="horizontal">
