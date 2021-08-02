@@ -226,7 +226,7 @@
                     <div id="folder-list-container">
                         <div class="folder-list loader"></div>
                     </div>
-                    <button id="add-folder-list-btn">
+                    <button id="add-folder-list-btn" onclick="addNewList(folder.id)">
                         + Add list
                     </button>
                 </div>
@@ -331,7 +331,7 @@
                 <div class="horizontal">
                     <h1><span class='loader'></span></h1>
                     <div class="spacer"></div>
-                    <button id="list-edit-btn">
+                    <button id="list-edit-btn" onclick="list.editName()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -339,7 +339,7 @@
                         </svg>
                         <span>edit</span>
                     </button>
-                    <button id="list-delete-btn">
+                    <button id="list-delete-btn" onclick="list.delete()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <line x1="4" y1="7" x2="20" y2="7" />
@@ -388,7 +388,7 @@
                 <div class="horizontal">
                     <h1><span class="loader"></span></h1>
                     <div class="spacer"></div>
-                    <button id="folder-edit-btn">
+                    <button id="folder-edit-btn" onclick="folder.editName()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -396,7 +396,7 @@
                         </svg>
                         <span>edit</span>
                     </button>
-                    <button id="folder-delete-btn">
+                    <button id="folder-delete-btn" onclick="folder.delete()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="var(--foreground-1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <line x1="4" y1="7" x2="20" y2="7" />
@@ -413,7 +413,7 @@
                     <div class="horizontal">
                         <h3>Public</h3>
                         <div class="spacer"></div>
-                        <button id="folder-toggle-public-btn" onclick="firestore.collection('folders').doc(splitPath[1]).update({public: !folderDoc.data().public})"></button>
+                        <button id="folder-toggle-public-btn" onclick="folder.togglePublic()"></button>
                     </div>
                     <h3>People</h3>
                     <div id="folder-roles-list" class="roles-list">

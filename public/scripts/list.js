@@ -33,15 +33,6 @@ class List{
         this.subscribeAvailableFolders()
         this.subscribeList()
 
-        //event listener for the button that edits the list, and puts that data on firestore
-        document.querySelector("#list-edit-btn").addEventListener('click',()=>{
-            let newName = window.prompt("Rename List:",this.data.name);
-            this.updateName(newName)
-        })
-        //for deleting the list
-        document.querySelector('#list-delete-btn').addEventListener('click',()=>{
-        })
-
         //variables for the fields
         let cardWord = "";
         let cardDefinition = "";
@@ -50,7 +41,7 @@ class List{
         let cardDefinitionElement = document.getElementById("card-definition-input");
 
         //listen for when something is typing on the text field
-        cardWordElement.addEventListener('keyup',(e)=>{
+        cardWordElement.onkeyup = (e)=>{
             cardWord = cardWordElement.value
             //if enter key is pressed, and there is both definition and word, add the card
             if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
@@ -66,8 +57,8 @@ class List{
                 //if definition is not filled in, focus that
                 cardDefinitionElement.focus()
             }
-        })
-        cardDefinitionElement.addEventListener('keyup',(e)=>{
+        }
+        cardDefinitionElement.onkeyup = (e)=>{
             cardDefinition = cardDefinitionElement.value
             //same thing copy and pasted, too lazy to make a function
             if ((e.key === 'Enter' || e.keyCode === 13) && cardWord && cardDefinition) {
@@ -81,7 +72,7 @@ class List{
                 //focus the word input this time
                 cardWordElement.focus()
             }
-        })
+        }
 
 
         let cardDragIndex=0;
@@ -451,7 +442,7 @@ class List{
         document.getElementById("card-container").innerHTML = items.join("  ")
     }
 
-    updateName(newName){
+    editName(newName){
         if(newName || newName ==""){
             firestore.collection("lists").doc(this.id).update(
                 {
@@ -461,7 +452,7 @@ class List{
         }
     }
 
-    deleteList(){
+    delete(){
         if(window.confirm("Delete this list?")){
             firestore.collection("lists").doc(this.id).delete()
             panel.hide()

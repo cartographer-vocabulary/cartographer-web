@@ -34,7 +34,7 @@ class Sidebar {
                     return((!item.data().folder) || item.data().folder == "")
                 })
                 //convert array into html basically
-                let items = filtered.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).sort((a,b)=>{return((a.data().roles[uid] < b.data().roles[uid])? -1 : 1)}).map(doc => {
+                let items = filtered.sort((a,b)=>{return((a.data().name.toLowerCase() < b.data().name.toLowerCase()) ? -1 : 1)}).sort((a,b)=>{return((a.data().roles[user.uid] < b.data().roles[user.uid])? -1 : 1)}).map(doc => {
                     //this part changes the url when you click and calls update window function in content.js
                     return(doc.exists ? `
                         <li onclick="windows.update('/list/${doc.id}')">
@@ -78,7 +78,8 @@ class Sidebar {
 
 var sidebar = new Sidebar()
 
-function addNewList(){
+function addNewList(folderId){
+    console.log("hello")
     try{
         //cause error if you don't have uid
         if(!user){lmao}
@@ -92,6 +93,7 @@ function addNewList(){
                 roles: {
                     [user.uid]: 'creator',
                 },
+                folder:folderId,
                 cards:[]
             })
         }

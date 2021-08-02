@@ -14,44 +14,8 @@ class Folder{
     constructor(folderId){
         this.id = folderId
         this.updateFolderView()
-
-        //event listener for the button that edits the list, and puts that data on firestore
-        document.querySelector("#folder-edit-btn").addEventListener('click',()=>{
-            let newName = window.prompt("Rename Folder:",folderDoc.data().name);
-            if(newName || newName ==""){
-                firestore.collection("folders").doc(splitPath[1]).update(
-                    {
-                        name: newName,
-                    }
-                )
-            }
-        })
-        //for deleting the list
-        document.querySelector('#folder-delete-btn').addEventListener('click',()=>{
-            if(window.confirm("Delete this folder? it will also delete all lists in this folder.")){
-                if(folderLists) {
-                    let batchDelete = firestore.batch();
-                    for (let doc of folderLists) {
-                        batchDelete.delete(firestore.collection("lists").doc(doc.id))
-                    }
-                    batchDelete.commit()
-                }
-                firestore.collection("folders").doc(splitPath[1]).delete()
-                //hides the panel when you click delete so you don't need to click outside because it's useless now that you have delete the list
-                let panelContainer = document.getElementById("panel-container");
-                panelContainer.classList.add("hidden");
-                for (let panel of panelContainer.children) {
-                    panel.classList.add("hidden");
-                }
-
-            }
-        })
-        document.getElementById('add-folder-list-btn').addEventListener('click', ()=>{
-            addNewList()
-        })
-
     }
-
+    
     updateFolderView(){
         subscriptions.folderDoc?.();
         subscriptions.folderList?.();
@@ -174,10 +138,35 @@ class Folder{
             })
     }
 
+    editName(){
+        let newName = window.prompt("Rename Folder:",this.data.name);
+        if(newName || newName ==""){
+            firestore.collection("folders").doc(this.id).update(
+                {
+                    name: newName,
+                }
+            )
+        }
+    }
+
+    delete(){
+            if(window.confirm("Delete this folder? it will also delete all lists in this folder.")){
+                if(this.folderLists) {
+                    let batchDelete = firestore.batch();
+                    for (let doc of folderLists) {
+                        batchDelete.delete(firestore.collection("lists").doc(doc.id))
+                    }
+                    batchDelete.commit()
+                }
+                firestore.collection("folders").doc(this.id).delete()
+                panel.hide()
+            }
+    }
+
     toggleFavoriteFolder(){
         if(user.data?.favoriteFolders?.includes(this.id)){
             let editedFavorites = user.data.favoriteFolders.filter(a=>{
-                return a!=splitPath[1]
+                return a!=this.id
             })
             firestore.collection("users").doc(user.uid).update({
                 favoriteFolders:editedFavorites
@@ -187,6 +176,10 @@ class Folder{
                 favoriteFolders:user?.data?.favoriteFolders?.concat([this.id]) ?? [this.id]
             })
         }
+    }
+    
+    togglePublic(){
+        firestore.collection('folders').doc(this.id).update({public: !this.data.public})
     }
 
 }
