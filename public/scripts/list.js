@@ -155,36 +155,26 @@ class List{
         };
 
         //add event listener for mouse down
+        document.removeEventListener("dragstart", cardDragStart)
         document.addEventListener("dragstart", cardDragStart)
 
-        document.addEventListener("mousedown", (e)=>{
+
+        function makeCardDraggable(e){
             if(e.target.className == "card"){
                 e.target.setAttribute("draggable","true")
             }
-        })
+        }
 
-        this.updateListCardQuizMode()
-        document.getElementById("list-card-toggle").addEventListener('click',()=>{
-            this.cardQuizMode = "card"
-            localStorage.setItem("listCardQuizMode",this.cardQuizMode)
-            this.updateListCardQuizMode()
-        })
-        document.getElementById("list-quiz-toggle").addEventListener('click',()=>{
-            this.cardQuizMode = "quiz"
-            localStorage.setItem("listCardQuizMode",this.cardQuizMode)
-            this.updateListCardQuizMode()
-        })
-        document.getElementById("quiz-word-definition-toggle").addEventListener('click', ()=>{
-            localStorage.setItem("quizWordDefinitionMode",this.quizWordDefinitionMode == "word" ? "definition" : "word")
-            this.quizWordDefinitionMode = this.quizWordDefinitionMode == "word" ? "definition" : "word"
-            this.refreshQuizAnswers()
-        })
+        document.removeEventListener("mousedown", makeCardDraggable)
+        document.addEventListener("mousedown", makeCardDraggable)
 
-        window.addEventListener("keydown",(e)=>{
-            if(this.cardQuizMode === "quiz" && document.activeElement == document.body && splitPath[0] == "list"){
+        function quizKeyShortCut(e){
+            if(this.cardQuizMode === "quiz" && document.activeElement == document.body){
                 document.getElementById(`quiz-definition-${parseInt(e.key)-1}`).click()
             }
-        })
+        }
+        window.removeEventListener("keydown",quizKeyShortCut)
+        window.addEventListener("keydown",quizKeyShortCut)
     }
 
     subscribeParentFolder(){
@@ -583,7 +573,10 @@ class List{
         }
     }
 
-    updateListCardQuizMode(){
+    updateCardQuizMode(mode){
+        this.cardQuizMode = mode
+        localStorage.setItem("listCardQuizMode",this.cardQuizMode)
+
         if (this.cardQuizMode == "card"){
             document.getElementById("list-card-toggle").style.border = "2px solid var(--accent-1)"
             document.getElementById("list-quiz-toggle").style.border = "1px solid var(--border-1)"
@@ -597,6 +590,12 @@ class List{
         }
     }
 
+    toggleQuizWordDefinition(){
+        localStorage.setItem("quizWordDefinitionMode",this.quizWordDefinitionMode == "word" ? "definition" : "word")
+        this.quizWordDefinitionMode = this.quizWordDefinitionMode == "word" ? "definition" : "word"
+        this.refreshQuizAnswers()
+    }
+    
     refreshQuizAnswers(){
         //random index from length of array
         let quizWord = Math.floor(Math.random()*this.data.cards.length);
