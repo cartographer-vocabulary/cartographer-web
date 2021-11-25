@@ -291,6 +291,24 @@ span.loader{
     margin: 0 0;
 }
 
+#sidebar-container ul:empty::before{
+    display: block;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+    text-align: center;
+    color: var(--foreground-2);
+}
+
+#my-lists-container:empty::before{
+    content: "no lists"; 
+}
+
+#my-folders-container:empty::before{
+    content: "no folders"; 
+}
+
 #sidebar-container ul li{
     list-style-type: none;
     border-radius: 5px;
@@ -349,6 +367,8 @@ span.loader{
 .sidebar-header:hover #add-folder-btn, .sidebar-header:hover #add-list-btn{
     opacity: 1;
 }
+
+
 
 
 
@@ -598,6 +618,17 @@ span.loader{
     font-weight: 400 !important;
 }
 
+#card-container:empty::before{
+    content: "there's nothing here, go type something in the textfield to add a card!";
+    display: block;
+    width: 100%;
+    height: 200px;
+    line-height: 200px;
+    overflow: hidden;
+    text-align: center;
+    color: var(--foreground-2);
+}
+
 
 /* ███████╗██╗      █████╗ ███████╗██╗  ██╗ ██████╗ █████╗ ██████╗ ██████╗  */
 /* ██╔════╝██║     ██╔══██╗██╔════╝██║  ██║██╔════╝██╔══██╗██╔══██╗██╔══██╗ */
@@ -709,18 +740,6 @@ span.loader{
     color: var(--background-1);
     font-weight: normal;
 }
-
-#card-container:empty::before{
-    content: "there's nothing here, go type something in the textfield to add a card!";
-    display: block;
-    width: 100%;
-    height: 200px;
-    line-height: 200px;
-    overflow: hidden;
-    text-align: center;
-    color: var(--foreground-2);
-}
-
 #folder-list-container:empty::before{
     content: "there are no lists in this folder, click the \"Add list\" button or move another list here!";
     display: block;

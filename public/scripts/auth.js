@@ -34,7 +34,11 @@ class Auth {
     }
     signedOut(){
         document.querySelector("#login-btn").style.display = "block"
-
+        //loop through all elements with the class loader
+        let loaders = document.querySelectorAll(".loader")
+        for (let i = 0; i < loaders.length; i++) {
+            loaders[i].parentNode.innerHTML = ""
+        }
         subscriptions.sidebarLists?.()
         subscriptions.sidebarFolders?.()
 

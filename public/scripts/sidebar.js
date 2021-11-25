@@ -26,6 +26,7 @@ class Sidebar {
         document.getElementById('sidebar-container').style.display = "none";
     }
     updateLists(){
+        document.getElementById("my-lists-container").innerHTML = '<li class="loader"></li>';
         subscriptions.sidebarLists = firestore.collection('lists')
             .where(`roles.${user.uid}`,'in',['creator','editor','viewer'])
             .onSnapshot(querySnapshot =>{
@@ -56,6 +57,7 @@ class Sidebar {
             });
     }
     updateFolders(){
+        document.getElementById("my-folders-container").innerHTML = '<li class="loader"></li>';
         subscriptions.siderbarFolders = firestore.collection('folders')
             .where(`roles.${user.uid}`,'in',['creator','editor','viewer'])
             .onSnapshot(querySnapshot=>{
@@ -79,7 +81,6 @@ class Sidebar {
 var sidebar = new Sidebar()
 
 function addNewList(folderId){
-    console.log("hello")
     try{
         //cause error if you don't have uid
         if(!user){lmao}
@@ -93,7 +94,7 @@ function addNewList(folderId){
                 roles: {
                     [user.uid]: 'creator',
                 },
-                folder:folderId,
+                folder:folderId ?? "",
                 cards:[]
             })
         }
