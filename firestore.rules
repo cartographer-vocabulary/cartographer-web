@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    match /users/{doc} {
+  		allow read: if request.auth != null && request.auth.uid == doc;
+    	allow write: if request.auth != null && request.auth.uid == doc;
+  	}
+    match /lists/{doc}{
+    	allow read: if resource.data.public == true || resource.data.roles[request.auth.uid] == "viewer" || resource.data.roles[request.auth.uid] == "editor" || resource.data.roles[request.auth.uid] == "creator"  || (get(/databases/$(database)/documents/folders/$(resource.data.folder)).data.public == true) || (get(/databases/$(database)/documents/folders/$(resource.data.folder)).data.roles[request.auth.uid] == "viewer")  || (get(/databases/$(database)/documents/folders/$(resource.data.folder)).data.roles[request.auth.uid] == "editor")|| (get(/databases/$(database)/documents/folders/$(resource.data.folder)).data.roles[request.auth.uid] == "creator");
+			allow create: if (request.resource.data.roles[request.auth.uid] == "editor" || request.resource.data.roles[request.auth.uid] == "creator") 
+      allow update: if (resource.data.roles[request.auth.uid] == "editor" || resource.data.roles[request.auth.uid] == "creator") && request.resource.data.roles[request.auth.uid] == resource.data.roles[request.auth.uid] || (get(/databases/$(database)/documents/folders/$(resource.data.folder)).data.roles[request.auth.uid] == "editor")|| (get(/databases/$(database)/documents/folders/$(resource.data.folder)).data.roles[request.auth.uid] == "creator");
+      allow delete: if request.auth != null && resource.data.roles[request.auth.uid] == "creator" || (get(/databases/$(database)/documents/folders/$(resource.data.folder)).data.roles[request.auth.uid] == "editor")|| (get(/databases/$(database)/documents/folders/$(resource.data.folder)).data.roles[request.auth.uid] == "creator");
+    }
+    match /folders/{doc}{
+    	allow read: if resource.data.public == true || resource.data.roles[request.auth.uid] == "viewer" || resource.data.roles[request.auth.uid] == "editor" || resource.data.roles[request.auth.uid] == "creator";
+ 			allow create: if (request.resource.data.roles[request.auth.uid] == "editor" || request.resource.data.roles[request.auth.uid] == "creator");
+      allow update: if (resource.data.roles[request.auth.uid] == "editor" || resource.data.roles[request.auth.uid] == "creator") && request.resource.data.roles[request.auth.uid] == resource.data.roles[request.auth.uid];
+      allow delete: if request.auth != null && resource.data.roles[request.auth.uid] == "creator";
+    }
+  }
+}
